@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net7.0-windows</TargetFramework>
+    <RootNamespace>Simple_Dice_Roller</RootNamespace>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ArkDice\DiceCollection.csproj" />
+    <ProjectReference Include="..\Character\Character.csproj" />
+    <ProjectReference Include="..\DicePile\DicePile.csproj" />
+  </ItemGroup>
+
+</Project>
