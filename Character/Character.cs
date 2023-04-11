@@ -90,9 +90,9 @@ namespace Character //change to ArkDice?
 
         //Constructor(s):
         //-------- -------- -------- -------- -------- -------- -------- -------- 
-        //Not technically a constructor, but used by them because I don't want to have to copy+paste and maintain this same code 4+ times.
-        //Sets this to a default, zeroed-out state.
-        private void zeroEverything ()
+        
+        //Creates a blank character.
+        public Character ()
         {
             //Basic info.
             id = "";
@@ -137,12 +137,7 @@ namespace Character //change to ArkDice?
             abilities = new List<Ability>();
             basicAbilities = new List<Ability>();
             passives = new List<string>();
-        }
 
-        //Creates a blank character.
-        public Character ()
-        {
-            zeroEverything();
             calculateProf();
         }
 
@@ -156,9 +151,10 @@ namespace Character //change to ArkDice?
 
         //Load a character from a JSON string.
         public Character (string json)
+            : this()
         {
             //Start with a blank slate.
-            zeroEverything();
+            //zeroEverything();
 
             //Temporarily removed.
             //Doesn't work, I'm guessing it requires public setters to work but I don't want those.
@@ -313,7 +309,7 @@ namespace Character //change to ArkDice?
                 {
                     //We don't technically need to do this here, but it won't hurt.
                     stats = new int[6];
-                    JsonElement temp2 = new JsonElement();
+                    //JsonElement temp2 = new JsonElement();
 
                     //to do: check if array length is 6 and complain otherwise?
                     for (int a = 0; a < temp.GetArrayLength() && a < 6; a++)
@@ -652,26 +648,27 @@ namespace Character //change to ArkDice?
 
         //Currently only used by abilities for sending back lists of changes.
         public Character (string id, string name)
+            : this()
         {
             this.id = id;
             this.name= name;
 
-            //Everything else is baseline / false / 0 / etc.
-            race = "";
-            maxHP = 0;
-            currentHP = 0;
-            classes = new List<ClassLevel> ();
-            prof = 0;
-            profBonus = 0;
-            stats = new int[6];
-            saveProfs = new int[6];
-            for (int a = 0; a < 6; a++)
-            {
-                stats[a] = 0;
-                saveProfs[a] = 0;
-            }
-            abilities= new List<Ability> ();
-            passives= new List<string> ();
+            ////Everything else is baseline / false / 0 / etc.
+            //race = "";
+            //maxHP = 0;
+            //currentHP = 0;
+            //classes = new List<ClassLevel> ();
+            //prof = 0;
+            //profBonus = 0;
+            //stats = new int[6];
+            //saveProfs = new int[6];
+            //for (int a = 0; a < 6; a++)
+            //{
+            //    stats[a] = 0;
+            //    saveProfs[a] = 0;
+            //}
+            //abilities= new List<Ability> ();
+            //passives= new List<string> ();
         }
 
 
@@ -892,6 +889,54 @@ namespace Character //change to ArkDice?
             //...
 
             return true;
+        }
+
+        //
+        private void zeroEverything()
+        {
+            //Basic info.
+            id = "";
+            name = "";
+            race = "";
+            maxHP = 0;
+            currentHP = 0;
+
+            //Class and level based info.
+            classes = new List<ClassLevel>();
+            profBonus = 0;
+
+            //Stats and related info.
+            stats = new int[6];
+            saveProfs = new int[6];
+            for (int a = 0; a < 6; a++)
+            {
+                stats[a] = 0;
+                saveProfs[a] = 0;
+            }
+            skills = new Dictionary<string, int>();
+            skills["Athletics"] = 0;
+            skills["Acrobatics"] = 0;
+            skills["Sleight of Hand"] = 0;
+            skills["Stealth"] = 0;
+            skills["Arcana"] = 0;
+            skills["History"] = 0;
+            skills["Investigation"] = 0;
+            skills["Nature"] = 0;
+            skills["Religion"] = 0;
+            skills["Animal Handling"] = 0;
+            skills["Insight"] = 0;
+            skills["Medicine"] = 0;
+            skills["Perception"] = 0;
+            skills["Survival"] = 0;
+            skills["Deception"] = 0;
+            skills["Intimidation"] = 0;
+            skills["Performance"] = 0;
+            skills["Persuasion"] = 0;
+
+            //Ability info
+            abilities = new List<Ability>();
+            basicAbilities = new List<Ability>();
+            passives = new List<string>();
         }
 
         //Getters and Setters:
