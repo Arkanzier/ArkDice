@@ -334,7 +334,7 @@ namespace Simple_Dice_Roller
             //to do: consider doing this by the column index instead.
             if (colName == "Abilities_UseButtonCol")
             {
-                DiceResponse resp = loadedCharacter.useAbility(abilityID);
+                DiceResponse resp = loadedCharacter.UseAbility(abilityID);
                 logMessage(resp.description);
                 //MessageBox.Show(resp.description);
                 //to do: check if description is actually present.
@@ -370,26 +370,26 @@ namespace Simple_Dice_Roller
         private void displayCharacter(Character.Character character)
         {
             //Basics
-            Char_ID.Text = character.getID();
-            Char_Name.Text = character.getName();
-            Char_Race.Text = character.getRace();
+            Char_ID.Text = character.id;
+            Char_Name.Text = character.name;
+            Char_Race.Text = character.race;
 
             //Stats
-            Char_Str.Text = character.getStr().ToString();
-            Char_Dex.Text = character.getDex().ToString();
-            Char_Con.Text = character.getCon().ToString();
-            Char_Int.Text = character.getInt().ToString();
-            Char_Wis.Text = character.getWis().ToString();
-            Char_Cha.Text = character.getCha().ToString();
+            Char_Str.Text = character.GetStr().ToString();
+            Char_Dex.Text = character.GetDex().ToString();
+            Char_Con.Text = character.GetCon().ToString();
+            Char_Int.Text = character.GetInt().ToString();
+            Char_Wis.Text = character.GetWis().ToString();
+            Char_Cha.Text = character.GetCha().ToString();
 
-            Char_Prof.Text = character.getProf().ToString();
+            Char_Prof.Text = character.GetProf().ToString();
 
             //Abilities
             AbilitiesArea.Rows.Clear();
 
-            for (int a = 0; a < character.getAbilities().Count(); a++)
+            for (int a = 0; a < character.GetAbilities().Count(); a++)
             {
-                Ability thisAbility = character.getAbilities()[a];
+                Ability thisAbility = character.GetAbilities()[a];
                 string id = thisAbility.getID();
                 string name = thisAbility.getName();
                 string text = thisAbility.getText();
@@ -414,7 +414,7 @@ namespace Simple_Dice_Roller
 
             //Generic abilities
             BasicAbilitiesArea.Rows.Clear();
-            List<Ability> basicAbilities = character.getBasicAbilities();
+            List<Ability> basicAbilities = character.GetBasicAbilities();
             for (int a = 0; a < basicAbilities.Count(); a++)
             {
                 Ability thisAbility = basicAbilities[a];
@@ -513,7 +513,7 @@ namespace Simple_Dice_Roller
         private void Button_SaveCharacter_Click(object sender, EventArgs e)
         {
             string filepath = "C:\\Users\\david\\Programs\\Simple Dice Roller\\Tiriel.char";
-            loadedCharacter.save(filepath);
+            loadedCharacter.Save(filepath);
         }
 
         private void TestButton_Click(object sender, EventArgs e)

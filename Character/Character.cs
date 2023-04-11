@@ -16,11 +16,14 @@ namespace Character //change to ArkDice?
         //subrace as separate field?
         public int maxHP { get; private set; }
         public int currentHP { get; private set; }
-        //temp hp
-        //temporary modifiers to max HP
+        public int tempHP { get; private set; }
+        //temporary modifiers to max HP?
 
         //Class related info
         public List<ClassLevel> classes { get; private set; }
+        //to do: consider setting something up to support gestalt rules.
+            //just set up a multiplier for levels or 'class levels per character level' type thing?
+                //the character's level equals total class level divided by that number
 
         //Added to the prof bonus calculated based on level. Can be negative.
         public int profBonus { get; private set; }
@@ -100,6 +103,7 @@ namespace Character //change to ArkDice?
             race = "";
             maxHP = 0;
             currentHP = 0;
+            tempHP = 0;
 
             //Class and level based info.
             classes = new List<ClassLevel>();
@@ -138,7 +142,7 @@ namespace Character //change to ArkDice?
             basicAbilities = new List<Ability>();
             passives = new List<string>();
 
-            calculateProf();
+            CalculateProf();
         }
 
         //public Character (string filename)
@@ -153,8 +157,8 @@ namespace Character //change to ArkDice?
         public Character (string json)
             : this()
         {
-            //Start with a blank slate.
-            //zeroEverything();
+            //to do: look into making this work with deserialize.
+            //will i have to make a struct with the same attributes and then write a function to copy stuff from there to here?
 
             //Temporarily removed.
             //Doesn't work, I'm guessing it requires public setters to work but I don't want those.
@@ -643,7 +647,7 @@ namespace Character //change to ArkDice?
                 return;
             }
 
-            calculateProf();
+            CalculateProf();
         }
 
         //Currently only used by abilities for sending back lists of changes.
@@ -675,31 +679,60 @@ namespace Character //change to ArkDice?
         //Public functions:
         //-------- -------- -------- -------- -------- -------- -------- -------- 
 
-        //Uses the specified ability.
-        public DiceResponse useAbility (string abilityID)
+        //Deal damage to the character.
+        public bool Damage(int amount, bool allowNegative = false)
         {
-            int index = getAbilityIndexByID(abilityID);
-            if (index < 0)
+            //We need to account for temp HP.
+            int totalHP = currentHP + tempHP;
+
+            if (amount == 0)
             {
-                //return new DiceResponse (false);
-                return new DiceResponse (false, "Could not find ability " + abilityID);
+                //We're done.
+                return true;
             }
-
-            return useAbility(index);
+            else if (amount < 0)
+            {
+                //We're not going to allow negative damage in this function. Use Heal().
+                return false;
+            } else
+            {
+                //Actually take damage.
+                if (amount <= totalHP)
+                {
+                    //We're going to survive
+                    if (amount <= tempHP)
+                    {
+                        tempHP -= amount;
+                        return true;
+                    } else
+                    {
+                        amount -= tempHP;
+                        tempHP = 0;
+                        currentHP -= amount;
+                        return true;
+                    }
+                }
+                else
+                {
+                    //We're going to die.
+                    if (allowNegative)
+                    {
+                        amount -= tempHP;
+                        tempHP = 0;
+                        currentHP -= amount;
+                        return true;
+                    } else
+                    {
+                        tempHP = 0;
+                        currentHP = 0;
+                        return true;
+                    }
+                }
+            }
         }
-        public DiceResponse useAbility (int abilityNum)
-        {
-            Ability ability = abilities[abilityNum];
 
-            DiceResponse resp = ability.use(getGeneralStatistics());
-
-            incorporateChanges(resp.changes);
-
-            return resp;
-        }
-
-        //
-        public int getCharacterLevel ()
+        //Returns the sum of the character's levels in each of their classes.
+        public int GetCharacterLevel ()
         {
             int ret = 0;
 
@@ -712,7 +745,7 @@ namespace Character //change to ArkDice?
         }
 
         //Returns a list of the character's basic numeric stats for use with abilities.
-        public Dictionary<string, int> getGeneralStatistics()
+        public Dictionary<string, int> GetGeneralStatistics()
         {
             Dictionary<string, int> ret = new Dictionary<string, int>();
 
@@ -733,7 +766,7 @@ namespace Character //change to ArkDice?
 
             //General info
             ret["prof"] = prof;
-            ret["level"] = getCharacterLevel();
+            ret["level"] = GetCharacterLevel();
             //toss in current and max hp?
 
             //Save profs
@@ -769,10 +802,26 @@ namespace Character //change to ArkDice?
             return ret;
         }
 
+        //Heal the character
+        public bool Heal (int amount)
+        {
+            if (amount + currentHP > maxHP)
+            {
+                currentHP = maxHP;
+            } else
+            {
+                currentHP += amount;
+            }
+
+            return true;
+        }
+
+        //modifyTempHP?
+
         //Makes a roll using the character's stats and proficiencies.
         public DiceResponse RollForCharacter (DiceCollection dc)
         {
-            Dictionary<string, int> stats = this.getGeneralStatistics();
+            Dictionary<string, int> stats = this.GetGeneralStatistics();
 
             DiceResponse resp = dc.roll(stats);
 
@@ -780,7 +829,7 @@ namespace Character //change to ArkDice?
         }
 
         //Saves the character and all it's abilities to a file.
-        public bool save (string filepath)
+        public bool Save (string filepath)
         {
             string folderpath = "C:\\Users\\david\\Programs\\Simple Dice Roller\\";
 
@@ -827,6 +876,27 @@ namespace Character //change to ArkDice?
             }
         }
 
+        //Sets the user's temporary HP to some number.
+        //If the onlyIncrease argument is true, this will only set the character's temp HP if the character doesn't already have more.
+        //Otherwise, it will be willing to reduce the character's temp HP.
+        public bool SetTempHP (int amount, bool onlyIncrease = true) {
+            if (amount > tempHP)
+            {
+                tempHP = amount;
+                return true;
+            } else
+            {
+                if (onlyIncrease)
+                {
+                    return true;
+                } else
+                {
+                    tempHP = amount;
+                    return true;
+                }
+            }
+        }
+
         //Converts the character and all of it's stuff to a JSON string, presumably for saving to a file.
         public override string ToString()
         {
@@ -834,19 +904,42 @@ namespace Character //change to ArkDice?
             return ret;
         }
 
+        //Uses the specified ability.
+        public DiceResponse UseAbility(string abilityID)
+        {
+            int index = GetAbilityIndexByID(abilityID);
+            if (index < 0)
+            {
+                //return new DiceResponse (false);
+                return new DiceResponse(false, "Could not find ability " + abilityID);
+            }
+
+            return UseAbility(index);
+        }
+        public DiceResponse UseAbility(int abilityNum)
+        {
+            Ability ability = abilities[abilityNum];
+
+            DiceResponse resp = ability.use(GetGeneralStatistics());
+
+            IncorporateChanges(resp.changes);
+
+            return resp;
+        }
+
 
         //Private functions:
         //-------- -------- -------- -------- -------- -------- -------- -------- 
         //Calculates the character's proficiency bonus and loads it into the prof variable.
-        private void calculateProf ()
+        private void CalculateProf ()
         {
-            int charLevel = getCharacterLevel();
+            int charLevel = GetCharacterLevel();
 
             prof = DiceFunctions.getProfForLevel(charLevel) + profBonus;
         }
 
         //Calculates the numeric index of the ability with the specified ID.
-        private int getAbilityIndexByID (string id)
+        private int GetAbilityIndexByID (string id)
         {
             string compare = id.ToLower();
             for (int a = 0; a < abilities.Count; a++)
@@ -862,8 +955,8 @@ namespace Character //change to ArkDice?
             return -1;
         }
 
-        //
-        private bool incorporateChanges (Dictionary<string, string> changes)
+        //Takes in some changes and applies them to the character.
+        private bool IncorporateChanges (Dictionary<string, string> changes)
         {
             //to do: consider having this return false when it can't parse something.
 
@@ -891,8 +984,8 @@ namespace Character //change to ArkDice?
             return true;
         }
 
-        //
-        private void zeroEverything()
+        //Sets everything to a zeroed out / default state.
+        private void ZeroEverything()
         {
             //Basic info.
             id = "";
@@ -941,132 +1034,90 @@ namespace Character //change to ArkDice?
 
         //Getters and Setters:
         //-------- -------- -------- -------- -------- -------- -------- -------- 
-        public string getID()
-        {
-            return this.id;
-        }
-        public string getName()
-        {
-            return this.name;
-        }
 
-        public string getRace ()
-        {
-            return this.race;
-        }
-
-        public int getMaxHP()
-        {
-            return this.maxHP;
-        }
-        public int getCurrentHP ()
-        {
-            return this.currentHP;
-        }
-        public void setCurrentHP (int newHP)
-        {
-            currentHP = newHP;
-        }
-
-        //Returns the character's total level.
-        public int getLevel()
-        {
-            int total = 0;
-            foreach (ClassLevel classEntry in this.classes)
-            {
-                total += classEntry.level;
-            }
-
-            return total;
-        }
-
-        //some for a few different flavors of getting classes and levels.
-        //getListOfClasses()
-        //getLevelInClass (string class)
-        //...
-
+        //to do: how many of these are actually needed?
         //Get stats.
-        public int getStrength()
+        public int GetStrength()
         {
             return this.stats[0];
         }
-        public int getStr()
+        public int GetStr()
         {
             return this.stats[0];
         }
-        public int getDexterity()
+        public int GetDexterity()
         {
             return this.stats[1];
         }
-        public int getDex()
+        public int GetDex()
         {
             return this.stats[1];
         }
-        public int getConstitution()
+        public int GetConstitution()
         {
             return this.stats[2];
         }
-        public int getCon()
+        public int GetCon()
         {
             return this.stats[2];
         }
-        public int getIntelligence()
+        public int GetIntelligence()
         {
             return this.stats[3];
         }
-        public int getInt()
+        public int GetInt()
         {
             return this.stats[3];
         }
-        public int getWisdom()
+        public int GetWisdom()
         {
             return this.stats[4];
         }
-        public int getWis()
+        public int GetWis()
         {
             return this.stats[4];
         }
-        public int getCharisma()
+        public int GetCharisma()
         {
             return this.stats[5];
         }
-        public int getCha()
+        public int GetCha()
         {
             return this.stats[5];
         }
-        public int[] getStats()
+        public int[] GetStats()
         {
             return this.stats;
         }
-        public int getProf()
+        public int GetProf()
         {
             return (this.prof);
         }
 
         //Get whether or not the character is proficient in any given save.
-        public int getSaveProf(string save)
+        public int GetSaveProf(string save)
         {
             //convert save to all lower case here
             switch (save)
             {
                 case "strength":
-                case "str": return getSaveProf(0);
+                case "str": return GetSaveProf(0);
                 case "dexterity":
-                case "dex": return getSaveProf(1);
+                case "dex": return GetSaveProf(1);
                 case "constitution":
-                case "con": return getSaveProf(2);
+                case "con": return GetSaveProf(2);
                 case "intelligence":
-                case "int": return getSaveProf(3);
+                case "int": return GetSaveProf(3);
                 case "wisdom":
-                case "wis": return getSaveProf(4);
+                case "wis": return GetSaveProf(4);
                 case "charisma":
-                case "cha": return getSaveProf(5);
+                case "cha": return GetSaveProf(5);
                 default:
                     //complain to a log file?
                     return 0;
             }
         }
-        public int getSaveProf(int save)
+        public int GetSaveProf(int save)
         {
             if (save < 0 || save > 5)
             {
@@ -1079,14 +1130,14 @@ namespace Character //change to ArkDice?
             }
         }
 
-        public List<Ability> getAbilities ()
+        public List<Ability> GetAbilities ()
         {
             //to do: perhaps switch this over to something that just outputs data needed to render the things for the abilities.
             //then switch ability class over to internal only again.
             return this.abilities;
         }
 
-        public List<Ability> getBasicAbilities ()
+        public List<Ability> GetBasicAbilities ()
         {
             return this.basicAbilities;
         }
