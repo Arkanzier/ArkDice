@@ -374,6 +374,19 @@ namespace Simple_Dice_Roller
             Char_Name.Text = character.name;
             Char_Race.Text = character.race;
 
+            //Health
+            string healthString;
+            if (character.tempHP > 0)
+            {
+                healthString = character.currentHP + " + " + character.tempHP + " (" + (character.currentHP + character.tempHP) + ") / " + character.maxHP;
+            }
+            else
+            {
+                healthString = character.currentHP + " / " + character.maxHP;
+            }
+            
+            Char_Health.Text = healthString;
+
             //Stats
             Char_Str.Text = character.GetStr().ToString();
             Char_Dex.Text = character.GetDex().ToString();

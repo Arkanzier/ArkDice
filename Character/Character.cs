@@ -13,7 +13,7 @@ namespace Character //change to ArkDice?
         public string id { get; private set; }
         public string name { get; private set; }
         public string race { get; private set; }
-        //subrace as separate field?
+        public string subrace { get; private set; }
         public int maxHP { get; private set; }
         public int currentHP { get; private set; }
         public int tempHP { get; private set; }
@@ -101,6 +101,7 @@ namespace Character //change to ArkDice?
             id = "";
             name = "";
             race = "";
+            subrace = "";
             maxHP = 0;
             currentHP = 0;
             tempHP = 0;
@@ -220,8 +221,11 @@ namespace Character //change to ArkDice?
                 }
                 if (root.TryGetProperty("race", out temp))
                 {
-                    //not currently in the file
                     race = temp.ToString();
+                }
+                if (root.TryGetProperty("subrace", out temp))
+                {
+                    subrace = temp.ToString();
                 }
                 if (root.TryGetProperty("maxHP", out temp))
                 {
@@ -235,6 +239,13 @@ namespace Character //change to ArkDice?
                     if (Int32.TryParse(temp.ToString(), out tempint))
                     {
                         currentHP = tempint;
+                    }
+                }
+                if (root.TryGetProperty("tempHP", out temp))
+                {
+                    if (Int32.TryParse(temp.ToString(), out tempint))
+                    {
+                        tempHP = tempint;
                     }
                 }
                 if (root.TryGetProperty("profBonus", out temp))
