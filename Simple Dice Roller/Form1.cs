@@ -81,6 +81,68 @@ namespace Simple_Dice_Roller
         //Functions that get called by the form:
         //-------- -------- -------- -------- -------- -------- -------- -------- 
 
+        //Handlers for the buttons in the abilities list.
+        private void AbilitiesArea_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            //var senderGrid = (DataGridView)sender;
+
+            //MessageBox.Show("Button clicked: row is " + e.RowIndex.ToString());
+            //MessageBox.Show("Button clicked: col is " + e.ColumnIndex.ToString());
+
+            int colIndex = e.ColumnIndex;
+            string colName = AbilitiesArea.Columns[colIndex].Name;
+
+            //MessageBox.Show("Button clicked: col is " + colName);
+
+            //Need to figure out 
+
+            int rowNum = e.RowIndex;
+            //string aaaa = AbilitiesArea2.Rows[rowNum].Cells["NameCol"].ToString();
+            string abilityID = "init";
+            try
+            {
+                abilityID = AbilitiesArea.Rows[rowNum].Cells[1].Value.ToString();
+                //MessageBox.Show ("Found ability ID " + abilityID);
+            }
+            catch
+            {
+                abilityID = "null";
+            }
+
+            //MessageBox.Show("Button clicked: col is " + abilityID);
+
+            //to do: consider doing this by the column index instead.
+            if (colName == "Abilities_UseButtonCol")
+            {
+                DiceResponse resp = loadedCharacter.UseAbility(abilityID);
+                logMessage(resp.description);
+                //MessageBox.Show(resp.description);
+                //to do: check if description is actually present.
+                //maybe change the class and it's getters so it'll do something special if I call getDescription() when there isn't a description?
+                //with monotype variables I don't think that's going to do a lot, so maybe not.
+                if (resp.success)
+                {
+                    //MessageBox.Show("Ability used: total is " + resp.total + " and string is " + resp.description);
+                }
+                else
+                {
+                    //MessageBox.Show("Failed to use ability");
+                }
+
+            }
+            else if (colName == "PlusButtonCol")
+            {
+
+            }
+            else if (colName == "MinusButtonCol")
+            {
+
+            }
+
+            displayCharacter(loadedCharacter);
+            //do I need to reload loadedCharacter first?
+        }
+
         //Dice roller functions: adding dice.
         private void AddDice(object sender, EventArgs e)
         {
@@ -185,6 +247,31 @@ namespace Simple_Dice_Roller
             updateDiceArrayDisplay();
         }
 
+        //Deal damage to the active character.
+        private void Damage(object sender, EventArgs e)
+        {
+            //Collect the amount to deal.
+            var btn = sender as Button;
+            if (btn == null)
+            {
+                //Complain to a log file?
+                return;
+            }
+            var tag = btn.Tag as string;
+            if (tag == null)
+            {
+                //Complain to a log file?
+                return;
+            }
+            tag = tag.Trim();
+
+            int amount;
+            Int32.TryParse(tag, out amount);
+
+            loadedCharacter.Damage(amount);
+            updateHealthDisplay();
+        }
+
         //Someone typed something into the dice string textbox.
         //We want to be able to do stuff when the enter key is pressed.
         private void diceStringBox_KeyDown(object sender, KeyEventArgs e)
@@ -196,6 +283,31 @@ namespace Simple_Dice_Roller
                 processTextInput(diceString);
                 diceStringBox.Text = "";
             }
+        }
+
+        //Heal the active character.
+        private void Heal(object sender, EventArgs e)
+        {
+            //Collect the amount to deal.
+            var btn = sender as Button;
+            if (btn == null)
+            {
+                //Complain to a log file?
+                return;
+            }
+            var tag = btn.Tag as string;
+            if (tag == null)
+            {
+                //Complain to a log file?
+                return;
+            }
+            tag = tag.Trim();
+
+            int amount;
+            Int32.TryParse(tag, out amount);
+
+            loadedCharacter.Heal(amount);
+            updateHealthDisplay();
         }
 
         //Redo the most recent roll.
@@ -301,66 +413,44 @@ namespace Simple_Dice_Roller
             }
         }
 
-        //Handlers for the buttons in the abilities list.
-        private void AbilitiesArea_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        //Gives or sets temp HP
+        //Give: sets the character's temp HP to the number specified, unless it's already higher.
+        //Set: sets the character's temp HP to the number specified, even if it's already higher.
+        private void TempHP(object sender, EventArgs e)
         {
-            //var senderGrid = (DataGridView)sender;
-
-            //MessageBox.Show("Button clicked: row is " + e.RowIndex.ToString());
-            //MessageBox.Show("Button clicked: col is " + e.ColumnIndex.ToString());
-
-            int colIndex = e.ColumnIndex;
-            string colName = AbilitiesArea.Columns[colIndex].Name;
-
-            //MessageBox.Show("Button clicked: col is " + colName);
-
-            //Need to figure out 
-
-            int rowNum = e.RowIndex;
-            //string aaaa = AbilitiesArea2.Rows[rowNum].Cells["NameCol"].ToString();
-            string abilityID = "init";
-            try
+            //First figure out whether to add or set temp HP.
+            //give is true, set is false.
+            var btn = sender as Button;
+            if (btn == null)
             {
-                abilityID = AbilitiesArea.Rows[rowNum].Cells[1].Value.ToString();
-                //MessageBox.Show ("Found ability ID " + abilityID);
+                //Complain to a log file?
+                return;
             }
-            catch
+            var tag = btn.Tag as string;
+            if (tag == null)
             {
-                abilityID = "null";
+                //Complain to a log file?
+                return;
             }
+            //MessageBox.Show(tag);
+            //comes through as string, set the buttons up with dice strings in the standard format in their Tag attribute
+            tag = tag.Trim();
+            bool onlyIncrease = (tag == "give") ? true : false;
+            //to do: flip this around?
 
-            //MessageBox.Show("Button clicked: col is " + abilityID);
 
-            //to do: consider doing this by the column index instead.
-            if (colName == "Abilities_UseButtonCol")
+            //Then get the number from the text box.
+            String temp = Textbox_TempHP.Text;
+            if (temp.Trim().Length == 0)
             {
-                DiceResponse resp = loadedCharacter.UseAbility(abilityID);
-                logMessage(resp.description);
-                //MessageBox.Show(resp.description);
-                //to do: check if description is actually present.
-                //maybe change the class and it's getters so it'll do something special if I call getDescription() when there isn't a description?
-                //with monotype variables I don't think that's going to do a lot, so maybe not.
-                if (resp.success)
-                {
-                    //MessageBox.Show("Ability used: total is " + resp.total + " and string is " + resp.description);
-                }
-                else
-                {
-                    //MessageBox.Show("Failed to use ability");
-                }
-
+                return;
             }
-            else if (colName == "PlusButtonCol")
-            {
+            int number;
+            Int32.TryParse(temp, out number);
 
-            }
-            else if (colName == "MinusButtonCol")
-            {
-
-            }
-
-            displayCharacter(loadedCharacter);
-            //do I need to reload loadedCharacter first?
+            //Then call the function.
+            loadedCharacter.SetTempHP(number, onlyIncrease);
+            updateHealthDisplay();
         }
 
 
@@ -375,17 +465,7 @@ namespace Simple_Dice_Roller
             Char_Race.Text = character.race;
 
             //Health
-            string healthString;
-            if (character.tempHP > 0)
-            {
-                healthString = character.currentHP + " + " + character.tempHP + " (" + (character.currentHP + character.tempHP) + ") / " + character.maxHP;
-            }
-            else
-            {
-                healthString = character.currentHP + " / " + character.maxHP;
-            }
-            
-            Char_Health.Text = healthString;
+            updateHealthDisplay();
 
             //Stats
             Char_Str.Text = character.GetStr().ToString();
@@ -468,6 +548,21 @@ namespace Simple_Dice_Roller
         private void updateDiceArrayDisplay()
         {
             DiceArrayDisplay.Text = currentDice.getDiceString();
+        }
+
+        private void updateHealthDisplay()
+        {
+            string healthString;
+            if (loadedCharacter.tempHP > 0)
+            {
+                healthString = loadedCharacter.currentHP + " + " + loadedCharacter.tempHP + " (" + (loadedCharacter.currentHP + loadedCharacter.tempHP) + ") / " + loadedCharacter.maxHP;
+            }
+            else
+            {
+                healthString = loadedCharacter.currentHP + " / " + loadedCharacter.maxHP;
+            }
+
+            Char_Health.Text = healthString;
         }
 
         //
