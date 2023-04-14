@@ -10,21 +10,21 @@ namespace Character
 
     public class ClassLevel
     {
-        public string name { get; set; }
-        public string subclass { get; set; }
-        public int level { get; set; }
+        public string Name { get; set; }
+        public string Subclass { get; set; }
+        public int Level { get; set; }
 
         public int HDSize { get; set; }
-        public int currentHD { get; set; }
+        public int CurrentHD { get; set; }
 
         //hd size?
         //current number of hd?
 
         public ClassLevel (string name = "", string subclass = "", int level = 0, int HDSize = -1, int currentHD = -1)
         {
-            this.name = name;
-            this.subclass = subclass;
-            this.level = level;
+            this.Name = name;
+            this.Subclass = subclass;
+            this.Level = level;
 
             if (HDSize > 0)
             {
@@ -39,11 +39,11 @@ namespace Character
 
             if (currentHD > 0)
             {
-                this.currentHD = currentHD;
+                this.CurrentHD = currentHD;
             } else
             {
                 //Default to full HD.
-                this.currentHD = level;
+                this.CurrentHD = level;
             }
         }
     }

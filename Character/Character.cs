@@ -11,34 +11,34 @@ namespace Character //change to ArkDice?
     public class Character
     {
         //Basic info
-        public string id { get; private set; }
-        public string name { get; private set; }
-        public string race { get; private set; }
-        public string subrace { get; private set; }
-        public int maxHP { get; private set; }
-        public int currentHP { get; private set; }
-        public int tempHP { get; private set; }
+        public string ID { get; private set; }
+        public string Name { get; private set; }
+        public string Race { get; private set; }
+        public string Subrace { get; private set; }
+        public int MaxHP { get; private set; }
+        public int CurrentHP { get; private set; }
+        public int TempHP { get; private set; }
         //temporary modifiers to max HP?
 
         //Class related info
-        public List<ClassLevel> classes { get; private set; }
+        public List<ClassLevel> Classes { get; private set; }
         //to do: consider setting something up to support gestalt rules.
             //just set up a multiplier for levels or 'class levels per character level' type thing?
                 //the character's level equals total class level divided by that number
 
         //Added to the prof bonus calculated based on level. Can be negative.
-        public int profBonus { get; private set; }
+        public int BonusToProf { get; private set; }
 
         //Automatically managed. Stores prof bonus by level + profBonus.
-        public int prof { get; private set; }
+        public int Prof { get; private set; }
 
         //Stats and related info
         //Starts at 0 and proceeds in the order Str, Dex, Con, Int, Wis, Cha.
-        public int[] stats { get; private set; }
+        public int[] Stats { get; private set; }
             //convert these over to loose ints/bools?
             //there are only 6 of each, and it would cut down a little on the work involved.
 
-        public int[] saveProfs { get; private set; }
+        public int[] Saves { get; private set; }
         //to do: rename to saves?
 
         //how to handle weapon and armor profs?
@@ -54,7 +54,7 @@ namespace Character //change to ArkDice?
         //lump tools and languages together, since they're just going to be lists anyway?
 
         //Skill proficiencies
-        public Dictionary<string, int> skills{ get; private set; }
+        public Dictionary<string, int> Skills{ get; private set; }
 
         //Skills by stat:
         /*
@@ -86,11 +86,11 @@ namespace Character //change to ArkDice?
          */
 
         //Abilities and related info.
-        public List<Ability> abilities{ get; private set; }
+        public List<Ability> Abilities{ get; private set; }
             //switch from strings to objects?
-        public List<Ability> basicAbilities { get; private set; }
+        public List<Ability> BasicAbilities { get; private set; }
         //Text describing passive abilities the character has.
-        public List<string> passives { get; private set; }
+        public List<string> Passives { get; private set; }
 
         //Constructor(s):
         //-------- -------- -------- -------- -------- -------- -------- -------- 
@@ -99,50 +99,50 @@ namespace Character //change to ArkDice?
         public Character ()
         {
             //Basic info.
-            id = "";
-            name = "";
-            race = "";
-            subrace = "";
-            maxHP = 0;
-            currentHP = 0;
-            tempHP = 0;
+            ID = "";
+            Name = "";
+            Race = "";
+            Subrace = "";
+            MaxHP = 0;
+            CurrentHP = 0;
+            TempHP = 0;
 
             //Class and level based info.
-            classes = new List<ClassLevel>();
-            profBonus = 0;
+            Classes = new List<ClassLevel>();
+            BonusToProf = 0;
 
             //Stats and related info.
-            stats = new int[6];
-            saveProfs = new int[6];
+            Stats = new int[6];
+            Saves = new int[6];
             for (int a = 0; a < 6; a++)
             {
-                stats[a] = 0;
-                saveProfs[a] = 0;
+                Stats[a] = 0;
+                Saves[a] = 0;
             }
-            skills = new Dictionary<string, int>();
-            skills["Athletics"] = 0;
-            skills["Acrobatics"] = 0;
-            skills["Sleight of Hand"] = 0;
-            skills["Stealth"] = 0;
-            skills["Arcana"] = 0;
-            skills["History"] = 0;
-            skills["Investigation"] = 0;
-            skills["Nature"] = 0;
-            skills["Religion"] = 0;
-            skills["Animal Handling"] = 0;
-            skills["Insight"] = 0;
-            skills["Medicine"] = 0;
-            skills["Perception"] = 0;
-            skills["Survival"] = 0;
-            skills["Deception"] = 0;
-            skills["Intimidation"] = 0;
-            skills["Performance"] = 0;
-            skills["Persuasion"] = 0;
+            Skills = new Dictionary<string, int>();
+            Skills["Athletics"] = 0;
+            Skills["Acrobatics"] = 0;
+            Skills["Sleight of Hand"] = 0;
+            Skills["Stealth"] = 0;
+            Skills["Arcana"] = 0;
+            Skills["History"] = 0;
+            Skills["Investigation"] = 0;
+            Skills["Nature"] = 0;
+            Skills["Religion"] = 0;
+            Skills["Animal Handling"] = 0;
+            Skills["Insight"] = 0;
+            Skills["Medicine"] = 0;
+            Skills["Perception"] = 0;
+            Skills["Survival"] = 0;
+            Skills["Deception"] = 0;
+            Skills["Intimidation"] = 0;
+            Skills["Performance"] = 0;
+            Skills["Persuasion"] = 0;
 
             //Ability info
-            abilities = new List<Ability>();
-            basicAbilities = new List<Ability>();
-            passives = new List<string>();
+            Abilities = new List<Ability>();
+            BasicAbilities = new List<Ability>();
+            Passives = new List<string>();
 
             CalculateProf();
         }
@@ -212,56 +212,56 @@ namespace Character //change to ArkDice?
                 int tempint = 0;
 
                 //Basic attributes
-                if (root.TryGetProperty("id", out temp))
+                if (root.TryGetProperty("ID", out temp))
                 {
-                    id = temp.ToString();
+                    ID = temp.ToString();
                 }
-                if (root.TryGetProperty("name", out temp))
+                if (root.TryGetProperty("Name", out temp))
                 {
-                    name = temp.ToString();
+                    Name = temp.ToString();
                 }
-                if (root.TryGetProperty("race", out temp))
+                if (root.TryGetProperty("Race", out temp))
                 {
-                    race = temp.ToString();
+                    Race = temp.ToString();
                 }
-                if (root.TryGetProperty("subrace", out temp))
+                if (root.TryGetProperty("Subrace", out temp))
                 {
-                    subrace = temp.ToString();
+                    Subrace = temp.ToString();
                 }
-                if (root.TryGetProperty("maxHP", out temp))
-                {
-                    if (Int32.TryParse(temp.ToString(), out tempint))
-                    {
-                        maxHP = tempint;
-                    }
-                }
-                if (root.TryGetProperty("currentHP", out temp))
+                if (root.TryGetProperty("MaxHP", out temp))
                 {
                     if (Int32.TryParse(temp.ToString(), out tempint))
                     {
-                        currentHP = tempint;
+                        MaxHP = tempint;
                     }
                 }
-                if (root.TryGetProperty("tempHP", out temp))
+                if (root.TryGetProperty("CurrentHP", out temp))
                 {
                     if (Int32.TryParse(temp.ToString(), out tempint))
                     {
-                        tempHP = tempint;
+                        CurrentHP = tempint;
                     }
                 }
-                if (root.TryGetProperty("profBonus", out temp))
+                if (root.TryGetProperty("TempHP", out temp))
+                {
+                    if (Int32.TryParse(temp.ToString(), out tempint))
+                    {
+                        TempHP = tempint;
+                    }
+                }
+                if (root.TryGetProperty("BonusToProf", out temp))
                 {
                     //not currently in the file
                     if (Int32.TryParse(temp.ToString(), out tempint))
                     {
-                        profBonus = tempint;
+                        BonusToProf = tempint;
                     }
                 }
 
                 //Classes and levels
-                if (root.TryGetProperty("classes", out temp))
+                if (root.TryGetProperty("Classes", out temp))
                 {
-                    classes = new List<ClassLevel>();
+                    Classes = new List<ClassLevel>();
                     JsonElement temp2 = new JsonElement();
 
                     for (int a = 0; a < temp.GetArrayLength(); a++)
@@ -269,28 +269,28 @@ namespace Character //change to ArkDice?
                         JsonElement thisclass = temp[a];
                         ClassLevel newclass = new ClassLevel();
 
-                        newclass.name = "";
-                        if (thisclass.TryGetProperty("name", out temp2))
+                        newclass.Name = "";
+                        if (thisclass.TryGetProperty("Name", out temp2))
                         {
-                            newclass.name = temp2.ToString();
+                            newclass.Name = temp2.ToString();
                         }
                         else
                         {
                             //complain to a log file?
                             continue;
                         }
-                        newclass.subclass = "";
-                        if (thisclass.TryGetProperty("subclass", out temp2))
+                        newclass.Subclass = "";
+                        if (thisclass.TryGetProperty("Subclass", out temp2))
                         {
-                            newclass.subclass = temp2.ToString();
+                            newclass.Subclass = temp2.ToString();
                         }
                         //Subclass is not required, so we don't quit when it's not present.
-                        newclass.level = 0;
-                        if (thisclass.TryGetProperty("level", out temp2))
+                        newclass.Level = 0;
+                        if (thisclass.TryGetProperty("Level", out temp2))
                         {
                             if (Int32.TryParse(temp2.ToString(), out tempint))
                             {
-                                newclass.level = tempint;
+                                newclass.Level = tempint;
                             }
                         }
                         else
@@ -306,25 +306,25 @@ namespace Character //change to ArkDice?
                                 newclass.HDSize = tempint;
                             }
                         }
-                        newclass.currentHD = 0;
-                        if (thisclass.TryGetProperty("currentHD", out temp2))
+                        newclass.CurrentHD = 0;
+                        if (thisclass.TryGetProperty("CurrentHD", out temp2))
                         {
                             if (Int32.TryParse(temp2.ToString(), out tempint))
                             {
-                                newclass.currentHD = tempint;
+                                newclass.CurrentHD = tempint;
                             }
                         }
 
-                        classes.Add(newclass);
+                        Classes.Add(newclass);
                     }
                 }
 
                 //Stats
                 //to do: this is now a purely numeric array, adjust this to compensate
-                if (root.TryGetProperty("stats", out temp))
+                if (root.TryGetProperty("Stats", out temp))
                 {
                     //We don't technically need to do this here, but it won't hurt.
-                    stats = new int[6];
+                    Stats = new int[6];
                     //JsonElement temp2 = new JsonElement();
 
                     //to do: check if array length is 6 and complain otherwise?
@@ -334,66 +334,21 @@ namespace Character //change to ArkDice?
 
                         if (thisstat.TryGetInt32(out tempint))
                         {
-                            stats[a] = tempint;
+                            Stats[a] = tempint;
                         }
                         else
                         {
-                            stats[a] = 0;
+                            Stats[a] = 0;
                             //complain to a log?
                         }
                     }
-                    /*
-                    if (temp.TryGetProperty("strength", out temp2))
-                    {
-                        if (temp2.TryGetInt32(out tempint))
-                        {
-                            stats[0] = tempint;
-                        }
-                    }
-                    if (temp.TryGetProperty("dexterity", out temp2))
-                    {
-                        if (temp2.TryGetInt32(out tempint))
-                        {
-                            stats[1] = tempint;
-                        }
-                    }
-                    if (temp.TryGetProperty("constitution", out temp2))
-                    {
-                        if (temp2.TryGetInt32(out tempint))
-                        {
-                            stats[2] = tempint;
-                        }
-                    }
-                    if (temp.TryGetProperty("intelligence", out temp2))
-                    {
-                        if (temp2.TryGetInt32(out tempint))
-                        {
-                            stats[3] = tempint;
-                        }
-                    }
-                    if (temp.TryGetProperty("wisdom", out temp2))
-                    {
-                        if (temp2.TryGetInt32(out tempint))
-                        {
-                            stats[4] = tempint;
-                        }
-                    }
-                    if (temp.TryGetProperty("charisma", out temp2))
-                    {
-                        //if (Int32.TryParse(temp2.ToString(), out tempint))
-                        if (temp2.TryGetInt32(out tempint))
-                        {
-                            stats[5] = tempint;
-                        }
-                    }
-                    */
                 }
 
                 //Saves
                 //to do: this is now a purely numeric array, adjust this to compensate
-                if (root.TryGetProperty("saves", out temp))
+                if (root.TryGetProperty("Saves", out temp))
                 {
-                    saveProfs = new int[6];
+                    Saves = new int[6];
                     JsonElement temp2 = new JsonElement();
                     if (temp.TryGetProperty("strength", out temp2))
                     {
@@ -401,11 +356,11 @@ namespace Character //change to ArkDice?
                         bool tempbool = temp2.GetBoolean();
                         if (tempbool)
                         {
-                            saveProfs[0] = 1;
+                            Saves[0] = 1;
                         }
                         else
                         {
-                            saveProfs[0] = 0;
+                            Saves[0] = 0;
                         }
                     }
                     if (temp.TryGetProperty("dexterity", out temp2))
@@ -414,11 +369,11 @@ namespace Character //change to ArkDice?
                         bool tempbool = temp2.GetBoolean();
                         if (tempbool)
                         {
-                            saveProfs[1] = 1;
+                            Saves[1] = 1;
                         }
                         else
                         {
-                            saveProfs[1] = 0;
+                            Saves[1] = 0;
                         }
                     }
                     if (temp.TryGetProperty("constitution", out temp2))
@@ -427,11 +382,11 @@ namespace Character //change to ArkDice?
                         bool tempbool = temp2.GetBoolean();
                         if (tempbool)
                         {
-                            saveProfs[2] = 1;
+                            Saves[2] = 1;
                         }
                         else
                         {
-                            saveProfs[2] = 0;
+                            Saves[2] = 0;
                         }
                     }
                     if (temp.TryGetProperty("intelligence", out temp2))
@@ -440,11 +395,11 @@ namespace Character //change to ArkDice?
                         bool tempbool = temp2.GetBoolean();
                         if (tempbool)
                         {
-                            saveProfs[3] = 1;
+                            Saves[3] = 1;
                         }
                         else
                         {
-                            saveProfs[3] = 0;
+                            Saves[3] = 0;
                         }
                     }
                     if (temp.TryGetProperty("wisdom", out temp2))
@@ -453,11 +408,11 @@ namespace Character //change to ArkDice?
                         bool tempbool = temp2.GetBoolean();
                         if (tempbool)
                         {
-                            saveProfs[4] = 1;
+                            Saves[4] = 1;
                         }
                         else
                         {
-                            saveProfs[4] = 0;
+                            Saves[4] = 0;
                         }
                     }
                     if (temp.TryGetProperty("charisma", out temp2))
@@ -466,11 +421,11 @@ namespace Character //change to ArkDice?
                         bool tempbool = temp2.GetBoolean();
                         if (tempbool)
                         {
-                            saveProfs[5] = 1;
+                            Saves[5] = 1;
                         }
                         else
                         {
-                            saveProfs[5] = 0;
+                            Saves[5] = 0;
                         }
                     }
                 }
@@ -478,173 +433,173 @@ namespace Character //change to ArkDice?
                 //Skills
                 //to do: set up a way to automatically get these indices.
                     //just do a foreach through the existing dictionary, since they should all be in there now?
-                if (root.TryGetProperty("skills", out temp))
+                if (root.TryGetProperty("Skills", out temp))
                 {
-                    skills = new Dictionary<string, int>();
+                    Skills = new Dictionary<string, int>();
                     JsonElement temp2 = new JsonElement();
 
-                    skills["Athletics"] = 0;
+                    Skills["Athletics"] = 0;
                     if (temp.TryGetProperty("Athletics", out temp2))
                     {
                         if (temp2.TryGetInt32(out tempint))
                         {
-                            skills["Athletics"] = tempint;
+                            Skills["Athletics"] = tempint;
                         }
                     }
-                    skills["Acrobatics"] = 0;
+                    Skills["Acrobatics"] = 0;
                     if (temp.TryGetProperty("Acrobatics", out temp2))
                     {
                         if (temp2.TryGetInt32(out tempint))
                         {
-                            skills["Acrobatics"] = tempint;
+                            Skills["Acrobatics"] = tempint;
                         }
                         else
                         {
-                            skills["Acrobatics"] = 0;
+                            Skills["Acrobatics"] = 0;
                         }
                     }
-                    skills["Sleight of Hand"] = 0;
+                    Skills["Sleight of Hand"] = 0;
                     if (temp.TryGetProperty("Sleight of Hand", out temp2))
                     {
                         if (temp2.TryGetInt32(out tempint))
                         {
-                            skills["Sleight of Hand"] = tempint;
+                            Skills["Sleight of Hand"] = tempint;
                         }
                     }
-                    skills["Stealth"] = 0;
+                    Skills["Stealth"] = 0;
                     if (temp.TryGetProperty("Stealth", out temp2))
                     {
                         if (temp2.TryGetInt32(out tempint))
                         {
-                            skills["Stealth"] = tempint;
+                            Skills["Stealth"] = tempint;
                         }
                     }
-                    skills["Arcana"] = 0;
+                    Skills["Arcana"] = 0;
                     if (temp.TryGetProperty("Arcana", out temp2))
                     {
                         if (temp2.TryGetInt32(out tempint))
                         {
-                            skills["Arcana"] = tempint;
+                            Skills["Arcana"] = tempint;
                         }
                     }
-                    skills["History"] = 0;
+                    Skills["History"] = 0;
                     if (temp.TryGetProperty("History", out temp2))
                     {
                         if (temp2.TryGetInt32(out tempint))
                         {
-                            skills["History"] = tempint;
+                            Skills["History"] = tempint;
                         }
                     }
-                    skills["Investigation"] = 0;
+                    Skills["Investigation"] = 0;
                     if (temp.TryGetProperty("Investigation", out temp2))
                     {
                         if (temp2.TryGetInt32(out tempint))
                         {
-                            skills["Investigation"] = tempint;
+                            Skills["Investigation"] = tempint;
                         }
                     }
-                    skills["Nature"] = 0;
+                    Skills["Nature"] = 0;
                     if (temp.TryGetProperty("Nature", out temp2))
                     {
                         if (temp2.TryGetInt32(out tempint))
                         {
-                            skills["Nature"] = tempint;
+                            Skills["Nature"] = tempint;
                         }
                     }
-                    skills["Religion"] = 0;
+                    Skills["Religion"] = 0;
                     if (temp.TryGetProperty("Religion", out temp2))
                     {
                         if (temp2.TryGetInt32(out tempint))
                         {
-                            skills["Religion"] = tempint;
+                            Skills["Religion"] = tempint;
                         }
                     }
-                    skills["Animal Handling"] = 0;
+                    Skills["Animal Handling"] = 0;
                     if (temp.TryGetProperty("Animal Handling", out temp2))
                     {
                         if (temp2.TryGetInt32(out tempint))
                         {
-                            skills["Animal Handling"] = tempint;
+                            Skills["Animal Handling"] = tempint;
                         }
                     }
-                    skills["Insight"] = 0;
+                    Skills["Insight"] = 0;
                     if (temp.TryGetProperty("Insight", out temp2))
                     {
                         if (temp2.TryGetInt32(out tempint))
                         {
-                            skills["Insight"] = tempint;
+                            Skills["Insight"] = tempint;
                         }
                     }
-                    skills["Medicine"] = 0;
+                    Skills["Medicine"] = 0;
                     if (temp.TryGetProperty("Medicine", out temp2))
                     {
                         if (temp2.TryGetInt32(out tempint))
                         {
-                            skills["Medicine"] = tempint;
+                            Skills["Medicine"] = tempint;
                         }
                     }
-                    skills["Perception"] = 0;
+                    Skills["Perception"] = 0;
                     if (temp.TryGetProperty("Perception", out temp2))
                     {
                         if (temp2.TryGetInt32(out tempint))
                         {
-                            skills["Perception"] = tempint;
+                            Skills["Perception"] = tempint;
                         }
                     }
-                    skills["Survival"] = 0;
+                    Skills["Survival"] = 0;
                     if (temp.TryGetProperty("Survival", out temp2))
                     {
                         if (temp2.TryGetInt32(out tempint))
                         {
-                            skills["Survival"] = tempint;
+                            Skills["Survival"] = tempint;
                         }
                     }
-                    skills["Deception"] = 0;
+                    Skills["Deception"] = 0;
                     if (temp.TryGetProperty("Deception", out temp2))
                     {
                         if (temp2.TryGetInt32(out tempint))
                         {
-                            skills["Deception"] = tempint;
+                            Skills["Deception"] = tempint;
                         }
                     }
-                    skills["Intimidation"] = 0;
+                    Skills["Intimidation"] = 0;
                     if (temp.TryGetProperty("Intimidation", out temp2))
                     {
                         if (temp2.TryGetInt32(out tempint))
                         {
-                            skills["Intimidation"] = tempint;
+                            Skills["Intimidation"] = tempint;
                         }
                     }
-                    skills["Performance"] = 0;
+                    Skills["Performance"] = 0;
                     if (temp.TryGetProperty("Performance", out temp2))
                     {
                         if (temp2.TryGetInt32(out tempint))
                         {
-                            skills["Performance"] = tempint;
+                            Skills["Performance"] = tempint;
                         }
                     }
-                    skills["Persuasion"] = 0;
+                    Skills["Persuasion"] = 0;
                     if (temp.TryGetProperty("Persuasion", out temp2))
                     {
                         if (temp2.TryGetInt32(out tempint))
                         {
-                            skills["Persuasion"] = tempint;
+                            Skills["Persuasion"] = tempint;
                         }
                     }
                 }
 
                 //Abilities
-                if (root.TryGetProperty ("abilities", out temp))
+                if (root.TryGetProperty ("Abilities", out temp))
                 {
                     //Contains an array of objects.
                     //Pass each object to the Ability class' constructor.
 
-                    abilities = new List<Ability>();
+                    Abilities = new List<Ability>();
 
                     for (int a = 0; a < temp.GetArrayLength(); a++)
                     {
                         Ability thisAbility = new Ability(temp[a].ToString());
-                        abilities.Add(thisAbility);
+                        Abilities.Add(thisAbility);
                     }
                 }
 
@@ -666,25 +621,8 @@ namespace Character //change to ArkDice?
         public Character (string id, string name)
             : this()
         {
-            this.id = id;
-            this.name= name;
-
-            ////Everything else is baseline / false / 0 / etc.
-            //race = "";
-            //maxHP = 0;
-            //currentHP = 0;
-            //classes = new List<ClassLevel> ();
-            //prof = 0;
-            //profBonus = 0;
-            //stats = new int[6];
-            //saveProfs = new int[6];
-            //for (int a = 0; a < 6; a++)
-            //{
-            //    stats[a] = 0;
-            //    saveProfs[a] = 0;
-            //}
-            //abilities= new List<Ability> ();
-            //passives= new List<string> ();
+            this.ID = id;
+            this.Name= name;
         }
 
 
@@ -695,7 +633,7 @@ namespace Character //change to ArkDice?
         public bool Damage(int amount, bool allowNegative = false)
         {
             //We need to account for temp HP.
-            int totalHP = currentHP + tempHP;
+            int totalHP = CurrentHP + TempHP;
 
             if (amount == 0)
             {
@@ -712,15 +650,15 @@ namespace Character //change to ArkDice?
                 if (amount <= totalHP)
                 {
                     //We're going to survive
-                    if (amount <= tempHP)
+                    if (amount <= TempHP)
                     {
-                        tempHP -= amount;
+                        TempHP -= amount;
                         return true;
                     } else
                     {
-                        amount -= tempHP;
-                        tempHP = 0;
-                        currentHP -= amount;
+                        amount -= TempHP;
+                        TempHP = 0;
+                        CurrentHP -= amount;
                         return true;
                     }
                 }
@@ -729,14 +667,14 @@ namespace Character //change to ArkDice?
                     //We're going to die.
                     if (allowNegative)
                     {
-                        amount -= tempHP;
-                        tempHP = 0;
-                        currentHP -= amount;
+                        amount -= TempHP;
+                        TempHP = 0;
+                        CurrentHP -= amount;
                         return true;
                     } else
                     {
-                        tempHP = 0;
-                        currentHP = 0;
+                        TempHP = 0;
+                        CurrentHP = 0;
                         return true;
                     }
                 }
@@ -750,10 +688,10 @@ namespace Character //change to ArkDice?
             //ret[x] refers to HD of size dx.
             int[] ret = new int[12];
 
-            for (int a = 0; a < classes.Count; a++)
+            for (int a = 0; a < Classes.Count; a++)
             {
-                int dieSize = classes[a].HDSize;
-                int numDice = classes[a].currentHD;
+                int dieSize = Classes[a].HDSize;
+                int numDice = Classes[a].CurrentHD;
                 ret[dieSize] += numDice;
             }
 
@@ -764,11 +702,11 @@ namespace Character //change to ArkDice?
         public int GetAvailableHD (int size)
         {
             int ret = 0;
-            for (int a = 0; a < classes.Count; a++)
+            for (int a = 0; a < Classes.Count; a++)
             {
-                if (classes[a].HDSize == size)
+                if (Classes[a].HDSize == size)
                 {
-                    ret += classes[a].currentHD;
+                    ret += Classes[a].CurrentHD;
                 }
             }
 
@@ -780,9 +718,9 @@ namespace Character //change to ArkDice?
         {
             int ret = 0;
 
-            foreach (var classEntry in classes)
+            foreach (var classEntry in Classes)
             {
-                ret += classEntry.level;
+                ret += classEntry.Level;
             }
 
             return ret;
@@ -794,52 +732,52 @@ namespace Character //change to ArkDice?
             Dictionary<string, int> ret = new Dictionary<string, int>();
 
             //Stats and modifiers
-            ret["strmod"] = DiceFunctions.getModifierForStat(stats[0]);
-            ret["dexmod"] = DiceFunctions.getModifierForStat(stats[1]);
-            ret["conmod"] = DiceFunctions.getModifierForStat(stats[2]);
-            ret["intmod"] = DiceFunctions.getModifierForStat(stats[3]);
-            ret["wismod"] = DiceFunctions.getModifierForStat(stats[4]);
-            ret["chamod"] = DiceFunctions.getModifierForStat(stats[5]);
+            ret["strmod"] = DiceFunctions.getModifierForStat(Stats[0]);
+            ret["dexmod"] = DiceFunctions.getModifierForStat(Stats[1]);
+            ret["conmod"] = DiceFunctions.getModifierForStat(Stats[2]);
+            ret["intmod"] = DiceFunctions.getModifierForStat(Stats[3]);
+            ret["wismod"] = DiceFunctions.getModifierForStat(Stats[4]);
+            ret["chamod"] = DiceFunctions.getModifierForStat(Stats[5]);
 
-            ret["strscore"] = stats[0];
-            ret["dexscore"] = stats[1];
-            ret["conscore"] = stats[2];
-            ret["intscore"] = stats[3];
-            ret["wisscore"] = stats[4];
-            ret["chascore"] = stats[5];
+            ret["strscore"] = Stats[0];
+            ret["dexscore"] = Stats[1];
+            ret["conscore"] = Stats[2];
+            ret["intscore"] = Stats[3];
+            ret["wisscore"] = Stats[4];
+            ret["chascore"] = Stats[5];
 
             //General info
-            ret["prof"] = prof;
+            ret["prof"] = Prof;
             ret["level"] = GetCharacterLevel();
             //toss in current and max hp?
 
             //Save profs
-            ret["strsave"] = saveProfs[0];
-            ret["dexsave"] = saveProfs[1];
-            ret["consave"] = saveProfs[2];
-            ret["intsave"] = saveProfs[3];
-            ret["wissave"] = saveProfs[4];
-            ret["chasave"] = saveProfs[5];
+            ret["strsave"] = Saves[0];
+            ret["dexsave"] = Saves[1];
+            ret["consave"] = Saves[2];
+            ret["intsave"] = Saves[3];
+            ret["wissave"] = Saves[4];
+            ret["chasave"] = Saves[5];
 
             //Skill profs
-            ret["athletics"]        = skills["Athletics"];
-            ret["acrobatics"]       = skills["Acrobatics"];
-            ret["sleightofhand"]    = skills["Sleight of Hand"];
-            ret["stealth"]          = skills["Stealth"];
-            ret["arcana"]           = skills["Arcana"];
-            ret["history"]          = skills["History"];
-            ret["investigation"]    = skills["Investigation"];
-            ret["nature"]           = skills["Nature"];
-            ret["religion"]         = skills["Religion"];
-            ret["animalhandling"]   = skills["Animal Handling"];
-            ret["insight"]          = skills["Insight"];
-            ret["medicine"]         = skills["Medicine"];
-            ret["perception"]       = skills["Perception"];
-            ret["survival"]         = skills["Survival"];
-            ret["deception"]        = skills["Deception"];
-            ret["intimidation"]     = skills["Intimidation"];
-            ret["performance"]      = skills["Performance"];
-            ret["persuasion"]       = skills["Persuasion"];
+            ret["athletics"]        = Skills["Athletics"];
+            ret["acrobatics"]       = Skills["Acrobatics"];
+            ret["sleightofhand"]    = Skills["Sleight of Hand"];
+            ret["stealth"]          = Skills["Stealth"];
+            ret["arcana"]           = Skills["Arcana"];
+            ret["history"]          = Skills["History"];
+            ret["investigation"]    = Skills["Investigation"];
+            ret["nature"]           = Skills["Nature"];
+            ret["religion"]         = Skills["Religion"];
+            ret["animalhandling"]   = Skills["Animal Handling"];
+            ret["insight"]          = Skills["Insight"];
+            ret["medicine"]         = Skills["Medicine"];
+            ret["perception"]       = Skills["Perception"];
+            ret["survival"]         = Skills["Survival"];
+            ret["deception"]        = Skills["Deception"];
+            ret["intimidation"]     = Skills["Intimidation"];
+            ret["performance"]      = Skills["Performance"];
+            ret["persuasion"]       = Skills["Persuasion"];
 
             //other profs here
 
@@ -849,12 +787,12 @@ namespace Character //change to ArkDice?
         //Heal the character
         public bool Heal (int amount)
         {
-            if (amount + currentHP > maxHP)
+            if (amount + CurrentHP > MaxHP)
             {
-                currentHP = maxHP;
+                CurrentHP = MaxHP;
             } else
             {
-                currentHP += amount;
+                CurrentHP += amount;
             }
 
             return true;
@@ -888,7 +826,7 @@ namespace Character //change to ArkDice?
                 }
 
                 //Now move the old file.
-                string backupFilepath = backupFolder + name + "_" + DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss") + ".char";
+                string backupFilepath = backupFolder + Name + "_" + DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss") + ".char";
                 //to do: consider leaving the original filename intact and just adding the stuff to that.
                     //there's probably a function or two that can split the base name and the extension for us.
                     //or a regex would work.
@@ -924,9 +862,9 @@ namespace Character //change to ArkDice?
         //If the onlyIncrease argument is true, this will only set the character's temp HP if the character doesn't already have more.
         //Otherwise, it will be willing to reduce the character's temp HP.
         public bool SetTempHP (int amount, bool onlyIncrease = true) {
-            if (amount > tempHP)
+            if (amount > TempHP)
             {
-                tempHP = amount;
+                TempHP = amount;
                 return true;
             } else
             {
@@ -935,7 +873,7 @@ namespace Character //change to ArkDice?
                     return true;
                 } else
                 {
-                    tempHP = amount;
+                    TempHP = amount;
                     return true;
                 }
             }
@@ -988,7 +926,7 @@ namespace Character //change to ArkDice?
         }
         public DiceResponse UseAbility(int abilityNum)
         {
-            Ability ability = abilities[abilityNum];
+            Ability ability = Abilities[abilityNum];
 
             DiceResponse resp = ability.use(GetGeneralStatistics());
 
@@ -1005,16 +943,16 @@ namespace Character //change to ArkDice?
         {
             int charLevel = GetCharacterLevel();
 
-            prof = DiceFunctions.getProfForLevel(charLevel) + profBonus;
+            Prof = DiceFunctions.getProfForLevel(charLevel) + BonusToProf;
         }
 
         //Calculates the numeric index of the ability with the specified ID.
         private int GetAbilityIndexByID (string id)
         {
-            string compare = id.ToLower();
-            for (int a = 0; a < abilities.Count; a++)
+            string compare = ID.ToLower();
+            for (int a = 0; a < Abilities.Count; a++)
             {
-                string compare2 = abilities[a].getID().ToLower();
+                string compare2 = Abilities[a].getID().ToLower();
                 if (compare == compare2)
                 {
                     return a;
@@ -1036,17 +974,17 @@ namespace Character //change to ArkDice?
             int tempint = 0;
 
             //Consider removing support for changing the character's name or ID.
-            if (changes.ContainsKey ("id")) { id = changes["id"]; }
-            if (changes.ContainsKey ("name")) { name = changes["name"]; }
-            if (changes.ContainsKey ("race")) { race = changes["race"]; }
+            if (changes.ContainsKey ("id")) { ID = changes["id"]; }
+            if (changes.ContainsKey ("name")) { Name = changes["name"]; }
+            if (changes.ContainsKey ("race")) { Race = changes["race"]; }
 
             if (changes.ContainsKey("maxHP") && Int32.TryParse(changes["maxHP"], out tempint))
             {
-                maxHP = tempint;
+                MaxHP = tempint;
             }
             if (changes.ContainsKey("currentHP") && Int32.TryParse(changes["currentHP"], out tempint))
             {
-                currentHP = tempint;
+                CurrentHP = tempint;
             }
 
             //...
@@ -1056,9 +994,9 @@ namespace Character //change to ArkDice?
 
         private bool SpendOneHD (int size, bool ignoreCon = false)
         {
-            for (int a = 0; a < classes.Count; a++)
+            for (int a = 0; a < Classes.Count; a++)
             {
-                if (classes[a].HDSize == size && classes[a].currentHD > 0)
+                if (Classes[a].HDSize == size && Classes[a].CurrentHD > 0)
                 {
                     //Determine amount to heal.
                     DicePile HD = new DicePile(size);
@@ -1079,7 +1017,7 @@ namespace Character //change to ArkDice?
 
                     if (success)
                     {
-                        classes[a].currentHD -= 1;
+                        Classes[a].CurrentHD -= 1;
                         return true;
                     } else
                     {
@@ -1097,48 +1035,48 @@ namespace Character //change to ArkDice?
         private void ZeroEverything()
         {
             //Basic info.
-            id = "";
-            name = "";
-            race = "";
-            maxHP = 0;
-            currentHP = 0;
+            ID = "";
+            Name = "";
+            Race = "";
+            MaxHP = 0;
+            CurrentHP = 0;
 
             //Class and level based info.
-            classes = new List<ClassLevel>();
-            profBonus = 0;
+            Classes = new List<ClassLevel>();
+            BonusToProf = 0;
 
             //Stats and related info.
-            stats = new int[6];
-            saveProfs = new int[6];
+            Stats = new int[6];
+            Saves = new int[6];
             for (int a = 0; a < 6; a++)
             {
-                stats[a] = 0;
-                saveProfs[a] = 0;
+                Stats[a] = 0;
+                Saves[a] = 0;
             }
-            skills = new Dictionary<string, int>();
-            skills["Athletics"] = 0;
-            skills["Acrobatics"] = 0;
-            skills["Sleight of Hand"] = 0;
-            skills["Stealth"] = 0;
-            skills["Arcana"] = 0;
-            skills["History"] = 0;
-            skills["Investigation"] = 0;
-            skills["Nature"] = 0;
-            skills["Religion"] = 0;
-            skills["Animal Handling"] = 0;
-            skills["Insight"] = 0;
-            skills["Medicine"] = 0;
-            skills["Perception"] = 0;
-            skills["Survival"] = 0;
-            skills["Deception"] = 0;
-            skills["Intimidation"] = 0;
-            skills["Performance"] = 0;
-            skills["Persuasion"] = 0;
+            Skills = new Dictionary<string, int>();
+            Skills["Athletics"] = 0;
+            Skills["Acrobatics"] = 0;
+            Skills["Sleight of Hand"] = 0;
+            Skills["Stealth"] = 0;
+            Skills["Arcana"] = 0;
+            Skills["History"] = 0;
+            Skills["Investigation"] = 0;
+            Skills["Nature"] = 0;
+            Skills["Religion"] = 0;
+            Skills["Animal Handling"] = 0;
+            Skills["Insight"] = 0;
+            Skills["Medicine"] = 0;
+            Skills["Perception"] = 0;
+            Skills["Survival"] = 0;
+            Skills["Deception"] = 0;
+            Skills["Intimidation"] = 0;
+            Skills["Performance"] = 0;
+            Skills["Persuasion"] = 0;
 
             //Ability info
-            abilities = new List<Ability>();
-            basicAbilities = new List<Ability>();
-            passives = new List<string>();
+            Abilities = new List<Ability>();
+            BasicAbilities = new List<Ability>();
+            Passives = new List<string>();
         }
 
         //Getters and Setters:
@@ -1148,83 +1086,83 @@ namespace Character //change to ArkDice?
         //Get stats.
         public int GetStrength()
         {
-            return this.stats[0];
+            return this.Stats[0];
         }
         public int GetStr()
         {
-            return this.stats[0];
+            return this.Stats[0];
         }
         public int GetStrMod()
         {
-            return DiceFunctions.getModifierForStat(this.stats[0]);
+            return DiceFunctions.getModifierForStat(this.Stats[0]);
         }
         public int GetDexterity()
         {
-            return this.stats[1];
+            return this.Stats[1];
         }
         public int GetDex()
         {
-            return this.stats[1];
+            return this.Stats[1];
         }
         public int GetDexMod()
         {
-            return DiceFunctions.getModifierForStat(this.stats[1]);
+            return DiceFunctions.getModifierForStat(this.Stats[1]);
         }
         public int GetConstitution()
         {
-            return this.stats[2];
+            return this.Stats[2];
         }
         public int GetCon()
         {
-            return this.stats[2];
+            return this.Stats[2];
         }
         public int GetConMod()
         {
-            return DiceFunctions.getModifierForStat(this.stats[2]);
+            return DiceFunctions.getModifierForStat(this.Stats[2]);
         }
         public int GetIntelligence()
         {
-            return this.stats[3];
+            return this.Stats[3];
         }
         public int GetInt()
         {
-            return this.stats[3];
+            return this.Stats[3];
         }
         public int GetIntMod()
         {
-            return DiceFunctions.getModifierForStat(this.stats[3]);
+            return DiceFunctions.getModifierForStat(this.Stats[3]);
         }
         public int GetWisdom()
         {
-            return this.stats[4];
+            return this.Stats[4];
         }
         public int GetWis()
         {
-            return this.stats[4];
+            return this.Stats[4];
         }
         public int GetWisMod()
         {
-            return DiceFunctions.getModifierForStat(this.stats[4]);
+            return DiceFunctions.getModifierForStat(this.Stats[4]);
         }
         public int GetCharisma()
         {
-            return this.stats[5];
+            return this.Stats[5];
         }
         public int GetCha()
         {
-            return this.stats[5];
+            return this.Stats[5];
         }
         public int GetChaMod()
         {
-            return DiceFunctions.getModifierForStat(this.stats[5]);
+            return DiceFunctions.getModifierForStat(this.Stats[5]);
         }
         public int[] GetStats()
         {
-            return this.stats;
+            return this.Stats;
         }
         public int GetProf()
         {
-            return (this.prof);
+            return (this.Prof);
         }
 
         //Get whether or not the character is proficient in any given save.
@@ -1259,7 +1197,7 @@ namespace Character //change to ArkDice?
             }
             else
             {
-                return this.saveProfs[save];
+                return this.Saves[save];
             }
         }
 
@@ -1267,12 +1205,12 @@ namespace Character //change to ArkDice?
         {
             //to do: perhaps switch this over to something that just outputs data needed to render the things for the abilities.
             //then switch ability class over to internal only again.
-            return this.abilities;
+            return this.Abilities;
         }
 
         public List<Ability> GetBasicAbilities ()
         {
-            return this.basicAbilities;
+            return this.BasicAbilities;
         }
     }
 }

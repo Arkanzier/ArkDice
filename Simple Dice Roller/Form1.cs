@@ -460,9 +460,9 @@ namespace Simple_Dice_Roller
         private void displayCharacter(Character.Character character)
         {
             //Basics
-            Char_ID.Text = character.id;
-            Char_Name.Text = character.name;
-            Char_Race.Text = character.race;
+            Char_ID.Text = character.ID;
+            Char_Name.Text = character.Name;
+            Char_Race.Text = character.Race;
 
             //Health
             updateHealthDisplay();
@@ -559,13 +559,13 @@ namespace Simple_Dice_Roller
         private void updateHealthDisplay()
         {
             string healthString;
-            if (loadedCharacter.tempHP > 0)
+            if (loadedCharacter.TempHP > 0)
             {
-                healthString = loadedCharacter.currentHP + " + " + loadedCharacter.tempHP + " (" + (loadedCharacter.currentHP + loadedCharacter.tempHP) + ") / " + loadedCharacter.maxHP;
+                healthString = loadedCharacter.CurrentHP + " + " + loadedCharacter.TempHP + " (" + (loadedCharacter.CurrentHP + loadedCharacter.TempHP) + ") / " + loadedCharacter.MaxHP;
             }
             else
             {
-                healthString = loadedCharacter.currentHP + " / " + loadedCharacter.maxHP;
+                healthString = loadedCharacter.CurrentHP + " / " + loadedCharacter.MaxHP;
             }
 
             Char_Health.Text = healthString;

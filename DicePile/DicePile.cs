@@ -5,7 +5,6 @@ using System.Reflection.PortableExecutable;
 namespace ArkDice
 {
     public class DicePile
-        //to do: consider changing this to a struct, since it's unlikely to change after the initial setup.
     {
         private int dieSize;
         private int numDice;
