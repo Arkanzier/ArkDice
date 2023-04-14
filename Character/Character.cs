@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.Design;
+using System.Drawing;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
@@ -742,6 +743,38 @@ namespace Character //change to ArkDice?
             }
         }
 
+        //Returns an array of the available unspent HD.
+        public int[] GetAvailableHD ()
+        {
+            //We'll use a full array out to 12 for convenience.
+            //ret[x] refers to HD of size dx.
+            int[] ret = new int[12];
+
+            for (int a = 0; a < classes.Count; a++)
+            {
+                int dieSize = classes[a].HDSize;
+                int numDice = classes[a].currentHD;
+                ret[dieSize] += numDice;
+            }
+
+            return ret;
+        }
+
+        //Returns the number of HD available of the specified size.
+        public int GetAvailableHD (int size)
+        {
+            int ret = 0;
+            for (int a = 0; a < classes.Count; a++)
+            {
+                if (classes[a].HDSize == size)
+                {
+                    ret += classes[a].currentHD;
+                }
+            }
+
+            return ret;
+        }
+
         //Returns the sum of the character's levels in each of their classes.
         public int GetCharacterLevel ()
         {
@@ -908,6 +941,32 @@ namespace Character //change to ArkDice?
             }
         }
 
+        //Spends one or more HD of the specified size.
+        //to do: consider putting in an option to spend the largest size repeatedly until HP is full.
+            //maybe make that a different function
+        public bool SpendHD (int size, int quantity = 1)
+        {
+            //Make sure there are enough HD of the specified size before we start spending them.
+            int numAvailable = GetAvailableHD(size);
+            if (numAvailable < quantity)
+            {
+                return false;
+            }
+
+            while (quantity > 0)
+            {
+                bool resp = SpendOneHD(size);
+                if (!resp)
+                {
+                    //This shouldn't happen.
+                    return false;
+                }
+            }
+
+            //If we got here, we spent all the HD we were told to.
+            return true;
+        }
+
         //Converts the character and all of it's stuff to a JSON string, presumably for saving to a file.
         public override string ToString()
         {
@@ -995,6 +1054,45 @@ namespace Character //change to ArkDice?
             return true;
         }
 
+        private bool SpendOneHD (int size, bool ignoreCon = false)
+        {
+            for (int a = 0; a < classes.Count; a++)
+            {
+                if (classes[a].HDSize == size && classes[a].currentHD > 0)
+                {
+                    //Determine amount to heal.
+                    DicePile HD = new DicePile(size);
+                    DiceResponse resp = HD.roll();
+                    int amount = resp.total;
+
+                    if (!ignoreCon)
+                    {
+                        int conMod = GetConMod();
+                        amount += conMod;
+                    }
+
+                    //5e doesn't allow negative healing from HD.
+                    if (amount < 0) { amount = 0; }
+
+                    //Do the healing.
+                    bool success = Heal(amount);
+
+                    if (success)
+                    {
+                        classes[a].currentHD -= 1;
+                        return true;
+                    } else
+                    {
+                        //complain to a log?
+                        return false;
+                    }
+                }
+            }
+
+            //Apparently this character doesn't have any HD of that size available.
+            return false;
+        }
+
         //Sets everything to a zeroed out / default state.
         private void ZeroEverything()
         {
@@ -1056,6 +1154,10 @@ namespace Character //change to ArkDice?
         {
             return this.stats[0];
         }
+        public int GetStrMod()
+        {
+            return DiceFunctions.getModifierForStat(this.stats[0]);
+        }
         public int GetDexterity()
         {
             return this.stats[1];
@@ -1063,6 +1165,10 @@ namespace Character //change to ArkDice?
         public int GetDex()
         {
             return this.stats[1];
+        }
+        public int GetDexMod()
+        {
+            return DiceFunctions.getModifierForStat(this.stats[1]);
         }
         public int GetConstitution()
         {
@@ -1072,6 +1178,10 @@ namespace Character //change to ArkDice?
         {
             return this.stats[2];
         }
+        public int GetConMod()
+        {
+            return DiceFunctions.getModifierForStat(this.stats[2]);
+        }
         public int GetIntelligence()
         {
             return this.stats[3];
@@ -1079,6 +1189,10 @@ namespace Character //change to ArkDice?
         public int GetInt()
         {
             return this.stats[3];
+        }
+        public int GetIntMod()
+        {
+            return DiceFunctions.getModifierForStat(this.stats[3]);
         }
         public int GetWisdom()
         {
@@ -1088,6 +1202,10 @@ namespace Character //change to ArkDice?
         {
             return this.stats[4];
         }
+        public int GetWisMod()
+        {
+            return DiceFunctions.getModifierForStat(this.stats[4]);
+        }
         public int GetCharisma()
         {
             return this.stats[5];
@@ -1095,6 +1213,10 @@ namespace Character //change to ArkDice?
         public int GetCha()
         {
             return this.stats[5];
+        }
+        public int GetChaMod()
+        {
+            return DiceFunctions.getModifierForStat(this.stats[5]);
         }
         public int[] GetStats()
         {

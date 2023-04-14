@@ -8,7 +8,7 @@ namespace Character
 {
     //A simple little struct so we can easily associate class + subclass + level as a single data point.
 
-    public struct ClassLevel
+    public class ClassLevel
     {
         public string name { get; set; }
         public string subclass { get; set; }

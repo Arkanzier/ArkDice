@@ -474,6 +474,12 @@ namespace Simple_Dice_Roller
             Char_Int.Text = character.GetInt().ToString();
             Char_Wis.Text = character.GetWis().ToString();
             Char_Cha.Text = character.GetCha().ToString();
+            Char_StrMod.Text = character.GetStrMod().ToString();
+            Char_DexMod.Text = character.GetDexMod().ToString();
+            Char_ConMod.Text = character.GetConMod().ToString();
+            Char_IntMod.Text = character.GetIntMod().ToString();
+            Char_WisMod.Text = character.GetWisMod().ToString();
+            Char_ChaMod.Text = character.GetChaMod().ToString();
 
             Char_Prof.Text = character.GetProf().ToString();
 

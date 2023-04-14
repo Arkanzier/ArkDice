@@ -9,16 +9,16 @@ namespace ArkDice
         //Attributes:
         //-------- -------- -------- -------- -------- -------- -------- -------- 
         //Indicates success/failure.
-        public bool success;
+        public bool success { get; set; }
 
         //Indicates the total of the roll.
-        public int total;
+        public int total { get; set; }
 
         //A Human-readable description of the roll to potentially display to the user.
-        public string description;
+        public string description { get; set; }
 
         //If we need to make any changes to the Character instance that triggered the dice rolls, put them here.
-        public Dictionary<string, string> changes;
+        public Dictionary<string, string> changes { get; set; }
 
         //Indicates nat 1/20, if present.
         //...

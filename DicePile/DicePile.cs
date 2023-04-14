@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Reflection.Metadata.Ecma335;
+using System.Reflection.PortableExecutable;
 
 namespace ArkDice
 {
@@ -111,12 +112,15 @@ namespace ArkDice
             return ret;
         }
 
+        //Wrapper for the other roll() function for when we have no stats to pass in.
+        public DiceResponse roll ()
+        {
+            Dictionary<string, int> empty = new Dictionary<string, int>();
+            return roll(empty);
+        }
+
         //Rolls this collection of dice and returns the total.
-        //stats contains:
-            //[stat]mod     ie strmod
-            //[stat]score   ie strscore
-            //prof
-            //level
+        //stats is expected to receive data in the format outputted by Character.GetGeneralStatistics()
         public DiceResponse roll (Dictionary<string, int> stats)
         {
             int numToRoll = this.numDice + this.numAdv + this.numDis;

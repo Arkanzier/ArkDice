@@ -149,7 +149,7 @@
             Button_Acrobatics = new Button();
             Button_DexSave = new Button();
             Button_Dex = new Button();
-            label2 = new Label();
+            Char_StrMod = new Label();
             Button_Athletics = new Button();
             Button_StrSave = new Button();
             Button_Str = new Button();
@@ -187,6 +187,11 @@
             MagicTab = new TabPage();
             label8 = new Label();
             label7 = new Label();
+            Char_DexMod = new Label();
+            Char_ConMod = new Label();
+            Char_IntMod = new Label();
+            Char_WisMod = new Label();
+            Char_ChaMod = new Label();
             MainTabArea.SuspendLayout();
             DiceTab.SuspendLayout();
             CharacterTab.SuspendLayout();
@@ -1050,6 +1055,11 @@
             // 
             // CharacterTab
             // 
+            CharacterTab.Controls.Add(Char_ChaMod);
+            CharacterTab.Controls.Add(Char_WisMod);
+            CharacterTab.Controls.Add(Char_IntMod);
+            CharacterTab.Controls.Add(Char_ConMod);
+            CharacterTab.Controls.Add(Char_DexMod);
             CharacterTab.Controls.Add(Button_GiveTempHP);
             CharacterTab.Controls.Add(Button_SetTempHP);
             CharacterTab.Controls.Add(Textbox_TempHP);
@@ -1097,7 +1107,7 @@
             CharacterTab.Controls.Add(Button_Acrobatics);
             CharacterTab.Controls.Add(Button_DexSave);
             CharacterTab.Controls.Add(Button_Dex);
-            CharacterTab.Controls.Add(label2);
+            CharacterTab.Controls.Add(Char_StrMod);
             CharacterTab.Controls.Add(Button_Athletics);
             CharacterTab.Controls.Add(Button_StrSave);
             CharacterTab.Controls.Add(Button_Str);
@@ -1616,14 +1626,14 @@
             Button_Dex.UseVisualStyleBackColor = true;
             Button_Dex.Click += RollDice;
             // 
-            // label2
+            // Char_StrMod
             // 
-            label2.AutoSize = true;
-            label2.Location = new Point(30, 106);
-            label2.Name = "label2";
-            label2.Size = new Size(45, 15);
-            label2.TabIndex = 25;
-            label2.Text = "strmod";
+            Char_StrMod.AutoSize = true;
+            Char_StrMod.Location = new Point(17, 107);
+            Char_StrMod.Name = "Char_StrMod";
+            Char_StrMod.Size = new Size(45, 15);
+            Char_StrMod.TabIndex = 25;
+            Char_StrMod.Text = "strmod";
             // 
             // Button_Athletics
             // 
@@ -1942,6 +1952,51 @@
             label7.TabIndex = 0;
             label7.Text = "Spell slots go here";
             // 
+            // Char_DexMod
+            // 
+            Char_DexMod.AutoSize = true;
+            Char_DexMod.Location = new Point(100, 107);
+            Char_DexMod.Name = "Char_DexMod";
+            Char_DexMod.Size = new Size(51, 15);
+            Char_DexMod.TabIndex = 73;
+            Char_DexMod.Text = "dexmod";
+            // 
+            // Char_ConMod
+            // 
+            Char_ConMod.AutoSize = true;
+            Char_ConMod.Location = new Point(176, 106);
+            Char_ConMod.Name = "Char_ConMod";
+            Char_ConMod.Size = new Size(52, 15);
+            Char_ConMod.TabIndex = 74;
+            Char_ConMod.Text = "conmod";
+            // 
+            // Char_IntMod
+            // 
+            Char_IntMod.AutoSize = true;
+            Char_IntMod.Location = new Point(266, 107);
+            Char_IntMod.Name = "Char_IntMod";
+            Char_IntMod.Size = new Size(46, 15);
+            Char_IntMod.TabIndex = 75;
+            Char_IntMod.Text = "intmod";
+            // 
+            // Char_WisMod
+            // 
+            Char_WisMod.AutoSize = true;
+            Char_WisMod.Location = new Point(341, 107);
+            Char_WisMod.Name = "Char_WisMod";
+            Char_WisMod.Size = new Size(49, 15);
+            Char_WisMod.TabIndex = 76;
+            Char_WisMod.Text = "wismod";
+            // 
+            // Char_ChaMod
+            // 
+            Char_ChaMod.AutoSize = true;
+            Char_ChaMod.Location = new Point(431, 106);
+            Char_ChaMod.Name = "Char_ChaMod";
+            Char_ChaMod.Size = new Size(51, 15);
+            Char_ChaMod.TabIndex = 77;
+            Char_ChaMod.Text = "chamod";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -2074,7 +2129,7 @@
         private Button Button_Str;
         private Button Button_StrSave;
         private Button Button_Athletics;
-        private Label label2;
+        private Label Char_StrMod;
         private Button Button_Acrobatics;
         private Button Button_DexSave;
         private Button Button_Dex;
@@ -2125,5 +2180,10 @@
         private TextBox Textbox_TempHP;
         private Button Button_SetTempHP;
         private Button Button_GiveTempHP;
+        private Label Char_ChaMod;
+        private Label Char_WisMod;
+        private Label Char_IntMod;
+        private Label Char_ConMod;
+        private Label Char_DexMod;
     }
 }
