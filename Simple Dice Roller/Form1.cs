@@ -68,7 +68,7 @@ namespace Simple_Dice_Roller
             Character.Character currentCharacter = new Character.Character(contents);
             loadedCharacter = currentCharacter;
             //MessageBox.Show(currentCharacter.ToString());
-            displayCharacter(currentCharacter);
+            DisplayCharacter(currentCharacter);
 
             //Currently selected dice for the dice roller.
             currentDice = new DiceCollection();
@@ -115,7 +115,7 @@ namespace Simple_Dice_Roller
             if (colName == "Abilities_UseButtonCol")
             {
                 DiceResponse resp = loadedCharacter.UseAbility(abilityID);
-                logMessage(resp.description);
+                LogMessage(resp.description);
                 //MessageBox.Show(resp.description);
                 //to do: check if description is actually present.
                 //maybe change the class and it's getters so it'll do something special if I call getDescription() when there isn't a description?
@@ -139,7 +139,7 @@ namespace Simple_Dice_Roller
 
             }
 
-            displayCharacter(loadedCharacter);
+            DisplayCharacter(loadedCharacter);
             //do I need to reload loadedCharacter first?
         }
 
@@ -244,7 +244,7 @@ namespace Simple_Dice_Roller
                 }
             }
 
-            updateDiceArrayDisplay();
+            UpdateDiceArrayDisplay();
         }
 
         //Deal damage to the active character.
@@ -269,7 +269,7 @@ namespace Simple_Dice_Roller
             Int32.TryParse(tag, out amount);
 
             loadedCharacter.Damage(amount);
-            updateHealthDisplay();
+            UpdateHealthDisplay();
         }
 
         //Someone typed something into the dice string textbox.
@@ -280,7 +280,7 @@ namespace Simple_Dice_Roller
             {
                 e.SuppressKeyPress = true;
                 string diceString = diceStringBox.Text;
-                processTextInput(diceString);
+                ProcessTextInput(diceString);
                 diceStringBox.Text = "";
             }
         }
@@ -307,7 +307,7 @@ namespace Simple_Dice_Roller
             Int32.TryParse(tag, out amount);
 
             loadedCharacter.Heal(amount);
-            updateHealthDisplay();
+            UpdateHealthDisplay();
         }
 
         //Redo the most recent roll.
@@ -315,7 +315,7 @@ namespace Simple_Dice_Roller
         {
             DiceResponse resp = lastDice.roll();
             outputTotal.Text = "Rolled " + resp.total;
-            logMessage(resp.description);
+            LogMessage(resp.description);
         }
 
         //Onclick event used for 'click button to roll stat/skill/whatever' buttons.
@@ -366,14 +366,14 @@ namespace Simple_Dice_Roller
                     DiceResponse resp = loadedCharacter.RollForCharacter(d);
 
                     outputTotal.Text = "Rolled " + resp.total;
-                    logMessage(resp.description);
+                    LogMessage(resp.description);
 
                     //rolls for d20+0 seem to be 1-19, investigate
                     //make sure there's stuff to support 'prof bonus if proficient' type commands in dice strings
                     //whatever + profifprof(thing) + whatever ?
                     //thing would then be the name of a skill, or a stat + 'save' ie 'strsave', or a weapon name, or whatever
 
-                    updateDiceArrayDisplay();
+                    UpdateDiceArrayDisplay();
                 }
                 else
                 {
@@ -388,28 +388,28 @@ namespace Simple_Dice_Roller
         }
 
         //The 'roll dice' button got clicked.
-        private void rollDice_Click(object sender, EventArgs e)
+        private void RollDice_Click(object sender, EventArgs e)
         {
             string diceString = diceStringBox.Text;
             if (diceString.Length > 0)
             {
                 //We prioritize text typed into the textbox.
-                processTextInput(diceString);
+                ProcessTextInput(diceString);
                 diceStringBox.Text = "";
 
-                updateLastDice(diceString);
+                UpdateLastDice(diceString);
             }
             else
             {
                 //Roll dice added via the buttons.
                 DiceResponse resp = currentDice.roll();
                 outputTotal.Text = "Rolled " + resp.total;
-                logMessage(resp.description);
+                LogMessage(resp.description);
 
-                updateLastDice(currentDice.getDiceString());
+                UpdateLastDice(currentDice.getDiceString());
 
                 currentDice = new DiceCollection();
-                updateDiceArrayDisplay();
+                UpdateDiceArrayDisplay();
             }
         }
 
@@ -450,14 +450,14 @@ namespace Simple_Dice_Roller
 
             //Then call the function.
             loadedCharacter.SetTempHP(number, onlyIncrease);
-            updateHealthDisplay();
+            UpdateHealthDisplay();
         }
 
 
         //Functions that do stuff to the form:
         //-------- -------- -------- -------- -------- -------- -------- -------- 
         //Display a character's info in the character tab.
-        private void displayCharacter(Character.Character character)
+        private void DisplayCharacter(Character.Character character)
         {
             //Basics
             Char_ID.Text = character.ID;
@@ -465,7 +465,7 @@ namespace Simple_Dice_Roller
             Char_Race.Text = character.Race;
 
             //Health
-            updateHealthDisplay();
+            UpdateHealthDisplay();
 
             //Stats
             Char_Str.Text = character.GetStr().ToString();
@@ -534,7 +534,7 @@ namespace Simple_Dice_Roller
         }
 
         //Display the log messages in the log messages area.
-        private void displayMessages()
+        private void DisplayMessages()
         {
             string text = "";
 
@@ -551,12 +551,12 @@ namespace Simple_Dice_Roller
         }
 
         //
-        private void updateDiceArrayDisplay()
+        private void UpdateDiceArrayDisplay()
         {
             DiceArrayDisplay.Text = currentDice.getDiceString();
         }
 
-        private void updateHealthDisplay()
+        private void UpdateHealthDisplay()
         {
             string healthString;
             if (loadedCharacter.TempHP > 0)
@@ -572,7 +572,7 @@ namespace Simple_Dice_Roller
         }
 
         //
-        private void updateLastDice(string diceString)
+        private void UpdateLastDice(string diceString)
         {
             lastDice = new DiceCollection(diceString);
             LastRollDiceString.Text = lastDice.getDiceString();
@@ -584,7 +584,7 @@ namespace Simple_Dice_Roller
         //Underlying functions that other stuff calls:
         //-------- -------- -------- -------- -------- -------- -------- -------- 
         //Add a message to the log area, plus some related logic.
-        private void logMessage(string message)
+        private void LogMessage(string message)
         {
             logMessages.Insert(0, message);
 
@@ -595,11 +595,11 @@ namespace Simple_Dice_Roller
                 logMessages.RemoveAt(logMessages.Count - 1);
             }
 
-            displayMessages();
+            DisplayMessages();
         }
 
         //Translate a dice string into some rolls.
-        private void processTextInput(string diceString)
+        private void ProcessTextInput(string diceString)
         {
             DiceCollection dice = new DiceCollection(diceString);
             outputDescription.Text = dice.getDescription();
@@ -609,9 +609,9 @@ namespace Simple_Dice_Roller
             //outputTotal.Text = "Rolled " + dice.getTotal();
             outputTotal.Text = "Rolled " + resp.total;
             //logMessage (dice.getDescription());
-            logMessage(resp.description);
+            LogMessage(resp.description);
 
-            updateLastDice(diceString);
+            UpdateLastDice(diceString);
         }
 
         private void Char_Name_Click(object sender, EventArgs e)
