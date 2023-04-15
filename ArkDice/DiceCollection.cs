@@ -221,8 +221,8 @@ namespace ArkDice
             foreach (var dp in dice)
             {
                 DiceResponse roll = dp.roll(stats);
-                int tempTot = roll.total;
-                string tempDesc = roll.description;
+                int tempTot = roll.Total;
+                string tempDesc = roll.Description;
 
                 total += tempTot;
                 if (desc.Length > 0)

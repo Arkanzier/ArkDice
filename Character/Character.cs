@@ -23,8 +23,8 @@ namespace Character //change to ArkDice?
         //Class related info
         public List<ClassLevel> Classes { get; private set; }
         //to do: consider setting something up to support gestalt rules.
-            //just set up a multiplier for levels or 'class levels per character level' type thing?
-                //the character's level equals total class level divided by that number
+        //just set up a multiplier for levels or 'class levels per character level' type thing?
+        //the character's level equals total class level divided by that number
 
         //Added to the prof bonus calculated based on level. Can be negative.
         public int BonusToProf { get; private set; }
@@ -35,8 +35,8 @@ namespace Character //change to ArkDice?
         //Stats and related info
         //Starts at 0 and proceeds in the order Str, Dex, Con, Int, Wis, Cha.
         public int[] Stats { get; private set; }
-            //convert these over to loose ints/bools?
-            //there are only 6 of each, and it would cut down a little on the work involved.
+        //convert these over to loose ints/bools?
+        //there are only 6 of each, and it would cut down a little on the work involved.
 
         public int[] Saves { get; private set; }
         //to do: rename to saves?
@@ -44,17 +44,17 @@ namespace Character //change to ArkDice?
         //how to handle weapon and armor profs?
         //armor can probably just be 3 bools/decimals
         //weapons can almost just be a couple bools/floats, but we might need to address each weapon individually
-            //do something with hardcoded categories?
-                //write a function or two to convert between weapon categories and specific weapons?
+        //do something with hardcoded categories?
+        //write a function or two to convert between weapon categories and specific weapons?
         //how to handle language profs?
-            //just make them bools, or build in houserules for learning them fractionally?
+        //just make them bools, or build in houserules for learning them fractionally?
         //need something for tool profs
-            //just put in an 'other' since there are so many types of tools?
-                //this would just be an array of strings, in that case.
+        //just put in an 'other' since there are so many types of tools?
+        //this would just be an array of strings, in that case.
         //lump tools and languages together, since they're just going to be lists anyway?
 
         //Skill proficiencies
-        public Dictionary<string, int> Skills{ get; private set; }
+        public Dictionary<string, int> Skills { get; private set; }
 
         //Skills by stat:
         /*
@@ -86,17 +86,17 @@ namespace Character //change to ArkDice?
          */
 
         //Abilities and related info.
-        public List<Ability> Abilities{ get; private set; }
-            //switch from strings to objects?
+        public List<Ability> Abilities { get; private set; }
+        //switch from strings to objects?
         public List<Ability> BasicAbilities { get; private set; }
         //Text describing passive abilities the character has.
         public List<string> Passives { get; private set; }
 
         //Constructor(s):
         //-------- -------- -------- -------- -------- -------- -------- -------- 
-        
+
         //Creates a blank character.
-        public Character ()
+        public Character()
         {
             //Basic info.
             ID = "";
@@ -156,7 +156,7 @@ namespace Character //change to ArkDice?
         //take the 'load from json' stuff from the other constructor, make it a function, and then call it here and there?
 
         //Load a character from a JSON string.
-        public Character (string json)
+        public Character(string json)
             : this()
         {
             //to do: look into making this work with deserialize.
@@ -432,7 +432,7 @@ namespace Character //change to ArkDice?
 
                 //Skills
                 //to do: set up a way to automatically get these indices.
-                    //just do a foreach through the existing dictionary, since they should all be in there now?
+                //just do a foreach through the existing dictionary, since they should all be in there now?
                 if (root.TryGetProperty("Skills", out temp))
                 {
                     Skills = new Dictionary<string, int>();
@@ -589,7 +589,7 @@ namespace Character //change to ArkDice?
                 }
 
                 //Abilities
-                if (root.TryGetProperty ("Abilities", out temp))
+                if (root.TryGetProperty("Abilities", out temp))
                 {
                     //Contains an array of objects.
                     //Pass each object to the Ability class' constructor.
@@ -618,16 +618,56 @@ namespace Character //change to ArkDice?
         }
 
         //Currently only used by abilities for sending back lists of changes.
-        public Character (string id, string name)
+        public Character(string id, string name)
             : this()
         {
             this.ID = id;
-            this.Name= name;
+            this.Name = name;
         }
 
 
         //Public functions:
         //-------- -------- -------- -------- -------- -------- -------- -------- 
+
+        //Add or remove HD to the specified class.
+        public bool AddOrSubtractHDForClass (string className, int amount)
+        {
+            for (int a = 0; a < Classes.Count; a++)
+            {
+                if (Classes[a].Name == className)
+                {
+                    if (amount >= 0)
+                    {
+                        if (Classes[a].CurrentHD + amount <= Classes[a].Level)
+                        {
+                            //We can just add them.
+                            Classes[a].CurrentHD += amount;
+                        } else
+                        {
+                            //We'll set them to full and let some be wasted.
+                            Classes[a].CurrentHD = Classes[a].Level;
+                        }
+                    } else
+                    {
+                        if (Classes[a].CurrentHD + amount >= 0)
+                        {
+                            //We can just subtract them.
+                            //Remember that amount is negative, so we add.
+                            Classes[a].CurrentHD += amount;
+                        } else
+                        {
+                            //We don't have enough to spend.
+                            return false;
+                        }
+                    }
+
+                    return true;
+                }
+            }
+
+            //If we got this far, that class isn't in the list.
+            return false;
+        }
 
         //Deal damage to the character.
         public bool Damage(int amount, bool allowNegative = false)
@@ -682,7 +722,7 @@ namespace Character //change to ArkDice?
         }
 
         //Returns an array of the available unspent HD.
-        public int[] GetAvailableHD ()
+        public int[] GetAvailableHD()
         {
             //We'll use a full array out to 12 for convenience.
             //ret[x] refers to HD of size dx.
@@ -699,7 +739,7 @@ namespace Character //change to ArkDice?
         }
 
         //Returns the number of HD available of the specified size.
-        public int GetAvailableHD (int size)
+        public int GetAvailableHD(int size)
         {
             int ret = 0;
             for (int a = 0; a < Classes.Count; a++)
@@ -714,7 +754,7 @@ namespace Character //change to ArkDice?
         }
 
         //Returns the sum of the character's levels in each of their classes.
-        public int GetCharacterLevel ()
+        public int GetCharacterLevel()
         {
             int ret = 0;
 
@@ -760,24 +800,24 @@ namespace Character //change to ArkDice?
             ret["chasave"] = Saves[5];
 
             //Skill profs
-            ret["athletics"]        = Skills["Athletics"];
-            ret["acrobatics"]       = Skills["Acrobatics"];
-            ret["sleightofhand"]    = Skills["Sleight of Hand"];
-            ret["stealth"]          = Skills["Stealth"];
-            ret["arcana"]           = Skills["Arcana"];
-            ret["history"]          = Skills["History"];
-            ret["investigation"]    = Skills["Investigation"];
-            ret["nature"]           = Skills["Nature"];
-            ret["religion"]         = Skills["Religion"];
-            ret["animalhandling"]   = Skills["Animal Handling"];
-            ret["insight"]          = Skills["Insight"];
-            ret["medicine"]         = Skills["Medicine"];
-            ret["perception"]       = Skills["Perception"];
-            ret["survival"]         = Skills["Survival"];
-            ret["deception"]        = Skills["Deception"];
-            ret["intimidation"]     = Skills["Intimidation"];
-            ret["performance"]      = Skills["Performance"];
-            ret["persuasion"]       = Skills["Persuasion"];
+            ret["athletics"] = Skills["Athletics"];
+            ret["acrobatics"] = Skills["Acrobatics"];
+            ret["sleightofhand"] = Skills["Sleight of Hand"];
+            ret["stealth"] = Skills["Stealth"];
+            ret["arcana"] = Skills["Arcana"];
+            ret["history"] = Skills["History"];
+            ret["investigation"] = Skills["Investigation"];
+            ret["nature"] = Skills["Nature"];
+            ret["religion"] = Skills["Religion"];
+            ret["animalhandling"] = Skills["Animal Handling"];
+            ret["insight"] = Skills["Insight"];
+            ret["medicine"] = Skills["Medicine"];
+            ret["perception"] = Skills["Perception"];
+            ret["survival"] = Skills["Survival"];
+            ret["deception"] = Skills["Deception"];
+            ret["intimidation"] = Skills["Intimidation"];
+            ret["performance"] = Skills["Performance"];
+            ret["persuasion"] = Skills["Persuasion"];
 
             //other profs here
 
@@ -785,7 +825,7 @@ namespace Character //change to ArkDice?
         }
 
         //Heal the character
-        public bool Heal (int amount)
+        public bool Heal(int amount)
         {
             if (amount + CurrentHP > MaxHP)
             {
@@ -801,7 +841,7 @@ namespace Character //change to ArkDice?
         //modifyTempHP?
 
         //Makes a roll using the character's stats and proficiencies.
-        public DiceResponse RollForCharacter (DiceCollection dc)
+        public DiceResponse RollForCharacter(DiceCollection dc)
         {
             Dictionary<string, int> stats = this.GetGeneralStatistics();
 
@@ -811,7 +851,7 @@ namespace Character //change to ArkDice?
         }
 
         //Saves the character and all it's abilities to a file.
-        public bool Save (string filepath)
+        public bool Save(string filepath)
         {
             string folderpath = "C:\\Users\\david\\Programs\\Simple Dice Roller\\";
 
@@ -828,8 +868,8 @@ namespace Character //change to ArkDice?
                 //Now move the old file.
                 string backupFilepath = backupFolder + Name + "_" + DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss") + ".char";
                 //to do: consider leaving the original filename intact and just adding the stuff to that.
-                    //there's probably a function or two that can split the base name and the extension for us.
-                    //or a regex would work.
+                //there's probably a function or two that can split the base name and the extension for us.
+                //or a regex would work.
                 try
                 {
                     System.IO.File.Move(filepath, backupFilepath);
@@ -861,7 +901,7 @@ namespace Character //change to ArkDice?
         //Sets the user's temporary HP to some number.
         //If the onlyIncrease argument is true, this will only set the character's temp HP if the character doesn't already have more.
         //Otherwise, it will be willing to reduce the character's temp HP.
-        public bool SetTempHP (int amount, bool onlyIncrease = true) {
+        public bool SetTempHP(int amount, bool onlyIncrease = true) {
             if (amount > TempHP)
             {
                 TempHP = amount;
@@ -881,8 +921,8 @@ namespace Character //change to ArkDice?
 
         //Spends one or more HD of the specified size.
         //to do: consider putting in an option to spend the largest size repeatedly until HP is full.
-            //maybe make that a different function
-        public bool SpendHD (int size, int quantity = 1)
+        //maybe make that a different function
+        public bool SpendHDBySize(int size, int quantity = 1)
         {
             //Make sure there are enough HD of the specified size before we start spending them.
             int numAvailable = GetAvailableHD(size);
@@ -893,7 +933,7 @@ namespace Character //change to ArkDice?
 
             while (quantity > 0)
             {
-                bool resp = SpendOneHD(size);
+                bool resp = SpendOneHDBySize(size);
                 if (!resp)
                 {
                     //This shouldn't happen.
@@ -903,6 +943,42 @@ namespace Character //change to ArkDice?
 
             //If we got here, we spent all the HD we were told to.
             return true;
+        }
+
+        //Spends HD from the specified class, if able.
+        public DiceResponse SpendHDByClass(string className, int quantity = 1, bool ignoreCon = false)
+        {
+            for (int a = 0; a < Classes.Count; a++)
+            {
+                if (Classes[a].Name == className)
+                {
+                    if (Classes[a].CurrentHD >= quantity)
+                    {
+                        //The HD are available, now we spend them.
+                        Classes[a].CurrentHD -= quantity;
+
+                        DiceResponse resp = HealingForHD (quantity, Classes[a].HDSize, ignoreCon);
+                        int healed = resp.Total;
+
+                        if (healed < 0)
+                        {
+                            return new DiceResponse(false);
+                        }
+                        else
+                        {
+                            //set description or something?
+                            return resp;
+                        }
+                    } else
+                    {
+                        //Complain to a log?
+                        return new DiceResponse(false, "Class " + className + " does not have " + quantity + " HD to spend.");
+                    }   //If the class has enough HD / else
+                }   //If the class is found
+            }   //For each class
+
+            //If we get here, we couldn't find that class.
+            return new DiceResponse(false, "Could not find class "+className);
         }
 
         //Converts the character and all of it's stuff to a JSON string, presumably for saving to a file.
@@ -930,7 +1006,7 @@ namespace Character //change to ArkDice?
 
             DiceResponse resp = ability.use(GetGeneralStatistics());
 
-            IncorporateChanges(resp.changes);
+            IncorporateChanges(resp.Changes);
 
             return resp;
         }
@@ -963,6 +1039,43 @@ namespace Character //change to ArkDice?
             return -1;
         }
 
+        //Handles the healing portion of spending HD.
+        //Returns the amount healed, or -1 if there was an error.
+        private DiceResponse HealingForHD (int num, int size, bool ignoreCon = false)
+        {
+            int totalHealing = 0;
+
+            for (int a = 0; a < num; a++)
+            {
+                DicePile HD = new DicePile(size, 1);
+                DiceResponse resp = HD.roll();
+                int amount = resp.Total;
+
+                if (!ignoreCon)
+                {
+                    int conMod = GetConMod();
+                    amount += conMod;
+                }
+
+                //5e doesn't allow negative healing from HD.
+                if (amount < 0) { amount = 0; }
+
+                totalHealing += amount;
+            }
+
+            //Do the healing.
+            bool success = Heal(totalHealing);
+
+            if (success)
+            {
+                string description = "HD: " + num + "d" + size + "+Con: healed " + totalHealing;
+                return new DiceResponse (true, totalHealing, description);
+            } else
+            {
+                return new DiceResponse (false);
+            }
+        }
+
         //Takes in some changes and applies them to the character.
         private bool IncorporateChanges (Dictionary<string, string> changes)
         {
@@ -992,37 +1105,22 @@ namespace Character //change to ArkDice?
             return true;
         }
 
-        private bool SpendOneHD (int size, bool ignoreCon = false)
+        private bool SpendOneHDBySize (int size, bool ignoreCon = false)
         {
             for (int a = 0; a < Classes.Count; a++)
             {
                 if (Classes[a].HDSize == size && Classes[a].CurrentHD > 0)
                 {
-                    //Determine amount to heal.
-                    DicePile HD = new DicePile(size);
-                    DiceResponse resp = HD.roll();
-                    int amount = resp.total;
-
-                    if (!ignoreCon)
-                    {
-                        int conMod = GetConMod();
-                        amount += conMod;
-                    }
-
-                    //5e doesn't allow negative healing from HD.
-                    if (amount < 0) { amount = 0; }
-
                     //Do the healing.
-                    bool success = Heal(amount);
+                    DiceResponse resp = HealingForHD(1, size, ignoreCon);
+                    int healed = resp.Total;
 
-                    if (success)
+                    if (healed < 0)
                     {
-                        Classes[a].CurrentHD -= 1;
-                        return true;
+                        return false;
                     } else
                     {
-                        //complain to a log?
-                        return false;
+                        return true;
                     }
                 }
             }

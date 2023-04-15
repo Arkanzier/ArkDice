@@ -227,25 +227,25 @@ namespace Character
                 case "counter":
                     //We add the result of the roll to the remaining uses.
                     //to do: consider splitting counters off to another variable, and adding "recharge" or something as an action.
-                    uses += resp.total;
+                    uses += resp.Total;
                     if (uses > maxUses)
                     {
                         uses = maxUses;
                     }
                     break;
                 case "heal":
-                    int newHP = stats["health"] + resp.total;
+                    int newHP = stats["health"] + resp.Total;
                     if (newHP > stats["maxHP"])
                     {
-                        resp.changes["health"] = stats["maxHP"].ToString();
+                        resp.Changes["health"] = stats["maxHP"].ToString();
                     }
                     else if (newHP < 0)
                     {
-                        resp.changes["health"] = "0";
+                        resp.Changes["health"] = "0";
                     }
                     else
                     {
-                        resp.changes["health"] = (stats["health"] + resp.total).ToString();
+                        resp.Changes["health"] = (stats["health"] + resp.Total).ToString();
                     }
                     //to do: check to make sure these indices actually exist.
                     //to do: should changes actually be string,int?
@@ -256,7 +256,7 @@ namespace Character
                             //another bool in DiceResponse?
                     break;
                 case "temphp":
-                    resp.changes["temphp"] = resp.total.ToString();
+                    resp.Changes["temphp"] = resp.Total.ToString();
                     //to do: check if there's already more
                     break;
                 default:
@@ -327,15 +327,15 @@ namespace Character
             foreach (DiceCollection d in this.dice)
             {
                 DiceResponse resp = d.roll(stats);
-                if (resp.success == false)
+                if (resp.Success == false)
                 {
                     //to do: decide what I want to do here.
                     description += "error rolling dice";
                 }
                 else
                 {
-                    total += resp.total;
-                    description += resp.description;
+                    total += resp.Total;
+                    description += resp.Description;
                 }
             }
 
@@ -352,8 +352,8 @@ namespace Character
             foreach (DiceCollection d in this.dice)
             {
                 DiceResponse resp = d.roll();
-                total += resp.total;
-                description += resp.description;
+                total += resp.Total;
+                description += resp.Description;
 
                 totalHealed += total;
             }

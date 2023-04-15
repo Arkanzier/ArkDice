@@ -115,12 +115,12 @@ namespace Simple_Dice_Roller
             if (colName == "Abilities_UseButtonCol")
             {
                 DiceResponse resp = loadedCharacter.UseAbility(abilityID);
-                LogMessage(resp.description);
+                LogMessage(resp.Description);
                 //MessageBox.Show(resp.description);
                 //to do: check if description is actually present.
                 //maybe change the class and it's getters so it'll do something special if I call getDescription() when there isn't a description?
                 //with monotype variables I don't think that's going to do a lot, so maybe not.
-                if (resp.success)
+                if (resp.Success)
                 {
                     //MessageBox.Show("Ability used: total is " + resp.total + " and string is " + resp.description);
                 }
@@ -247,6 +247,64 @@ namespace Simple_Dice_Roller
             UpdateDiceArrayDisplay();
         }
 
+        private void ClassesArea_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            //First we figure out which button was clicked.
+            //Column:
+            int colIndex = e.ColumnIndex;
+            string colName = ClassesArea.Columns[colIndex].Name;
+
+            //Row:
+            int rowNum = e.RowIndex;
+            string className;
+            string subclassName;
+            try
+            {
+                className = ClassesArea.Rows[rowNum].Cells[0].Value.ToString();
+                subclassName = ClassesArea.Rows[rowNum].Cells[1].Value.ToString();
+                //MessageBox.Show ("Found class ID " + className + " (" + subclassName + ")");
+            }
+            catch
+            {
+                className = "";
+                subclassName = "";
+            }
+            className ??= "";
+            //MessageBox.Show("Button clicked is " + colName + " column for class " + className + " (" + subclassName + ")");
+
+            if (colName == "SpendHDButton")
+            {
+                DiceResponse resp = loadedCharacter.SpendHDByClass(className, 1, false);
+                if (resp.Success)
+                {
+                    //MessageBox.Show("HD response:" + resp.Total);
+                }
+                else
+                {
+                    //MessageBox.Show("HD spending failed.");
+                }
+
+                LogMessage(resp.Description);
+
+                //We also want to update the HP display.
+                UpdateHealthDisplay();
+            }
+            else if (colName == "AddHDButton")
+            {
+                loadedCharacter.AddOrSubtractHDForClass(className, 1);
+            }
+            else if (colName == "SubtractHDButton")
+            {
+                loadedCharacter.AddOrSubtractHDForClass(className, -1);
+            }
+
+            //update the display.
+            DisplayClassList(loadedCharacter);
+
+            //it's doing 3 healing every time
+            //it's not decrementing the hd
+        }
+
         //Deal damage to the active character.
         private void Damage(object sender, EventArgs e)
         {
@@ -314,8 +372,8 @@ namespace Simple_Dice_Roller
         private void RerollButton_Click(object sender, EventArgs e)
         {
             DiceResponse resp = lastDice.roll();
-            outputTotal.Text = "Rolled " + resp.total;
-            LogMessage(resp.description);
+            outputTotal.Text = "Rolled " + resp.Total;
+            LogMessage(resp.Description);
         }
 
         //Onclick event used for 'click button to roll stat/skill/whatever' buttons.
@@ -365,8 +423,8 @@ namespace Simple_Dice_Roller
                     DiceCollection d = new DiceCollection(diceString);
                     DiceResponse resp = loadedCharacter.RollForCharacter(d);
 
-                    outputTotal.Text = "Rolled " + resp.total;
-                    LogMessage(resp.description);
+                    outputTotal.Text = "Rolled " + resp.Total;
+                    LogMessage(resp.Description);
 
                     //rolls for d20+0 seem to be 1-19, investigate
                     //make sure there's stuff to support 'prof bonus if proficient' type commands in dice strings
@@ -403,8 +461,8 @@ namespace Simple_Dice_Roller
             {
                 //Roll dice added via the buttons.
                 DiceResponse resp = currentDice.roll();
-                outputTotal.Text = "Rolled " + resp.total;
-                LogMessage(resp.description);
+                outputTotal.Text = "Rolled " + resp.Total;
+                LogMessage(resp.Description);
 
                 UpdateLastDice(currentDice.getDiceString());
 
@@ -483,6 +541,8 @@ namespace Simple_Dice_Roller
 
             Char_Prof.Text = character.GetProf().ToString();
 
+            DisplayClassList(character);
+
             //Abilities
             AbilitiesArea.Rows.Clear();
 
@@ -531,6 +591,30 @@ namespace Simple_Dice_Roller
             }
 
             //...
+        }
+
+        //Displays the currently loaded character's classes in the form.
+        private void DisplayClassList(Character.Character character)
+        {
+            ClassesArea.Rows.Clear();
+
+            for (int a = 0; a < character.Classes.Count; a++)
+            {
+                ClassLevel thisClass = character.Classes[a];
+
+                string name = thisClass.Name;
+                //MessageBox.Show("Processing class " + name);
+                string subclass = thisClass.Subclass;
+                int level = thisClass.Level;
+                string levelString = level.ToString();
+                string hd = thisClass.CurrentHD.ToString() + " / " + thisClass.Level.ToString() + "d" + thisClass.HDSize.ToString();
+                string spendButton = "Spend";
+                string plusButton = "+1";
+                string minusButton = "-1";
+
+                string[] row = { name, subclass, levelString, hd, spendButton, plusButton, minusButton };
+                ClassesArea.Rows.Add(row);
+            }
         }
 
         //Display the log messages in the log messages area.
@@ -607,9 +691,9 @@ namespace Simple_Dice_Roller
             //dice.roll();
             //outputTotal.Text = "The total is " + dice.getTotal();
             //outputTotal.Text = "Rolled " + dice.getTotal();
-            outputTotal.Text = "Rolled " + resp.total;
+            outputTotal.Text = "Rolled " + resp.Total;
             //logMessage (dice.getDescription());
-            LogMessage(resp.description);
+            LogMessage(resp.Description);
 
             UpdateLastDice(diceString);
         }

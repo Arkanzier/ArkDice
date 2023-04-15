@@ -9,18 +9,21 @@ namespace ArkDice
         //Attributes:
         //-------- -------- -------- -------- -------- -------- -------- -------- 
         //Indicates success/failure.
-        public bool success { get; set; }
+        public bool Success { get; set; }
 
         //Indicates the total of the roll.
-        public int total { get; set; }
+        public int Total { get; set; }
 
         //A Human-readable description of the roll to potentially display to the user.
-        public string description { get; set; }
+        public string Description { get; set; }
 
         //If we need to make any changes to the Character instance that triggered the dice rolls, put them here.
-        public Dictionary<string, string> changes { get; set; }
+        public Dictionary<string, string> Changes { get; set; }
 
         //Indicates nat 1/20, if present.
+
+        //Array of rolls, in case they're relevant?
+
         //...
 
 
@@ -29,46 +32,43 @@ namespace ArkDice
         //Blank slate.
         public DiceResponse()
         {
-            success = false;
-            total = 0;
-            description = "";
-            changes = new Dictionary<string, string>();
+            Success = false;
+            Total = 0;
+            Description = "";
+            Changes = new Dictionary<string, string>();
         }
 
         //Just success/failure.
         public DiceResponse(bool success)
+            : this()
         {
-            this.success = success;
-            total = 0;
-            description = "";
-            changes = new Dictionary<string, string>();
+            this.Success = success;
         }
 
         //Just success/failure and a message.
         public DiceResponse(bool success, string description)
+            :this ()
         {
-            this.success = success;
-            total = 0;
-            this.description = description;
-            changes = new Dictionary<string, string>();
+            this.Success = success;
+            this.Description = description;
         }
 
         //Everything but changes.
         public DiceResponse(bool success, int total, string description)
+            : this ()
         {
-            this.success = success;
-            this.total = total;
-            this.description = description;
-            changes = new Dictionary<string, string>();
+            this.Success = success;
+            this.Total = total;
+            this.Description = description;
         }
 
         //Everything.
         public DiceResponse(bool success, int total, string description, Dictionary<string, string> changes)
         {
-            this.success = success;
-            this.total = total;
-            this.description = description;
-            this.changes = changes;
+            this.Success = success;
+            this.Total = total;
+            this.Description = description;
+            this.Changes = changes;
         }
     }
 }

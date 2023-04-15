@@ -102,6 +102,7 @@
             DiceArrayDisplay = new Label();
             LastRollLabel = new Label();
             CharacterTab = new TabPage();
+            ClassesArea = new DataGridView();
             Char_ChaMod = new Label();
             Char_WisMod = new Label();
             Char_IntMod = new Label();
@@ -192,7 +193,6 @@
             MagicTab = new TabPage();
             label8 = new Label();
             label7 = new Label();
-            dataGridView1 = new DataGridView();
             ClassName = new DataGridViewTextBoxColumn();
             Subclass = new DataGridViewTextBoxColumn();
             Level = new DataGridViewTextBoxColumn();
@@ -203,11 +203,11 @@
             MainTabArea.SuspendLayout();
             DiceTab.SuspendLayout();
             CharacterTab.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)ClassesArea).BeginInit();
             ((System.ComponentModel.ISupportInitialize)BasicAbilitiesArea).BeginInit();
             AbilitiesTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)AbilitiesArea).BeginInit();
             MagicTab.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
             // 
             // rollDice
@@ -1064,7 +1064,7 @@
             // 
             // CharacterTab
             // 
-            CharacterTab.Controls.Add(dataGridView1);
+            CharacterTab.Controls.Add(ClassesArea);
             CharacterTab.Controls.Add(Char_ChaMod);
             CharacterTab.Controls.Add(Char_WisMod);
             CharacterTab.Controls.Add(Char_IntMod);
@@ -1142,6 +1142,19 @@
             CharacterTab.TabIndex = 1;
             CharacterTab.Text = "Character";
             CharacterTab.UseVisualStyleBackColor = true;
+            // 
+            // ClassesArea
+            // 
+            ClassesArea.AllowUserToAddRows = false;
+            ClassesArea.AllowUserToDeleteRows = false;
+            ClassesArea.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            ClassesArea.Columns.AddRange(new DataGridViewColumn[] { ClassName, Subclass, Level, HD, SpendHDButton, AddHDButton, SubtractHDButton });
+            ClassesArea.Location = new Point(6, 46);
+            ClassesArea.Name = "ClassesArea";
+            ClassesArea.RowTemplate.Height = 25;
+            ClassesArea.Size = new Size(453, 116);
+            ClassesArea.TabIndex = 78;
+            ClassesArea.CellContentClick += ClassesArea_CellContentClick;
             // 
             // Char_ChaMod
             // 
@@ -2007,16 +2020,6 @@
             label7.TabIndex = 0;
             label7.Text = "Spell slots go here";
             // 
-            // dataGridView1
-            // 
-            dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Columns.AddRange(new DataGridViewColumn[] { ClassName, Subclass, Level, HD, SpendHDButton, AddHDButton, SubtractHDButton });
-            dataGridView1.Location = new Point(6, 46);
-            dataGridView1.Name = "dataGridView1";
-            dataGridView1.RowTemplate.Height = 25;
-            dataGridView1.Size = new Size(434, 116);
-            dataGridView1.TabIndex = 78;
-            // 
             // ClassName
             // 
             ClassName.HeaderText = "Class";
@@ -2031,13 +2034,13 @@
             // 
             Level.HeaderText = "Level";
             Level.Name = "Level";
-            Level.Width = 50;
+            Level.Width = 40;
             // 
             // HD
             // 
             HD.HeaderText = "HD";
             HD.Name = "HD";
-            HD.Width = 30;
+            HD.Width = 60;
             // 
             // SpendHDButton
             // 
@@ -2070,12 +2073,12 @@
             DiceTab.PerformLayout();
             CharacterTab.ResumeLayout(false);
             CharacterTab.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)ClassesArea).EndInit();
             ((System.ComponentModel.ISupportInitialize)BasicAbilitiesArea).EndInit();
             AbilitiesTab.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)AbilitiesArea).EndInit();
             MagicTab.ResumeLayout(false);
             MagicTab.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -2246,7 +2249,7 @@
         private Label Char_IntMod;
         private Label Char_ConMod;
         private Label Char_DexMod;
-        private DataGridView dataGridView1;
+        private DataGridView ClassesArea;
         private DataGridViewTextBoxColumn ClassName;
         private DataGridViewTextBoxColumn Subclass;
         private DataGridViewTextBoxColumn Level;
