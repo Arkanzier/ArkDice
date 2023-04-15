@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DicePile\DicePile.csproj" />
     <ProjectReference Include="..\IfDice\DiceCondition.csproj" />
   </ItemGroup>
 

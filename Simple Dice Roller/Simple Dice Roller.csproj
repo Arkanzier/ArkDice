@@ -12,7 +12,6 @@
   <ItemGroup>
     <ProjectReference Include="..\ArkDice\DiceCollection.csproj" />
     <ProjectReference Include="..\Character\Character.csproj" />
-    <ProjectReference Include="..\DicePile\DicePile.csproj" />
   </ItemGroup>
 
 </Project>

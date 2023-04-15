@@ -5,19 +5,13 @@ VisualStudioVersion = 17.3.32804.467
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiceCollection", "ArkDice\DiceCollection.csproj", "{FA750BEE-D582-4662-BD91-40887ADBD4FE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DicePile", "DicePile\DicePile.csproj", "{C181EDF6-D8FF-4F3E-9F5E-9DAF0A63DAD9}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simple Dice Roller", "Simple Dice Roller\Simple Dice Roller.csproj", "{54854257-FE1E-46C3-916C-D167EE9A809B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Character", "Character\Character.csproj", "{DAAA47CB-6063-4D76-905E-AA94086E708A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiceResponse", "DiceResponse\DiceResponse.csproj", "{F4052040-BBD9-49F2-AAB9-32885CF0E89C}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiceCondition", "IfDice\DiceCondition.csproj", "{582D58D2-7C1E-4B7D-9097-7BCD7929A8E5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiceFunctions", "DiceFunctions\DiceFunctions.csproj", "{E5F4661E-49EB-47B8-BB97-C1B16CAA4DA8}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spell", "Spell\Spell.csproj", "{2007C713-646F-4241-98C6-B5C4458C17F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +23,6 @@ Global
 		{FA750BEE-D582-4662-BD91-40887ADBD4FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FA750BEE-D582-4662-BD91-40887ADBD4FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FA750BEE-D582-4662-BD91-40887ADBD4FE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C181EDF6-D8FF-4F3E-9F5E-9DAF0A63DAD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C181EDF6-D8FF-4F3E-9F5E-9DAF0A63DAD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C181EDF6-D8FF-4F3E-9F5E-9DAF0A63DAD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C181EDF6-D8FF-4F3E-9F5E-9DAF0A63DAD9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{54854257-FE1E-46C3-916C-D167EE9A809B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{54854257-FE1E-46C3-916C-D167EE9A809B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{54854257-FE1E-46C3-916C-D167EE9A809B}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -41,10 +31,6 @@ Global
 		{DAAA47CB-6063-4D76-905E-AA94086E708A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DAAA47CB-6063-4D76-905E-AA94086E708A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DAAA47CB-6063-4D76-905E-AA94086E708A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F4052040-BBD9-49F2-AAB9-32885CF0E89C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F4052040-BBD9-49F2-AAB9-32885CF0E89C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F4052040-BBD9-49F2-AAB9-32885CF0E89C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F4052040-BBD9-49F2-AAB9-32885CF0E89C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{582D58D2-7C1E-4B7D-9097-7BCD7929A8E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{582D58D2-7C1E-4B7D-9097-7BCD7929A8E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{582D58D2-7C1E-4B7D-9097-7BCD7929A8E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -53,10 +39,6 @@ Global
 		{E5F4661E-49EB-47B8-BB97-C1B16CAA4DA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E5F4661E-49EB-47B8-BB97-C1B16CAA4DA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E5F4661E-49EB-47B8-BB97-C1B16CAA4DA8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2007C713-646F-4241-98C6-B5C4458C17F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2007C713-646F-4241-98C6-B5C4458C17F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2007C713-646F-4241-98C6-B5C4458C17F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2007C713-646F-4241-98C6-B5C4458C17F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
