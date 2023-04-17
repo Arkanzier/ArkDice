@@ -197,7 +197,7 @@ namespace Character
                     //not counter, for example.
 
             //actions:
-                //just roll - put the total in the log
+                //roll - put the total in the log
                 //heal - increase current hp, to a max of max hp
                 //temphp - set temp hp to the roll, unless it's already higher
                 //counter - count up/down
@@ -205,16 +205,23 @@ namespace Character
                 //potentially add one for recharging/whatever - increase/decrease current uses by the number rolled.
                 //do i need a special case for when there's no action?
 
+            //to do: put in some way to do 'one of these plus also decrement uses.'
+                //just put in a 'UsesChange' attribute or somesuch?
+                    //ignore this / set it to 0 when the action is counter
+            //How feasible would it be to allow multiple different types of options operating off the same pool of uses / charges / whatever?
+                //Would it be easier to link multiple abilities to the same pool, or to have multiple entries for the same ability?
+                    //If shared pools, I could just have names for some and stick a List of them on the character.
+
             //string logString = name+": ";
 
             if (action.ToLower() == "false")
             {
                 //There's nothing to do, therefore we're already done.
-                //We'll list the ability as having been used.
+                //We'll send back a log message saying the ability was used.
 
                 //logString += "used";
                 //return new DiceResponse(true, logString);
-                return new DiceResponse(true, name + ": " + "used");
+                return new DiceResponse(true, name + ": " + " used");
             }
 
             DiceResponse resp = rollDice(stats);
@@ -234,18 +241,18 @@ namespace Character
                     }
                     break;
                 case "heal":
-                    int newHP = stats["health"] + resp.Total;
-                    if (newHP > stats["maxHP"])
+                    int newHP = stats["CurrentHP"] + resp.Total;
+                    if (newHP > stats["MaxHP"])
                     {
-                        resp.Changes["health"] = stats["maxHP"].ToString();
+                        resp.Changes["CurrentHP"] = stats["MaxHP"].ToString();
                     }
                     else if (newHP < 0)
                     {
-                        resp.Changes["health"] = "0";
+                        resp.Changes["CurrentHP"] = "0";
                     }
                     else
                     {
-                        resp.Changes["health"] = (stats["health"] + resp.Total).ToString();
+                        resp.Changes["CurrentHP"] = (stats["CurrentHP"] + resp.Total).ToString();
                     }
                     //to do: check to make sure these indices actually exist.
                     //to do: should changes actually be string,int?
@@ -256,7 +263,7 @@ namespace Character
                             //another bool in DiceResponse?
                     break;
                 case "temphp":
-                    resp.Changes["temphp"] = resp.Total.ToString();
+                    resp.Changes["TempHP"] = resp.Total.ToString();
                     //to do: check if there's already more
                     break;
                 default:
@@ -365,6 +372,41 @@ namespace Character
             return new DiceResponse(true, total, description);
         }
 
+        //Other public functions
+        //-------- -------- -------- -------- -------- -------- -------- -------- 
+        //Recharges the ability or not based on the specified event.
+        public bool MaybeRecharge (string renameme)
+        {
+            if (ShouldRecharge (renameme))
+            {
+                return Recharge();
+            }
+
+            return false;
+        }
+        
+        //Recharges the ability.
+        //to do: add more complexity than just 'all' for amount to recharge.
+        public bool Recharge()
+        {
+            uses = maxUses;
+            return true;
+        }
+
+        //Returns true if the ability should be recharged under the specified event, or false otherwise.
+        public bool ShouldRecharge (string renameme) {
+            renameme = renameme.ToLower();
+
+            if (renameme == recharge.ToLower())
+            {
+                return true;
+            } else if (renameme == "long rest" && recharge.ToLower() == "short rest")
+            {
+                return true;
+            }
+
+            return false;
+        }
 
         //Getters and setters:
         //-------- -------- -------- -------- -------- -------- -------- -------- 

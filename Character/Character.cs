@@ -164,10 +164,22 @@ namespace Character //change to ArkDice?
 
             //Temporarily removed.
             //Doesn't work, I'm guessing it requires public setters to work but I don't want those.
+            
+            if (json == null)
+            {
+                return;
+            }
+
             /*
             try
             {
-                Character copy = JsonSerializer.Deserialize<Character>(json);
+                var deserializerOptions = new JsonSerializerOptions
+                {
+                    NumberHandling = JsonNumberHandling.AllowReadingFromString
+                };
+                //Character? copy = JsonSerializer.Deserialize<Character>(json);
+                CharacterCopy? copy = JsonSerializer.Deserialize<CharacterCopy> (json);
+                //CharacterCopy? copy = JsonSerializer.Deserialize<CharacterCopy> (json, deserializerOptions);
 
                 if (copy == null)
                 {
@@ -179,28 +191,30 @@ namespace Character //change to ArkDice?
                 //copy copy's stuff to here.
                 //do some error checking first?
 
-                id = copy.id;
-                name = copy.name;
-                race = copy.race;
-                maxHP = copy.maxHP;
-                currentHP = copy.currentHP;
-                classes = copy.classes;
-                prof = copy.prof;
-                profBonus = copy.profBonus;
-                stats = copy.stats;
-                saveProfs = copy.saveProfs;
-                skills = copy.skills;
-                abilities = copy.abilities;
-                basicAbilities = copy.basicAbilities;
-                passives = copy.passives;
+                ID = copy.ID;
+                Name = copy.Name;
+                Race = copy.Race;
+                MaxHP = copy.MaxHP;
+                CurrentHP = copy.CurrentHP;
+                Classes = copy.Classes;
+                Prof = copy.Prof;
+                BonusToProf = copy.BonusToProf;
+                Stats = copy.Stats;
+                Saves = copy.Saves;
+                Skills = copy.Skills;
+                Abilities = copy.Abilities;
+                BasicAbilities = copy.BasicAbilities;
+                Passives = copy.Passives;
                 return;
             }
             catch
             {
                 //complain to a log?
+                Name = "Error";
                 return;
             }
             */
+            
 
             //Pull info from the JSON.
             try
@@ -345,7 +359,29 @@ namespace Character //change to ArkDice?
                 }
 
                 //Saves
-                //to do: this is now a purely numeric array, adjust this to compensate
+                if (root.TryGetProperty("Saves", out temp))
+                {
+                    //We don't technically need to do this here, but it won't hurt.
+                    Saves = new int[6];
+                    //JsonElement temp2 = new JsonElement();
+
+                    //to do: check if array length is 6 and complain otherwise?
+                    for (int a = 0; a < temp.GetArrayLength() && a < 6; a++)
+                    {
+                        JsonElement thissave = temp[a];
+
+                        if (thissave.TryGetInt32(out tempint))
+                        {
+                            Saves[a] = tempint;
+                        }
+                        else
+                        {
+                            Saves[a] = 0;
+                            //complain to a log?
+                        }
+                    }
+                }
+                /*
                 if (root.TryGetProperty("Saves", out temp))
                 {
                     Saves = new int[6];
@@ -429,6 +465,7 @@ namespace Character //change to ArkDice?
                         }
                     }
                 }
+                */
 
                 //Skills
                 //to do: set up a way to automatically get these indices.
@@ -598,6 +635,7 @@ namespace Character //change to ArkDice?
 
                     for (int a = 0; a < temp.GetArrayLength(); a++)
                     {
+                        //MessageBox.Show(temp[a].ToString());
                         Ability thisAbility = new Ability(temp[a].ToString());
                         Abilities.Add(thisAbility);
                     }
@@ -611,6 +649,7 @@ namespace Character //change to ArkDice?
             catch
             {
                 //complain to a log file?
+                //Name = "Error";
                 return;
             }
 
@@ -726,7 +765,7 @@ namespace Character //change to ArkDice?
         {
             //We'll use a full array out to 12 for convenience.
             //ret[x] refers to HD of size dx.
-            int[] ret = new int[12];
+            int[] ret = new int[13];
 
             for (int a = 0; a < Classes.Count; a++)
             {
@@ -824,6 +863,23 @@ namespace Character //change to ArkDice?
             return ret;
         }
 
+        //Returns an array of the maximum HD of each size.
+        public int[] GetMaximumHD()
+        {
+            //We'll use a full array out to 12 for convenience.
+            //ret[x] refers to HD of size dx.
+            int[] ret = new int[13];
+
+            for (int a = 0; a < Classes.Count; a++)
+            {
+                int dieSize = Classes[a].HDSize;
+                int numDice = Classes[a].Level;
+                ret[dieSize] += numDice;
+            }
+
+            return ret;
+        }
+
         //Heal the character
         public bool Heal(int amount)
         {
@@ -838,7 +894,83 @@ namespace Character //change to ArkDice?
             return true;
         }
 
-        //modifyTempHP?
+        //Replenishes abilities and, on a long rest, also replenishes HD.
+        //to do: find a better name for this?
+        public bool RechargeAbilities (string type)
+        {
+            type = type.ToLower();
+            if (type == "short rest")
+            {
+                //do short rest stuff
+            }
+            else if (type == "long rest")
+            {
+                //do short + long rest stuff
+                RegainHD("half");
+            } else
+            {
+                //check for stuff matching that name
+            }
+
+            //Replenish abilities as appropriate.
+            for (int a = 0; a < Abilities.Count; a++)
+            {
+                Abilities[a].MaybeRecharge(type);
+            }
+
+            return true;
+        }
+
+        //Replenishes the character's spent HD.
+        public bool RegainHD (string amount)
+        {
+            amount = amount.ToLower();
+
+            if (amount == "half")
+            {
+                //Regain 1/2 of all available HD.
+                int toRegain = Decimal.ToInt32(Math.Floor((decimal)GetCharacterLevel() / 2));
+
+                int[] max = GetMaximumHD();
+                int[] current = GetAvailableHD();
+
+                for (int size = 12; size > 0; size--)
+                {
+                    if (max.Length - 1 < size || current.Length - 1 < size)
+                    {
+                        continue;
+                    }
+                    if (max[size] > current[size])
+                    {
+                        for (int a = 0; a < Classes.Count; a++)
+                        {
+                            if (Classes[a].HDSize == size)
+                            {
+                                int toAdd;
+                                int missingHere = Classes[a].Level - Classes[a].CurrentHD;
+                                if (missingHere >= toRegain)
+                                {
+                                    //We can add all.
+                                    Classes[a].CurrentHD += toRegain;
+                                } else
+                                {
+                                    //We can only add some.
+                                    Classes[a].CurrentHD = Classes[a].Level;
+                                    toRegain -= missingHere;
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+                //need a decently fast way to skip to the largest hd sizes
+                //write a function to get the max hd of each size, like the one that gets current hd?
+                    //or modify that one with another mode.
+            }
+
+            return true;
+        }
 
         //Makes a roll using the character's stats and proficiencies.
         public DiceResponse RollForCharacter(DiceCollection dc)
@@ -984,7 +1116,11 @@ namespace Character //change to ArkDice?
         //Converts the character and all of it's stuff to a JSON string, presumably for saving to a file.
         public override string ToString()
         {
-            string ret = JsonSerializer.Serialize<Character>(this);
+            var serializerOptions = new JsonSerializerOptions
+            {
+                WriteIndented = true
+            };
+            string ret = JsonSerializer.Serialize<Character>(this, serializerOptions);
             return ret;
         }
 
@@ -1023,9 +1159,9 @@ namespace Character //change to ArkDice?
         }
 
         //Calculates the numeric index of the ability with the specified ID.
-        private int GetAbilityIndexByID (string id)
+        private int GetAbilityIndexByID (string abilityID)
         {
-            string compare = ID.ToLower();
+            string compare = abilityID.ToLower();
             for (int a = 0; a < Abilities.Count; a++)
             {
                 string compare2 = Abilities[a].getID().ToLower();
@@ -1087,17 +1223,21 @@ namespace Character //change to ArkDice?
             int tempint = 0;
 
             //Consider removing support for changing the character's name or ID.
-            if (changes.ContainsKey ("id")) { ID = changes["id"]; }
-            if (changes.ContainsKey ("name")) { Name = changes["name"]; }
-            if (changes.ContainsKey ("race")) { Race = changes["race"]; }
+            if (changes.ContainsKey ("ID")) { ID = changes["ID"]; }
+            if (changes.ContainsKey ("Name")) { Name = changes["Name"]; }
+            if (changes.ContainsKey ("Race")) { Race = changes["Race"]; }
 
-            if (changes.ContainsKey("maxHP") && Int32.TryParse(changes["maxHP"], out tempint))
+            if (changes.ContainsKey("MaxHP") && Int32.TryParse(changes["MaxHP"], out tempint))
             {
                 MaxHP = tempint;
             }
-            if (changes.ContainsKey("currentHP") && Int32.TryParse(changes["currentHP"], out tempint))
+            if (changes.ContainsKey("CurrentHP") && Int32.TryParse(changes["CurrentHP"], out tempint))
             {
                 CurrentHP = tempint;
+            }
+            if (changes.ContainsKey("TempHP") && Int32.TryParse(changes["TempHP"], out tempint))
+            {
+                TempHP = tempint;
             }
 
             //...

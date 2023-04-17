@@ -139,8 +139,10 @@ namespace Simple_Dice_Roller
 
             }
 
+            //Update everything in case stuff changed.
             DisplayCharacter(loadedCharacter);
-            //do I need to reload loadedCharacter first?
+            DisplayClassList(loadedCharacter);
+            UpdateHealthDisplay();
         }
 
         //Dice roller functions: adding dice.
@@ -511,9 +513,50 @@ namespace Simple_Dice_Roller
             UpdateHealthDisplay();
         }
 
+        private void TestButton_Click(object sender, EventArgs e)
+        {
+            //string resp = loadedCharacter.ToString();
+            //MessageBox.Show(resp);
+            //loadedCharacter.RegainHD("half");
+            loadedCharacter.RechargeAbilities("long rest");
+            DisplayClassList(loadedCharacter);
+            DisplayAbilities(loadedCharacter);
+        }
+
 
         //Functions that do stuff to the form:
         //-------- -------- -------- -------- -------- -------- -------- -------- 
+        //Display a character's abilities in the abilities tab.
+        private void DisplayAbilities (Character.Character character)
+        {
+            AbilitiesArea.Rows.Clear();
+
+            for (int a = 0; a < character.GetAbilities().Count(); a++)
+            {
+                Ability thisAbility = character.GetAbilities()[a];
+                string id = thisAbility.getID();
+                string name = thisAbility.getName();
+                string text = thisAbility.getText();
+                string recharge = thisAbility.getRecharge();
+                string dice = thisAbility.getDiceString();
+                string usesString = thisAbility.getUsesString();
+
+                string[] allOfRow = { (a + 1).ToString(), id, name, text, recharge, dice, usesString, "Use", "+1", "-1" };
+                AbilitiesArea.Rows.Add(allOfRow);
+
+                //Clicks handled by AbilitiesArea_CellContentClick()
+
+                //To do:
+                //Consider making the default sort order column hidden.
+                //How will the user indicate they want the grid sorted by it, then?
+                //Actually hook up the abilities.
+                //Add an invisible column for the ID and do it by that?
+                //Eventually: hide the text column and make it appear when the user clicks the row.
+                //And disappear when they click another row.
+                //Make sure the user can scroll horizontally when relevant.
+            }
+        }
+
         //Display a character's info in the character tab.
         private void DisplayCharacter(Character.Character character)
         {
@@ -543,33 +586,7 @@ namespace Simple_Dice_Roller
 
             DisplayClassList(character);
 
-            //Abilities
-            AbilitiesArea.Rows.Clear();
-
-            for (int a = 0; a < character.GetAbilities().Count(); a++)
-            {
-                Ability thisAbility = character.GetAbilities()[a];
-                string id = thisAbility.getID();
-                string name = thisAbility.getName();
-                string text = thisAbility.getText();
-                string recharge = thisAbility.getRecharge();
-                string dice = thisAbility.getDiceString();
-                string usesString = thisAbility.getUsesString();
-
-                string[] allOfRow = { (a + 1).ToString(), id, name, text, recharge, dice, usesString, "Use", "+1", "-1" };
-                AbilitiesArea.Rows.Add(allOfRow);
-
-                //Clicks handled by AbilitiesArea_CellContentClick()
-
-                //To do:
-                //Consider making the default sort order column hidden.
-                //How will the user indicate they want the grid sorted by it, then?
-                //Actually hook up the abilities.
-                //Add an invisible column for the ID and do it by that?
-                //Eventually: hide the text column and make it appear when the user clicks the row.
-                //And disappear when they click another row.
-                //Make sure the user can scroll horizontally when relevant.
-            }
+            DisplayAbilities(character);
 
             //Generic abilities
             BasicAbilitiesArea.Rows.Clear();
@@ -712,12 +729,6 @@ namespace Simple_Dice_Roller
         {
             string filepath = "C:\\Users\\david\\Programs\\Simple Dice Roller\\Tiriel.char";
             loadedCharacter.Save(filepath);
-        }
-
-        private void TestButton_Click(object sender, EventArgs e)
-        {
-            string resp = loadedCharacter.ToString();
-            MessageBox.Show(resp);
         }
     }
 }
