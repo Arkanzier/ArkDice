@@ -7,35 +7,37 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Xml.Schema;
 using ArkDice;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Character
 {
     public class Ability
     {
-        public string id { get; private set; }
-        public string name { get; private set; }
+        public string ID { get; private set; }
+        public string Name { get; private set; }
 
-        public string action { get; private set; }
-        public List<DiceCollection> dice { get; private set; }
+        public string Action { get; private set; }
+        public List<DiceCollection> Dice { get; private set; }
 
-        public int uses{ get; private set; }
+        //Number of currently available uses / charges / whatever.
+        public int Uses{ get; private set; }
             //if max uses < 0, unlimited uses?
                 //require that current uses = 0?
-        public int maxUses { get; private set; }
-        public int counter { get; private set; }
+        //Maximum number of uses / charges / whatever.
+        public int MaxUses { get; private set; }
+        //How the uses change with each activation.
+        public int UsesChange { get; private set; }
 
-        //These two are used by the program to temporarily store values that get generated.
-        public int total { get; private set; }
-        public string description { get; private set; }
-        public Dictionary<string, string> changes { get; private set; }
-        //private something changes;
-        //create a Character class instance and add a function to add two together?
+        //These three are used by the program to temporarily store values that get generated.
+        public int Total { get; private set; }
+        public string Description { get; private set; }
+        public Dictionary<string, string> Changes { get; private set; }
 
-        public string recharge{ get; private set; }
+        public string RechargeCondition{ get; private set; }
         //consider adding a rechargeAmount variable.
             //Determines how much the thing recharges, when it recharges.
             //-1 for all? Just do 9999?
-        public string text{ get; private set; }
+        public string Text{ get; private set; }
 
         //consider adding displayTier or something similar.
             //Decide how I want sorting to work.
@@ -82,42 +84,33 @@ namespace Character
 
         //Constructor(s):
         //-------- -------- -------- -------- -------- -------- -------- -------- 
-        public Ability(string id, string text)
+        public Ability ()
         {
-            this.id = id;
-            this.action = "";
-            this.name = "";
+            ID = "";
+            Action = "";
+            Name = "";
 
-            this.uses = 0;
-            this.maxUses = 0;
-            this.counter = 0;
+            Uses = 0;
+            MaxUses = 0;
+            UsesChange = 0;
 
-            this.text = text;
-            this.dice = new List<DiceCollection>();
-            this.recharge = "";
+            Text = "";
+            Dice = new List<DiceCollection>();
+            RechargeCondition = "";
 
-            this.total = 0;
-            this.description = "";
-            this.changes = new Dictionary<string, string>();
+            Total = 0;
+            Description = "";
+            Changes = new Dictionary<string, string>();
         }
-
-        public Ability(string json)
+        public Ability(string id, string text)
+            : this ()
         {
-            //Start with things zeroed out.
-            this.id = "";
-            this.name = "";
-            this.text = "";
-            this.dice = new List<DiceCollection>();
-            this.action = "";
-            this.recharge = "";
-            this.uses = 0;
-            this.maxUses = 0;
-            this.counter = 0;
-
-            this.total = 0;
-            this.description = "";
-            this.changes = new Dictionary<string, string>();
-
+            this.ID = id;
+            this.Text = text;
+        }
+        public Ability(string json)
+            : this()
+        {
             try
             {
                 JsonDocument doc = JsonDocument.Parse(json);
@@ -126,54 +119,54 @@ namespace Character
                 JsonElement temp = new JsonElement();
                 int tempint = 0;
 
-                if (root.TryGetProperty("id", out temp))
+                if (root.TryGetProperty("ID", out temp))
                 {
-                    id = temp.ToString();
+                    ID = temp.ToString();
                 }
-                if (root.TryGetProperty("name", out temp))
+                if (root.TryGetProperty("Name", out temp))
                 {
-                    name = temp.ToString();
+                    Name = temp.ToString();
                 }
-                if (root.TryGetProperty("text", out temp))
+                if (root.TryGetProperty("Text", out temp))
                 {
-                    text = temp.ToString();
+                    Text = temp.ToString();
                 }
-                if (root.TryGetProperty("recharges", out temp))
+                if (root.TryGetProperty("RechargeCondition", out temp))
                 {
-                    recharge = temp.ToString();
+                    RechargeCondition = temp.ToString();
                 }
-                if (root.TryGetProperty("action", out temp))
+                if (root.TryGetProperty("Action", out temp))
                 {
-                    action = temp.ToString();
-                }
-
-                if (root.TryGetProperty("maxUses", out temp))
-                {
-                    if (Int32.TryParse(temp.ToString(), out tempint))
-                    {
-                        maxUses = tempint;
-                    }
-                }
-                if (root.TryGetProperty("currentUses", out temp))
-                {
-                    if (Int32.TryParse(temp.ToString(), out tempint))
-                    {
-                        uses = tempint;
-                    }
-                }
-                if (root.TryGetProperty("counter", out temp))
-                {
-                    if (Int32.TryParse(temp.ToString(), out tempint))
-                    {
-                        counter = tempint;
-                    }
+                    Action = temp.ToString();
                 }
 
-                if (root.TryGetProperty("dice", out temp))
+                if (root.TryGetProperty("MaxUses", out temp))
+                {
+                    if (Int32.TryParse(temp.ToString(), out tempint))
+                    {
+                        MaxUses = tempint;
+                    }
+                }
+                if (root.TryGetProperty("CurrentUses", out temp))
+                {
+                    if (Int32.TryParse(temp.ToString(), out tempint))
+                    {
+                        Uses = tempint;
+                    }
+                }
+                if (root.TryGetProperty("UsesChange", out temp))
+                {
+                    if (Int32.TryParse(temp.ToString(), out tempint))
+                    {
+                        UsesChange = tempint;
+                    }
+                }
+
+                if (root.TryGetProperty("Dice", out temp))
                 {
                     string temp2 = temp.ToString();
                     DiceCollection aaa = new DiceCollection(temp2);
-                    dice = new List<DiceCollection> { aaa };
+                    Dice = new List<DiceCollection> { aaa };
                 }
             }
             catch
@@ -186,47 +179,77 @@ namespace Character
         //Functions relating to triggering the ability:
         //-------- -------- -------- -------- -------- -------- -------- -------- 
         //Triggers this ability.
-        public DiceResponse use (Dictionary<string, int> stats)
+        public DiceResponse Use (Dictionary<string, int> stats)
         {
-            //to do: make sure this can properly pass along the stats list.
-            //general structure:
-                //always roll?
-                //then apply the total/etc to the specified action.
-            //to do: should using this decrement it's uses remaining?
-                //only do this for some actions.
-                    //not counter, for example.
-
             //actions:
-                //roll - put the total in the log
-                //heal - increase current hp, to a max of max hp
-                //temphp - set temp hp to the roll, unless it's already higher
-                //counter - count up/down
-                    //add a variable to store a counter, so I don't have to use current uses?
-                //potentially add one for recharging/whatever - increase/decrease current uses by the number rolled.
-                //do i need a special case for when there's no action?
+            //roll - put the total in the log
+            //heal - increase current hp, to a max of max hp
+            //temphp - set temp hp to the roll, unless it's already higher
+            //counter - count up/down
+            //add a variable to store a counter, so I don't have to use current uses?
+            //potentially add one for recharging/whatever - increase/decrease current uses by the number rolled.
+            //do i need a special case for when there's no action?
+
+            //to do: add an option for putting in a log message with the die roll, but nothing else.
 
             //to do: put in some way to do 'one of these plus also decrement uses.'
-                //just put in a 'UsesChange' attribute or somesuch?
-                    //ignore this / set it to 0 when the action is counter
+            //just put in a 'UsesChange' attribute or somesuch?
+            //ignore this / set it to 0 when the action is counter
             //How feasible would it be to allow multiple different types of options operating off the same pool of uses / charges / whatever?
-                //Would it be easier to link multiple abilities to the same pool, or to have multiple entries for the same ability?
-                    //If shared pools, I could just have names for some and stick a List of them on the character.
+            //Would it be easier to link multiple abilities to the same pool, or to have multiple entries for the same ability?
+            //If shared pools, I could just have names for some and stick a List of them on the character.
 
             //string logString = name+": ";
 
-            if (action.ToLower() == "false")
+            //First we'll mess with the remaining uses.
+            //Let's store how many we use in case that's relevant at some point.
+            int usesUsed;
+            if (UsesChange == 0)
+            {
+                //We're done with this part, that was easy.
+                usesUsed = 0;
+            }
+            else if (UsesChange < 0)
+            {
+                //Attempt to reduce the number of uses remaining.
+                if (Uses + UsesChange < 0)
+                {
+                    //There aren't enough uses left to use this ability.
+                    return new DiceResponse(false, "Not enough uses for " + Name);
+                    usesUsed = Uses;
+                    Uses = 0;
+                } else
+                {
+                    Uses += UsesChange;
+                    usesUsed = UsesChange;
+                }
+            } else if (UsesChange > 0)
+            {
+                //Attempt to increase the number of uses / charges.
+                if (Uses + UsesChange > MaxUses)
+                {
+                    usesUsed = MaxUses - Uses;
+                    Uses = MaxUses;
+                } else
+                {
+                    Uses += UsesChange;
+                    usesUsed = UsesChange;
+                }
+            }
+
+            if (Action.ToLower() == "false")
             {
                 //There's nothing to do, therefore we're already done.
                 //We'll send back a log message saying the ability was used.
 
                 //logString += "used";
                 //return new DiceResponse(true, logString);
-                return new DiceResponse(true, name + ": " + " used");
+                return new DiceResponse(true, Name + ": " + " used");
             }
 
-            DiceResponse resp = rollDice(stats);
+            DiceResponse resp = RollDice(stats);
 
-            switch (action)
+            switch (Action)
             {
                 case "roll":
                     //We just do the roll and let it get logged.
@@ -234,10 +257,10 @@ namespace Character
                 case "counter":
                     //We add the result of the roll to the remaining uses.
                     //to do: consider splitting counters off to another variable, and adding "recharge" or something as an action.
-                    uses += resp.Total;
-                    if (uses > maxUses)
+                    Uses += resp.Total;
+                    if (Uses > MaxUses)
                     {
-                        uses = maxUses;
+                        Uses = MaxUses;
                     }
                     break;
                 case "heal":
@@ -254,7 +277,6 @@ namespace Character
                     {
                         resp.Changes["CurrentHP"] = (stats["CurrentHP"] + resp.Total).ToString();
                     }
-                    //to do: check to make sure these indices actually exist.
                     //to do: should changes actually be string,int?
                         //will i ever actually change a non-int variable with this?
                         //abilities can change themselves now, so nbd there.
@@ -270,8 +292,6 @@ namespace Character
                     //There's apparently nothing to do, so we're done.
                     return new DiceResponse(true);
             }
-
-            //MessageBox.Show(resp.description);
 
             //resp.description = name + "     " + resp.description;
 
@@ -325,51 +345,51 @@ namespace Character
         //    //idea: change the returned boolean in these from success/failure to indicating whether or not there is a description to display.
         //}
 
-        private DiceResponse rollDice(Dictionary<string, int> stats)
+        private DiceResponse RollDice(Dictionary<string, int> stats)
         {
-            total = 0;
-            description = name+": ";
-            changes = new Dictionary<string, string>();
+            Total = 0;
+            Description = Name+": ";
+            Changes = new Dictionary<string, string>();
 
-            foreach (DiceCollection d in this.dice)
+            foreach (DiceCollection d in this.Dice)
             {
                 DiceResponse resp = d.roll(stats);
                 if (resp.Success == false)
                 {
                     //to do: decide what I want to do here.
-                    description += "error rolling dice";
+                    Description += "error rolling dice";
                 }
                 else
                 {
-                    total += resp.Total;
-                    description += resp.Description;
+                    Total += resp.Total;
+                    Description += resp.Description;
                 }
             }
 
-            return new DiceResponse(true, total, description);
+            return new DiceResponse(true, Total, Description);
         }
 
-        private DiceResponse heal ()
+        private DiceResponse Heal ()
         {
             //Name and ID must be changes for this to work.
             //changes = new Character("changes", "changes");
-            changes = new Dictionary<string, string> ();
+            Changes = new Dictionary<string, string> ();
             int totalHealed = 0;
 
-            foreach (DiceCollection d in this.dice)
+            foreach (DiceCollection d in this.Dice)
             {
                 DiceResponse resp = d.roll();
-                total += resp.Total;
-                description += resp.Description;
+                Total += resp.Total;
+                Description += resp.Description;
 
-                totalHealed += total;
+                totalHealed += Total;
             }
 
-            changes["currentHP"] = totalHealed.ToString();
+            Changes["CurrentHP"] = totalHealed.ToString();
 
             //return new DiceResponse(true, total, description, changes);
             //still deciding how to handle changes in DiceResponse, add this when I have that nailed down.
-            return new DiceResponse(true, total, description);
+            return new DiceResponse(true, Total, Description);
         }
 
         //Other public functions
@@ -389,7 +409,7 @@ namespace Character
         //to do: add more complexity than just 'all' for amount to recharge.
         public bool Recharge()
         {
-            uses = maxUses;
+            Uses = MaxUses;
             return true;
         }
 
@@ -397,10 +417,10 @@ namespace Character
         public bool ShouldRecharge (string renameme) {
             renameme = renameme.ToLower();
 
-            if (renameme == recharge.ToLower())
+            if (renameme == RechargeCondition.ToLower())
             {
                 return true;
-            } else if (renameme == "long rest" && recharge.ToLower() == "short rest")
+            } else if (renameme == "long rest" && RechargeCondition.ToLower() == "short rest")
             {
                 return true;
             }
@@ -410,37 +430,12 @@ namespace Character
 
         //Getters and setters:
         //-------- -------- -------- -------- -------- -------- -------- -------- 
-        public string getID ()
-        {
-            return id;
-        }
-        public string getName()
-        {
-            return name;
-        }
-        public string getText()
-        {
-            return text;
-        }
-        public int getTotal()
-        {
-            return total;
-        }
-        public string getDescription()
-        {
-            return description;
-        }
-        public string getRecharge()
-        {
-            return recharge;
-        }
-
         public string getDiceString()
         {
             //We're going to temporarily just list the first dice string.
-            if (dice.Count > 0)
+            if (Dice.Count > 0)
             {
-                return dice[0].getDiceString();
+                return Dice[0].getDiceString();
             } else
             {
                 return "none";
@@ -449,7 +444,8 @@ namespace Character
 
         public string getUsesString ()
         {
-            return uses.ToString() + " / " + maxUses.ToString();
+            return Uses.ToString() + " / " + MaxUses.ToString();
         }
+        
     }
 }

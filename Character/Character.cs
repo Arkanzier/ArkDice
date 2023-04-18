@@ -1140,7 +1140,7 @@ namespace Character //change to ArkDice?
         {
             Ability ability = Abilities[abilityNum];
 
-            DiceResponse resp = ability.use(GetGeneralStatistics());
+            DiceResponse resp = ability.Use(GetGeneralStatistics());
 
             IncorporateChanges(resp.Changes);
 
@@ -1164,7 +1164,7 @@ namespace Character //change to ArkDice?
             string compare = abilityID.ToLower();
             for (int a = 0; a < Abilities.Count; a++)
             {
-                string compare2 = Abilities[a].getID().ToLower();
+                string compare2 = Abilities[a].ID.ToLower();
                 if (compare == compare2)
                 {
                     return a;

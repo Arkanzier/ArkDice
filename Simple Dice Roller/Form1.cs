@@ -534,10 +534,10 @@ namespace Simple_Dice_Roller
             for (int a = 0; a < character.GetAbilities().Count(); a++)
             {
                 Ability thisAbility = character.GetAbilities()[a];
-                string id = thisAbility.getID();
-                string name = thisAbility.getName();
-                string text = thisAbility.getText();
-                string recharge = thisAbility.getRecharge();
+                string id = thisAbility.ID;
+                string name = thisAbility.Name;
+                string text = thisAbility.Text;
+                string recharge = thisAbility.RechargeCondition;
                 string dice = thisAbility.getDiceString();
                 string usesString = thisAbility.getUsesString();
 
@@ -595,10 +595,10 @@ namespace Simple_Dice_Roller
             {
                 Ability thisAbility = basicAbilities[a];
 
-                string id = thisAbility.getID();
-                string name = thisAbility.getName();
-                string text = thisAbility.getText();
-                string recharge = thisAbility.getRecharge();
+                string id = thisAbility.ID;
+                string name = thisAbility.Name;
+                string text = thisAbility.Text;
+                string recharge = thisAbility.RechargeCondition;
                 string dice = thisAbility.getDiceString();
                 //usesString?
 
