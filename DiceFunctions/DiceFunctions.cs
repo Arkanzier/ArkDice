@@ -26,27 +26,75 @@
             }
         }
 
+        //Takes in a string referring to a type of roll and returns the stat used for it.
+        public static string GetStatForRoll (string name)
+        {
+            name = name.ToLower();
+
+            //If this is a skill, we can take the easy way out.
+            string temp = getStatForSkill (name);
+            if (temp != "")
+            {
+                //This is a skill, we're done.
+                return temp;
+            }
+
+            //We're dealing with something else.
+            switch (name)
+            {
+                case "str":
+                case "strength":
+                case "strsave":
+                    return "strength";
+                case "dex":
+                case "dexterity":
+                case "dexsave":
+                    return "dexterity";
+                case "con":
+                case "constitution":
+                case "consave":
+                case "concentration":
+                    return "constitution";
+                case "int":
+                case "intelligence":
+                case "intsave":
+                    return "intelligence";
+                case "wis":
+                case "wisdom":
+                case "wissave":
+                    return "wisdom";
+                case "cha":
+                case "charisma":
+                case "chasave":
+                    return "charisma";
+                default:
+                    return "";
+            }
+        }
+
         //Takes in the name of a skill and spits out the name of the stat typically associated to it.
         //to do: load this from a file
         //to do: create a version that returns an int?
         public static string getStatForSkill(string skill)
         {
-            string moddedSkill = skill.ToLower();
-            switch (moddedSkill)
+            skill = skill.ToLower();
+            switch (skill)
             {
                 case "athletics":
                     return "strength";
                 case "acrobatics":
                 case "sleight of hand":
+                case "sleightofhand":
                 case "stealth":
                     return "dexterity";
                 case "arcana":
                 case "history":
                 case "investigation":
                 case "nature":
-                case "religion;":
+                case "religion":
                     return "intelligence";
                 case "animal handling":
+                case "animalhandling":
                 case "insight":
                 case "medicine":
                 case "perception":

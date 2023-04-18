@@ -1450,5 +1450,121 @@ namespace Character //change to ArkDice?
         {
             return this.BasicAbilities;
         }
+
+        //Calculates and returns the flat bonus the character gets on the specified roll.
+        public int GetBonusForRoll (string roll)
+        {
+            int ret = 0;
+
+            //If this is a skill, this will tell us it's stat.
+            //If this isn't a skill, this will send back empty string.
+            string stat = DiceFunctions.GetStatForRoll(roll);
+
+            //Add appropriate stat mod.
+            if (stat == "strength")
+            {
+                ret += GetStrMod();
+            }
+            else if (stat == "dexterity")
+            {
+                ret += GetDexMod();
+            }
+            else if (stat == "constitution")
+            {
+                //There are no Con skills, but we'll leave that in just in case of houserules.
+                ret += GetConMod();
+            }
+            else if (stat == "intelligence")
+            {
+                ret += GetIntMod();
+            }
+            else if (stat == "wisdom")
+            {
+                ret += GetWisMod();
+            }
+            else if (stat == "charisma")
+            {
+                ret += GetChaMod();
+            } else
+            {
+                //Did someone forgot to add something to GetStatForRoll()?
+                //Don't add any stat.
+            }
+
+            //Add prof as appropriate.
+            decimal profMult = GetProfForRoll(roll);
+            ret += (int)Math.Floor((Prof + BonusToProf) * profMult);
+
+            //Misc bonuses not currently supported.
+
+            return ret;
+        }
+
+        public string GetBonusForRollAsString (string roll)
+        {
+            int bonus = GetBonusForRoll(roll);
+
+            if (bonus < 0)
+            {
+                return bonus.ToString();
+            } else
+            {
+                return "+" + bonus.ToString();
+            }
+        }
+
+        //Calculates and returns the multiplier that should be used for the character's proficiency bonus on a roll.
+        //Non-proficiency returns 0, proficiency returns 1, and expertise returns 2.
+        //This is decimal instead of int because 0.5x proficiency might pop up in houserules.
+        public decimal GetProfForRoll (string roll)
+        {
+            string lower = roll.ToLower();
+
+            //Stats are always 0.
+
+            //Saves:
+            if (lower == "strsave")
+            {
+                return Saves[0];
+            }
+            else if (lower == "dexsave")
+            {
+                return Saves[1];
+            }
+            else if (lower == "consave" || lower == "concentration")
+            {
+                return Saves[2];
+            }
+            else if (lower == "intsave")
+            {
+                return Saves[3];
+            }
+            else if (lower == "wissave")
+            {
+                return Saves[4];
+            } else if (lower == "chasave")
+            {
+                return Saves[5];
+            }
+            //Death saves are always 0.
+
+            //Skills:
+            if (Skills.TryGetValue(roll, out var skill))
+            {
+                return skill;
+            }
+            //to do: consider replacing this with a for loop comparing ToLower() versions against each other.
+                //Is there a case insensitive version of TryGetValue()?
+
+            //Weapons go here.
+
+            //Armor goes here?
+
+            //Misc profs go here.
+                //Musical instruments, tools, etc.
+
+            //If we get this far, assume no proficiency.
+            return 0;
+        }
     }
 }

@@ -527,7 +527,7 @@ namespace Simple_Dice_Roller
         //Functions that do stuff to the form:
         //-------- -------- -------- -------- -------- -------- -------- -------- 
         //Display a character's abilities in the abilities tab.
-        private void DisplayAbilities (Character.Character character)
+        private void DisplayAbilities(Character.Character character)
         {
             AbilitiesArea.Rows.Clear();
 
@@ -581,6 +581,7 @@ namespace Simple_Dice_Roller
             Char_IntMod.Text = character.GetIntMod().ToString();
             Char_WisMod.Text = character.GetWisMod().ToString();
             Char_ChaMod.Text = character.GetChaMod().ToString();
+            UpdateStatButtonLabels();
 
             Char_Prof.Text = character.GetProf().ToString();
 
@@ -679,6 +680,48 @@ namespace Simple_Dice_Roller
             LastRollDiceString.Text = lastDice.getDiceString();
         }
 
+        //Sets the appropriate bonuses into the labels for the various stat, save, and skill buttons.
+        private void UpdateStatButtonLabels()
+        {
+            //Stats:
+            Button_Str.Text = "Strength " + loadedCharacter.GetBonusForRollAsString("str");
+            Button_Dex.Text = "Dexterity " + loadedCharacter.GetBonusForRollAsString("dex");
+            Button_Con.Text = "Constitution " + loadedCharacter.GetBonusForRollAsString("con");
+            Button_Int.Text = "Intelligence " + loadedCharacter.GetBonusForRollAsString("int");
+            Button_Wis.Text = "Wisdom " + loadedCharacter.GetBonusForRollAsString("wis");
+            Button_Cha.Text = "Charisma " + loadedCharacter.GetBonusForRollAsString("cha");
+
+            //Saves:
+            Button_StrSave.Text = "Save " + loadedCharacter.GetBonusForRollAsString("strsave");
+            Button_DexSave.Text = "Save " + loadedCharacter.GetBonusForRollAsString("dexsave");
+            Button_ConSave.Text = "Save " + loadedCharacter.GetBonusForRollAsString("consave");
+            Button_IntSave.Text = "Save " + loadedCharacter.GetBonusForRollAsString("intsave");
+            Button_WisSave.Text = "Save " + loadedCharacter.GetBonusForRollAsString("wissave");
+            Button_ChaSave.Text = "Save " + loadedCharacter.GetBonusForRollAsString("chasave");
+
+            //Skills:
+            Button_Athletics.Text = "Athletics " + loadedCharacter.GetBonusForRollAsString("Athletics");
+            Button_Acrobatics.Text = "Acrobatics " + loadedCharacter.GetBonusForRollAsString("Acrobatics");
+            Button_SleightOfHand.Text = "Sleight of Hand " + loadedCharacter.GetBonusForRollAsString("Sleight of hand");
+            Button_Stealth.Text = "Stealth " + loadedCharacter.GetBonusForRollAsString("Stealth");
+            Button_Arcana.Text = "Arcana " + loadedCharacter.GetBonusForRollAsString("Arcana");
+            Button_History.Text = "History " + loadedCharacter.GetBonusForRollAsString("History");
+            Button_Investigation.Text = "Investigation " + loadedCharacter.GetBonusForRollAsString("Investigation");
+            Button_Nature.Text = "Nature " + loadedCharacter.GetBonusForRollAsString("Nature");
+            Button_Religion.Text = "Religion " + loadedCharacter.GetBonusForRollAsString("Religion");
+            Button_AnimalHandling.Text = "Animal Handling " + loadedCharacter.GetBonusForRollAsString("Animal Handling");
+            Button_Insight.Text = "Insight " + loadedCharacter.GetBonusForRollAsString("Insight");
+            Button_Medicine.Text = "Medicine " + loadedCharacter.GetBonusForRollAsString("Medicine");
+            Button_Perception.Text = "Perception " + loadedCharacter.GetBonusForRollAsString("Perception");
+            Button_Survival.Text = "Survival " + loadedCharacter.GetBonusForRollAsString("Survival");
+            Button_Deception.Text = "Deception " + loadedCharacter.GetBonusForRollAsString("Deception");
+            Button_Intimidation.Text = "Intimidation " + loadedCharacter.GetBonusForRollAsString("Intimidation");
+            Button_Performance.Text = "Performance " + loadedCharacter.GetBonusForRollAsString("Performance");
+            Button_Persuasion.Text = "Persuasion " + loadedCharacter.GetBonusForRollAsString("Persuasion");
+
+
+        }
+
         //function to update the last die roll stored + indicator?
 
 
@@ -729,6 +772,11 @@ namespace Simple_Dice_Roller
         {
             string filepath = "C:\\Users\\david\\Programs\\Simple Dice Roller\\Tiriel.char";
             loadedCharacter.Save(filepath);
+        }
+
+        private void CharacterTab_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

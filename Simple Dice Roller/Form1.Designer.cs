@@ -103,6 +103,13 @@
             LastRollLabel = new Label();
             CharacterTab = new TabPage();
             ClassesArea = new DataGridView();
+            ClassName = new DataGridViewTextBoxColumn();
+            Subclass = new DataGridViewTextBoxColumn();
+            Level = new DataGridViewTextBoxColumn();
+            HD = new DataGridViewTextBoxColumn();
+            SpendHDButton = new DataGridViewButtonColumn();
+            AddHDButton = new DataGridViewButtonColumn();
+            SubtractHDButton = new DataGridViewButtonColumn();
             Char_ChaMod = new Label();
             Char_WisMod = new Label();
             Char_IntMod = new Label();
@@ -159,7 +166,6 @@
             Button_Athletics = new Button();
             Button_StrSave = new Button();
             Button_Str = new Button();
-            label1 = new Label();
             BasicAbilitiesArea = new DataGridView();
             Basic_NumberCol = new DataGridViewTextBoxColumn();
             Basic_IDCol = new DataGridViewTextBoxColumn();
@@ -193,13 +199,6 @@
             MagicTab = new TabPage();
             label8 = new Label();
             label7 = new Label();
-            ClassName = new DataGridViewTextBoxColumn();
-            Subclass = new DataGridViewTextBoxColumn();
-            Level = new DataGridViewTextBoxColumn();
-            HD = new DataGridViewTextBoxColumn();
-            SpendHDButton = new DataGridViewButtonColumn();
-            AddHDButton = new DataGridViewButtonColumn();
-            SubtractHDButton = new DataGridViewButtonColumn();
             MainTabArea.SuspendLayout();
             DiceTab.SuspendLayout();
             CharacterTab.SuspendLayout();
@@ -255,7 +254,7 @@
             MainTabArea.Location = new Point(12, 12);
             MainTabArea.Name = "MainTabArea";
             MainTabArea.SelectedIndex = 0;
-            MainTabArea.Size = new Size(749, 560);
+            MainTabArea.Size = new Size(780, 560);
             MainTabArea.TabIndex = 4;
             // 
             // DiceTab
@@ -333,7 +332,7 @@
             DiceTab.Location = new Point(4, 24);
             DiceTab.Name = "DiceTab";
             DiceTab.Padding = new Padding(3);
-            DiceTab.Size = new Size(741, 532);
+            DiceTab.Size = new Size(772, 532);
             DiceTab.TabIndex = 0;
             DiceTab.Text = "Dice";
             DiceTab.UseVisualStyleBackColor = true;
@@ -1121,7 +1120,6 @@
             CharacterTab.Controls.Add(Button_Athletics);
             CharacterTab.Controls.Add(Button_StrSave);
             CharacterTab.Controls.Add(Button_Str);
-            CharacterTab.Controls.Add(label1);
             CharacterTab.Controls.Add(BasicAbilitiesArea);
             CharacterTab.Controls.Add(Char_Cha);
             CharacterTab.Controls.Add(Char_Wis);
@@ -1138,10 +1136,11 @@
             CharacterTab.Location = new Point(4, 24);
             CharacterTab.Name = "CharacterTab";
             CharacterTab.Padding = new Padding(3);
-            CharacterTab.Size = new Size(741, 532);
+            CharacterTab.Size = new Size(772, 532);
             CharacterTab.TabIndex = 1;
             CharacterTab.Text = "Character";
             CharacterTab.UseVisualStyleBackColor = true;
+            CharacterTab.Click += CharacterTab_Click;
             // 
             // ClassesArea
             // 
@@ -1156,10 +1155,50 @@
             ClassesArea.TabIndex = 78;
             ClassesArea.CellContentClick += ClassesArea_CellContentClick;
             // 
+            // ClassName
+            // 
+            ClassName.HeaderText = "Class";
+            ClassName.Name = "ClassName";
+            // 
+            // Subclass
+            // 
+            Subclass.HeaderText = "Subclass";
+            Subclass.Name = "Subclass";
+            // 
+            // Level
+            // 
+            Level.HeaderText = "Level";
+            Level.Name = "Level";
+            Level.Width = 40;
+            // 
+            // HD
+            // 
+            HD.HeaderText = "HD";
+            HD.Name = "HD";
+            HD.Width = 60;
+            // 
+            // SpendHDButton
+            // 
+            SpendHDButton.HeaderText = "Spend";
+            SpendHDButton.Name = "SpendHDButton";
+            SpendHDButton.Width = 50;
+            // 
+            // AddHDButton
+            // 
+            AddHDButton.HeaderText = "+1";
+            AddHDButton.Name = "AddHDButton";
+            AddHDButton.Width = 25;
+            // 
+            // SubtractHDButton
+            // 
+            SubtractHDButton.HeaderText = "-1";
+            SubtractHDButton.Name = "SubtractHDButton";
+            SubtractHDButton.Width = 25;
+            // 
             // Char_ChaMod
             // 
             Char_ChaMod.AutoSize = true;
-            Char_ChaMod.Location = new Point(431, 180);
+            Char_ChaMod.Location = new Point(664, 191);
             Char_ChaMod.Name = "Char_ChaMod";
             Char_ChaMod.Size = new Size(51, 15);
             Char_ChaMod.TabIndex = 77;
@@ -1168,7 +1207,7 @@
             // Char_WisMod
             // 
             Char_WisMod.AutoSize = true;
-            Char_WisMod.Location = new Point(341, 181);
+            Char_WisMod.Location = new Point(538, 191);
             Char_WisMod.Name = "Char_WisMod";
             Char_WisMod.Size = new Size(49, 15);
             Char_WisMod.TabIndex = 76;
@@ -1177,7 +1216,7 @@
             // Char_IntMod
             // 
             Char_IntMod.AutoSize = true;
-            Char_IntMod.Location = new Point(266, 181);
+            Char_IntMod.Location = new Point(413, 191);
             Char_IntMod.Name = "Char_IntMod";
             Char_IntMod.Size = new Size(46, 15);
             Char_IntMod.TabIndex = 75;
@@ -1186,7 +1225,7 @@
             // Char_ConMod
             // 
             Char_ConMod.AutoSize = true;
-            Char_ConMod.Location = new Point(176, 180);
+            Char_ConMod.Location = new Point(281, 191);
             Char_ConMod.Name = "Char_ConMod";
             Char_ConMod.Size = new Size(52, 15);
             Char_ConMod.TabIndex = 74;
@@ -1195,7 +1234,7 @@
             // Char_DexMod
             // 
             Char_DexMod.AutoSize = true;
-            Char_DexMod.Location = new Point(100, 181);
+            Char_DexMod.Location = new Point(163, 191);
             Char_DexMod.Name = "Char_DexMod";
             Char_DexMod.Size = new Size(51, 15);
             Char_DexMod.TabIndex = 73;
@@ -1343,7 +1382,7 @@
             // 
             // TestButton
             // 
-            TestButton.Location = new Point(660, 296);
+            TestButton.Location = new Point(559, 139);
             TestButton.Name = "TestButton";
             TestButton.Size = new Size(75, 23);
             TestButton.TabIndex = 58;
@@ -1353,7 +1392,7 @@
             // 
             // Button_SaveCharacter
             // 
-            Button_SaveCharacter.Location = new Point(660, 325);
+            Button_SaveCharacter.Location = new Point(640, 139);
             Button_SaveCharacter.Name = "Button_SaveCharacter";
             Button_SaveCharacter.Size = new Size(75, 23);
             Button_SaveCharacter.TabIndex = 57;
@@ -1364,7 +1403,7 @@
             // Char_Prof
             // 
             Char_Prof.AutoSize = true;
-            Char_Prof.Location = new Point(553, 181);
+            Char_Prof.Location = new Point(508, 71);
             Char_Prof.Name = "Char_Prof";
             Char_Prof.Size = new Size(29, 15);
             Char_Prof.TabIndex = 56;
@@ -1373,7 +1412,7 @@
             // CharLabel_Prof
             // 
             CharLabel_Prof.AutoSize = true;
-            CharLabel_Prof.Location = new Point(530, 166);
+            CharLabel_Prof.Location = new Point(485, 56);
             CharLabel_Prof.Name = "CharLabel_Prof";
             CharLabel_Prof.Size = new Size(102, 15);
             CharLabel_Prof.TabIndex = 55;
@@ -1381,9 +1420,9 @@
             // 
             // Button_Persuasion
             // 
-            Button_Persuasion.Location = new Point(411, 354);
+            Button_Persuasion.Location = new Point(636, 354);
             Button_Persuasion.Name = "Button_Persuasion";
-            Button_Persuasion.Size = new Size(75, 23);
+            Button_Persuasion.Size = new Size(120, 23);
             Button_Persuasion.TabIndex = 54;
             Button_Persuasion.Tag = "roll d20+chamod+profifprof(persuasion)";
             Button_Persuasion.Text = "Persuasion";
@@ -1392,9 +1431,9 @@
             // 
             // Button_Performance
             // 
-            Button_Performance.Location = new Point(411, 325);
+            Button_Performance.Location = new Point(636, 325);
             Button_Performance.Name = "Button_Performance";
-            Button_Performance.Size = new Size(75, 23);
+            Button_Performance.Size = new Size(120, 23);
             Button_Performance.TabIndex = 53;
             Button_Performance.Tag = "roll d20+chamod+profifprof(performance)";
             Button_Performance.Text = "Performance";
@@ -1403,9 +1442,9 @@
             // 
             // Button_Intimidation
             // 
-            Button_Intimidation.Location = new Point(411, 296);
+            Button_Intimidation.Location = new Point(636, 296);
             Button_Intimidation.Name = "Button_Intimidation";
-            Button_Intimidation.Size = new Size(75, 23);
+            Button_Intimidation.Size = new Size(120, 23);
             Button_Intimidation.TabIndex = 52;
             Button_Intimidation.Tag = "roll d20+chamod+profifprof(intimidation)";
             Button_Intimidation.Text = "Intimidation";
@@ -1414,9 +1453,9 @@
             // 
             // Button_Deception
             // 
-            Button_Deception.Location = new Point(411, 267);
+            Button_Deception.Location = new Point(636, 267);
             Button_Deception.Name = "Button_Deception";
-            Button_Deception.Size = new Size(75, 23);
+            Button_Deception.Size = new Size(120, 23);
             Button_Deception.TabIndex = 51;
             Button_Deception.Tag = "roll d20+chamod+profifprof(deception)";
             Button_Deception.Text = "Deception";
@@ -1425,9 +1464,9 @@
             // 
             // Button_ChaSave
             // 
-            Button_ChaSave.Location = new Point(411, 238);
+            Button_ChaSave.Location = new Point(636, 238);
             Button_ChaSave.Name = "Button_ChaSave";
-            Button_ChaSave.Size = new Size(75, 23);
+            Button_ChaSave.Size = new Size(120, 23);
             Button_ChaSave.TabIndex = 50;
             Button_ChaSave.Tag = "roll d20+chamod+profifprof(chasave)";
             Button_ChaSave.Text = "Cha Save";
@@ -1436,9 +1475,9 @@
             // 
             // Button_Cha
             // 
-            Button_Cha.Location = new Point(411, 209);
+            Button_Cha.Location = new Point(636, 209);
             Button_Cha.Name = "Button_Cha";
-            Button_Cha.Size = new Size(75, 23);
+            Button_Cha.Size = new Size(120, 23);
             Button_Cha.TabIndex = 49;
             Button_Cha.Tag = "roll d20+chamod";
             Button_Cha.Text = "Charisma";
@@ -1447,9 +1486,9 @@
             // 
             // Button_Survival
             // 
-            Button_Survival.Location = new Point(330, 383);
+            Button_Survival.Location = new Point(510, 383);
             Button_Survival.Name = "Button_Survival";
-            Button_Survival.Size = new Size(75, 23);
+            Button_Survival.Size = new Size(120, 23);
             Button_Survival.TabIndex = 48;
             Button_Survival.Tag = "roll d20+wismod+profifprof(survival)";
             Button_Survival.Text = "Survival";
@@ -1458,9 +1497,9 @@
             // 
             // Button_Perception
             // 
-            Button_Perception.Location = new Point(330, 354);
+            Button_Perception.Location = new Point(510, 354);
             Button_Perception.Name = "Button_Perception";
-            Button_Perception.Size = new Size(75, 23);
+            Button_Perception.Size = new Size(120, 23);
             Button_Perception.TabIndex = 47;
             Button_Perception.Tag = "roll d20+wismod+profifprof(perception)";
             Button_Perception.Text = "Perception";
@@ -1469,9 +1508,9 @@
             // 
             // Button_Medicine
             // 
-            Button_Medicine.Location = new Point(330, 325);
+            Button_Medicine.Location = new Point(510, 325);
             Button_Medicine.Name = "Button_Medicine";
-            Button_Medicine.Size = new Size(75, 23);
+            Button_Medicine.Size = new Size(120, 23);
             Button_Medicine.TabIndex = 46;
             Button_Medicine.Tag = "roll d20+wismod+profifprof(medicine)";
             Button_Medicine.Text = "Medicine";
@@ -1480,9 +1519,9 @@
             // 
             // Button_Insight
             // 
-            Button_Insight.Location = new Point(330, 296);
+            Button_Insight.Location = new Point(510, 296);
             Button_Insight.Name = "Button_Insight";
-            Button_Insight.Size = new Size(75, 23);
+            Button_Insight.Size = new Size(120, 23);
             Button_Insight.TabIndex = 45;
             Button_Insight.Tag = "roll d20+wismod+profifprof(insight)";
             Button_Insight.Text = "Insight";
@@ -1491,9 +1530,9 @@
             // 
             // Button_AnimalHandling
             // 
-            Button_AnimalHandling.Location = new Point(330, 267);
+            Button_AnimalHandling.Location = new Point(510, 267);
             Button_AnimalHandling.Name = "Button_AnimalHandling";
-            Button_AnimalHandling.Size = new Size(75, 23);
+            Button_AnimalHandling.Size = new Size(120, 23);
             Button_AnimalHandling.TabIndex = 44;
             Button_AnimalHandling.Tag = "roll d20+wismod+profifprof(animalhandling)";
             Button_AnimalHandling.Text = "Animal Handling";
@@ -1502,9 +1541,9 @@
             // 
             // Button_WisSave
             // 
-            Button_WisSave.Location = new Point(330, 238);
+            Button_WisSave.Location = new Point(510, 238);
             Button_WisSave.Name = "Button_WisSave";
-            Button_WisSave.Size = new Size(75, 23);
+            Button_WisSave.Size = new Size(120, 23);
             Button_WisSave.TabIndex = 43;
             Button_WisSave.Tag = "roll d20+wismod+profifprof(wissave)";
             Button_WisSave.Text = "Wis Save";
@@ -1513,9 +1552,9 @@
             // 
             // Button_Wis
             // 
-            Button_Wis.Location = new Point(330, 209);
+            Button_Wis.Location = new Point(510, 209);
             Button_Wis.Name = "Button_Wis";
-            Button_Wis.Size = new Size(75, 23);
+            Button_Wis.Size = new Size(120, 23);
             Button_Wis.TabIndex = 42;
             Button_Wis.Tag = "roll d20+wismod";
             Button_Wis.Text = "Wisdom";
@@ -1524,9 +1563,9 @@
             // 
             // Button_Religion
             // 
-            Button_Religion.Location = new Point(249, 383);
+            Button_Religion.Location = new Point(384, 383);
             Button_Religion.Name = "Button_Religion";
-            Button_Religion.Size = new Size(75, 23);
+            Button_Religion.Size = new Size(120, 23);
             Button_Religion.TabIndex = 41;
             Button_Religion.Tag = "roll d20+intmod+profifprof(religion)";
             Button_Religion.Text = "Religion";
@@ -1535,9 +1574,9 @@
             // 
             // Button_Nature
             // 
-            Button_Nature.Location = new Point(249, 354);
+            Button_Nature.Location = new Point(384, 354);
             Button_Nature.Name = "Button_Nature";
-            Button_Nature.Size = new Size(75, 23);
+            Button_Nature.Size = new Size(120, 23);
             Button_Nature.TabIndex = 40;
             Button_Nature.Tag = "roll d20+intmod+profifprof(nature)";
             Button_Nature.Text = "Nature";
@@ -1547,7 +1586,7 @@
             // label6
             // 
             label6.AutoSize = true;
-            label6.Location = new Point(266, 417);
+            label6.Location = new Point(30, 368);
             label6.Name = "label6";
             label6.Size = new Size(250, 15);
             label6.TabIndex = 39;
@@ -1556,7 +1595,7 @@
             // label5
             // 
             label5.AutoSize = true;
-            label5.Location = new Point(266, 432);
+            label5.Location = new Point(30, 383);
             label5.Name = "label5";
             label5.Size = new Size(233, 15);
             label5.TabIndex = 38;
@@ -1564,9 +1603,9 @@
             // 
             // Button_Investigation
             // 
-            Button_Investigation.Location = new Point(249, 325);
+            Button_Investigation.Location = new Point(384, 325);
             Button_Investigation.Name = "Button_Investigation";
-            Button_Investigation.Size = new Size(75, 23);
+            Button_Investigation.Size = new Size(120, 23);
             Button_Investigation.TabIndex = 37;
             Button_Investigation.Tag = "roll d20+intmod+profifprof(investigation)";
             Button_Investigation.Text = "Investigation";
@@ -1575,9 +1614,9 @@
             // 
             // Button_History
             // 
-            Button_History.Location = new Point(249, 296);
+            Button_History.Location = new Point(384, 296);
             Button_History.Name = "Button_History";
-            Button_History.Size = new Size(75, 23);
+            Button_History.Size = new Size(120, 23);
             Button_History.TabIndex = 36;
             Button_History.Tag = "roll d20+intmod+profifprof(history)";
             Button_History.Text = "History";
@@ -1586,9 +1625,9 @@
             // 
             // Button_Arcana
             // 
-            Button_Arcana.Location = new Point(249, 267);
+            Button_Arcana.Location = new Point(384, 267);
             Button_Arcana.Name = "Button_Arcana";
-            Button_Arcana.Size = new Size(75, 23);
+            Button_Arcana.Size = new Size(120, 23);
             Button_Arcana.TabIndex = 35;
             Button_Arcana.Tag = "roll d20+intmod+profifprof(arcana)";
             Button_Arcana.Text = "Arcana";
@@ -1597,9 +1636,9 @@
             // 
             // Button_IntSave
             // 
-            Button_IntSave.Location = new Point(249, 238);
+            Button_IntSave.Location = new Point(384, 238);
             Button_IntSave.Name = "Button_IntSave";
-            Button_IntSave.Size = new Size(75, 23);
+            Button_IntSave.Size = new Size(120, 23);
             Button_IntSave.TabIndex = 34;
             Button_IntSave.Tag = "roll d20+intmod+profifprof(intsave)";
             Button_IntSave.Text = "Int Save";
@@ -1608,9 +1647,9 @@
             // 
             // Button_Int
             // 
-            Button_Int.Location = new Point(249, 209);
+            Button_Int.Location = new Point(384, 209);
             Button_Int.Name = "Button_Int";
-            Button_Int.Size = new Size(75, 23);
+            Button_Int.Size = new Size(120, 23);
             Button_Int.TabIndex = 33;
             Button_Int.Tag = "roll d20+intmod";
             Button_Int.Text = "Intelligence";
@@ -1619,9 +1658,9 @@
             // 
             // Button_ConSave
             // 
-            Button_ConSave.Location = new Point(168, 238);
+            Button_ConSave.Location = new Point(258, 238);
             Button_ConSave.Name = "Button_ConSave";
-            Button_ConSave.Size = new Size(75, 23);
+            Button_ConSave.Size = new Size(120, 23);
             Button_ConSave.TabIndex = 32;
             Button_ConSave.Tag = "roll d20+conmod+profifprof(consave)";
             Button_ConSave.Text = "Con Save";
@@ -1630,9 +1669,9 @@
             // 
             // Button_Con
             // 
-            Button_Con.Location = new Point(168, 209);
+            Button_Con.Location = new Point(258, 209);
             Button_Con.Name = "Button_Con";
-            Button_Con.Size = new Size(75, 23);
+            Button_Con.Size = new Size(120, 23);
             Button_Con.TabIndex = 31;
             Button_Con.Tag = "roll d20+conmod";
             Button_Con.Text = "Constitution";
@@ -1641,9 +1680,9 @@
             // 
             // Button_Stealth
             // 
-            Button_Stealth.Location = new Point(87, 325);
+            Button_Stealth.Location = new Point(132, 325);
             Button_Stealth.Name = "Button_Stealth";
-            Button_Stealth.Size = new Size(75, 23);
+            Button_Stealth.Size = new Size(120, 23);
             Button_Stealth.TabIndex = 30;
             Button_Stealth.Tag = "roll d20+dexmod+profifprof(stealth)";
             Button_Stealth.Text = "Stealth";
@@ -1652,9 +1691,9 @@
             // 
             // Button_SleightOfHand
             // 
-            Button_SleightOfHand.Location = new Point(87, 296);
+            Button_SleightOfHand.Location = new Point(132, 296);
             Button_SleightOfHand.Name = "Button_SleightOfHand";
-            Button_SleightOfHand.Size = new Size(75, 23);
+            Button_SleightOfHand.Size = new Size(120, 23);
             Button_SleightOfHand.TabIndex = 29;
             Button_SleightOfHand.Tag = "roll d20+dexmod+profifprof(sleightofhand)";
             Button_SleightOfHand.Text = "Sleight of Hand";
@@ -1663,9 +1702,9 @@
             // 
             // Button_Acrobatics
             // 
-            Button_Acrobatics.Location = new Point(87, 267);
+            Button_Acrobatics.Location = new Point(132, 267);
             Button_Acrobatics.Name = "Button_Acrobatics";
-            Button_Acrobatics.Size = new Size(75, 23);
+            Button_Acrobatics.Size = new Size(120, 23);
             Button_Acrobatics.TabIndex = 28;
             Button_Acrobatics.Tag = "roll d20+dexmod+profifprof(acrobatics)";
             Button_Acrobatics.Text = "Acrobatics";
@@ -1674,9 +1713,9 @@
             // 
             // Button_DexSave
             // 
-            Button_DexSave.Location = new Point(87, 238);
+            Button_DexSave.Location = new Point(132, 238);
             Button_DexSave.Name = "Button_DexSave";
-            Button_DexSave.Size = new Size(75, 23);
+            Button_DexSave.Size = new Size(120, 23);
             Button_DexSave.TabIndex = 27;
             Button_DexSave.Tag = "roll d20+dexmod+profifprof(dexsave)";
             Button_DexSave.Text = "Dex Save";
@@ -1685,9 +1724,9 @@
             // 
             // Button_Dex
             // 
-            Button_Dex.Location = new Point(87, 209);
+            Button_Dex.Location = new Point(132, 209);
             Button_Dex.Name = "Button_Dex";
-            Button_Dex.Size = new Size(75, 23);
+            Button_Dex.Size = new Size(120, 23);
             Button_Dex.TabIndex = 26;
             Button_Dex.Tag = "roll d20+dexmod";
             Button_Dex.Text = "Dexterity";
@@ -1697,7 +1736,7 @@
             // Char_StrMod
             // 
             Char_StrMod.AutoSize = true;
-            Char_StrMod.Location = new Point(17, 181);
+            Char_StrMod.Location = new Point(43, 191);
             Char_StrMod.Name = "Char_StrMod";
             Char_StrMod.Size = new Size(45, 15);
             Char_StrMod.TabIndex = 25;
@@ -1707,7 +1746,7 @@
             // 
             Button_Athletics.Location = new Point(6, 267);
             Button_Athletics.Name = "Button_Athletics";
-            Button_Athletics.Size = new Size(75, 23);
+            Button_Athletics.Size = new Size(120, 23);
             Button_Athletics.TabIndex = 24;
             Button_Athletics.Tag = "roll d20+strmod+profifprof(athletics)";
             Button_Athletics.Text = "Athletics";
@@ -1718,7 +1757,7 @@
             // 
             Button_StrSave.Location = new Point(6, 238);
             Button_StrSave.Name = "Button_StrSave";
-            Button_StrSave.Size = new Size(75, 23);
+            Button_StrSave.Size = new Size(120, 23);
             Button_StrSave.TabIndex = 23;
             Button_StrSave.Tag = "roll d20+strmod+profifprof(strsave)";
             Button_StrSave.Text = "Str Save";
@@ -1729,21 +1768,12 @@
             // 
             Button_Str.Location = new Point(6, 209);
             Button_Str.Name = "Button_Str";
-            Button_Str.Size = new Size(75, 23);
+            Button_Str.Size = new Size(120, 23);
             Button_Str.TabIndex = 22;
             Button_Str.Tag = "roll d20+strmod";
             Button_Str.Text = "Strength";
             Button_Str.UseVisualStyleBackColor = true;
             Button_Str.Click += RollDice;
-            // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Location = new Point(266, 447);
-            label1.Name = "label1";
-            label1.Size = new Size(301, 15);
-            label1.TabIndex = 21;
-            label1.Text = "eventually set the button labels to include their bonuses";
             // 
             // BasicAbilitiesArea
             // 
@@ -1751,11 +1781,11 @@
             BasicAbilitiesArea.AllowUserToDeleteRows = false;
             BasicAbilitiesArea.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             BasicAbilitiesArea.Columns.AddRange(new DataGridViewColumn[] { Basic_NumberCol, Basic_IDCol, Basic_NameCol, Basic_TextCol, Basic_UseButtonCol });
-            BasicAbilitiesArea.Location = new Point(6, 468);
+            BasicAbilitiesArea.Location = new Point(6, 412);
             BasicAbilitiesArea.Name = "BasicAbilitiesArea";
             BasicAbilitiesArea.ReadOnly = true;
             BasicAbilitiesArea.RowTemplate.Height = 25;
-            BasicAbilitiesArea.Size = new Size(729, 58);
+            BasicAbilitiesArea.Size = new Size(760, 114);
             BasicAbilitiesArea.TabIndex = 18;
             // 
             // Basic_NumberCol
@@ -1792,7 +1822,7 @@
             // Char_Cha
             // 
             Char_Cha.AutoSize = true;
-            Char_Cha.Location = new Point(433, 165);
+            Char_Cha.Location = new Point(666, 176);
             Char_Cha.Name = "Char_Cha";
             Char_Cha.Size = new Size(26, 15);
             Char_Cha.TabIndex = 17;
@@ -1802,7 +1832,7 @@
             // Char_Wis
             // 
             Char_Wis.AutoSize = true;
-            Char_Wis.Location = new Point(351, 165);
+            Char_Wis.Location = new Point(548, 175);
             Char_Wis.Name = "Char_Wis";
             Char_Wis.Size = new Size(24, 15);
             Char_Wis.TabIndex = 15;
@@ -1812,7 +1842,7 @@
             // Char_Int
             // 
             Char_Int.AutoSize = true;
-            Char_Int.Location = new Point(281, 165);
+            Char_Int.Location = new Point(428, 175);
             Char_Int.Name = "Char_Int";
             Char_Int.Size = new Size(21, 15);
             Char_Int.TabIndex = 13;
@@ -1822,7 +1852,7 @@
             // Char_Con
             // 
             Char_Con.AutoSize = true;
-            Char_Con.Location = new Point(187, 165);
+            Char_Con.Location = new Point(292, 176);
             Char_Con.Name = "Char_Con";
             Char_Con.Size = new Size(27, 15);
             Char_Con.TabIndex = 11;
@@ -1832,7 +1862,7 @@
             // Char_Dex
             // 
             Char_Dex.AutoSize = true;
-            Char_Dex.Location = new Point(106, 165);
+            Char_Dex.Location = new Point(169, 175);
             Char_Dex.Name = "Char_Dex";
             Char_Dex.Size = new Size(26, 15);
             Char_Dex.TabIndex = 9;
@@ -1842,7 +1872,7 @@
             // Char_Str
             // 
             Char_Str.AutoSize = true;
-            Char_Str.Location = new Point(30, 165);
+            Char_Str.Location = new Point(56, 175);
             Char_Str.Name = "Char_Str";
             Char_Str.Size = new Size(20, 15);
             Char_Str.TabIndex = 7;
@@ -1911,7 +1941,7 @@
             AbilitiesTab.Location = new Point(4, 24);
             AbilitiesTab.Name = "AbilitiesTab";
             AbilitiesTab.Padding = new Padding(3);
-            AbilitiesTab.Size = new Size(741, 532);
+            AbilitiesTab.Size = new Size(772, 532);
             AbilitiesTab.TabIndex = 2;
             AbilitiesTab.Text = "Abilities";
             AbilitiesTab.UseVisualStyleBackColor = true;
@@ -1997,7 +2027,7 @@
             MagicTab.Location = new Point(4, 24);
             MagicTab.Name = "MagicTab";
             MagicTab.Padding = new Padding(3);
-            MagicTab.Size = new Size(741, 532);
+            MagicTab.Size = new Size(772, 532);
             MagicTab.TabIndex = 3;
             MagicTab.Text = "Magic";
             MagicTab.UseVisualStyleBackColor = true;
@@ -2020,51 +2050,11 @@
             label7.TabIndex = 0;
             label7.Text = "Spell slots go here";
             // 
-            // ClassName
-            // 
-            ClassName.HeaderText = "Class";
-            ClassName.Name = "ClassName";
-            // 
-            // Subclass
-            // 
-            Subclass.HeaderText = "Subclass";
-            Subclass.Name = "Subclass";
-            // 
-            // Level
-            // 
-            Level.HeaderText = "Level";
-            Level.Name = "Level";
-            Level.Width = 40;
-            // 
-            // HD
-            // 
-            HD.HeaderText = "HD";
-            HD.Name = "HD";
-            HD.Width = 60;
-            // 
-            // SpendHDButton
-            // 
-            SpendHDButton.HeaderText = "Spend";
-            SpendHDButton.Name = "SpendHDButton";
-            SpendHDButton.Width = 50;
-            // 
-            // AddHDButton
-            // 
-            AddHDButton.HeaderText = "+1";
-            AddHDButton.Name = "AddHDButton";
-            AddHDButton.Width = 25;
-            // 
-            // SubtractHDButton
-            // 
-            SubtractHDButton.HeaderText = "-1";
-            SubtractHDButton.Name = "SubtractHDButton";
-            SubtractHDButton.Width = 25;
-            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(774, 759);
+            ClientSize = new Size(804, 833);
             Controls.Add(MainTabArea);
             Controls.Add(outputDescription);
             Name = "Form1";
@@ -2189,7 +2179,6 @@
         private Button button41;
         private Button button40;
         private Button button39;
-        private Label label1;
         private Button Button_Str;
         private Button Button_StrSave;
         private Button Button_Athletics;
