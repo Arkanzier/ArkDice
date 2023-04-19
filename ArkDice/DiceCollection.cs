@@ -9,13 +9,13 @@ namespace ArkDice
 {
     public class DiceCollection
     {
-        private List<DicePile> dice;
+        private List<DicePile> Dice { get; set; }
 
-        private List<DiceCondition> conditions;
+        private List<DiceCondition> Conditions { get; set; }
 
         //These two are used by the program to temporarily store values that get generated.
-        private int total;
-        private string description;
+        private int Total { get; set; }
+        private string Description { get; set; }
 
         //To add eventually:
         //Functions for adding/removing dice matching certain descriptions without outside functions needing to interact with the list.
@@ -24,10 +24,10 @@ namespace ArkDice
         //Constructor(s)
         public DiceCollection (string diceString = "")
         {
-            dice = new List<DicePile> ();
-            total = 0;
-            description = "";
-            conditions = new List<DiceCondition> ();
+            Dice = new List<DicePile> ();
+            Total = 0;
+            Description = "";
+            Conditions = new List<DiceCondition> ();
 
             //It's possible for there to be 'no dice string' in things.
             //This is represented by specifying 'false' for the dice string.
@@ -37,16 +37,10 @@ namespace ArkDice
             }
             else
             {
-                dice = new List<DicePile>();
-                bool temp = parseDiceCollection(diceString);
+                Dice = new List<DicePile>();
+                bool temp = ParseDiceCollection(diceString);
+                //error checking goes here?
             }
-
-            
-            //if (!temp)
-            //{
-            //    //Temporary, for testing.
-            //    dice.Add(new DicePile(6, 3, 0, 1, 1, 1));
-            //}
         }
 
         //Public functions
@@ -69,9 +63,9 @@ namespace ArkDice
 
         //procedure:
             //to add / remove regular dice, just click the appropriate +/- buttons
-        public bool addOneDie (int dieSize, bool subtract = false, int advdis = 0, bool flatBonus = false)
+        public bool AddOneDie (int dieSize, bool subtract = false, int advdis = 0, bool flatBonus = false)
         {
-            foreach (DicePile pile in dice)
+            foreach (DicePile pile in Dice)
             {
                 if (flatBonus && pile.getDieSize() == 0)
                 {
@@ -124,13 +118,13 @@ namespace ArkDice
                 //to do
 
             DicePile newPile = new DicePile(dieSize, numDice, bonus, "", numAdv, numDis, multiplier);
-            dice.Add(newPile);
+            Dice.Add(newPile);
 
             return true;
         }
 
         //Adds to an existing DicePile.
-        public bool addDie (int dieSize, int numDice = 1)
+        public bool AddDie (int dieSize, int numDice = 1)
             //to do: rename to reflect it's ability to reduce/remove dice as well?
             //to do: add the ability to increase stuff with adv/dis, as part of the dice roller portion of the program.
             //add 2 extra options for specifying adv/dis, and this will add the dice if they match?
@@ -141,11 +135,11 @@ namespace ArkDice
                 return false;
             }
 
-            for (int a = 0; a < dice.Count(); a++)
+            for (int a = 0; a < Dice.Count(); a++)
             {
-                int size = dice[a].getDieSize();
-                int adv = dice[a].getNumAdv();
-                int dis = dice[a].getNumDis();
+                int size = Dice[a].getDieSize();
+                int adv = Dice[a].getNumAdv();
+                int dis = Dice[a].getNumDis();
                 if (adv > 0 || dis > 0)
                 {
                     //Adding dice to piles with advantage and/or disadvantage throws off the math, so we're not going to do it.
@@ -154,17 +148,17 @@ namespace ArkDice
 
                 if (size == dieSize)
                 {
-                    int newNum = dice[a].getNumDice() + numDice;
+                    int newNum = Dice[a].getNumDice() + numDice;
                     if (newNum <= 0)
                     {
                         //We're going to remove this entry.
-                        dice.RemoveAt(a);
+                        Dice.RemoveAt(a);
                         return true;
                     }
                     else
                     {
                         //We're going to increase/reduce this entry without removing it.
-                        dice[a].setNumDice(newNum);
+                        Dice[a].setNumDice(newNum);
                         return true;
                     }
                 }
@@ -179,14 +173,14 @@ namespace ArkDice
             //If we get this far, we can assume that we didn't find a matching DicePile.
             //We'll need to add one.
             DicePile newPile = new DicePile (dieSize, numDice);
-            dice.Add(newPile);
+            Dice.Add(newPile);
 
             return true;
         }
 
-        public DiceCollection getCopy()
+        public DiceCollection GetCopy()
         {
-            DiceCollection ret = new DiceCollection(this.getDiceString());
+            DiceCollection ret = new DiceCollection(this.GetDiceString());
 
             //I could do this by getDiceString(), though I'd like something more direct.
 
@@ -195,30 +189,30 @@ namespace ArkDice
 
         //Retrieves the description from a previously-done roll.
         //Note that this will return empty string if no roll has been done yet.
-        public string getDescription()
+        public string GetDescription()
         {
-            return this.description;
+            return this.Description;
         }
 
         //Retrieves the total from a previously-done roll.
         //Note that this will return 0 if no roll has been done yet.
-        public int getTotal()
+        public int GetTotal()
         {
-            return this.total;
+            return this.Total;
         }
 
         //Rolls the provided dice and plugs the total into the total variable for retrieval later.
         //Also puts a text description of the roll into the description variable.
-        public DiceResponse roll ()
+        public DiceResponse Roll ()
         {
-            return roll (new Dictionary<string, int>());
+            return Roll (new Dictionary<string, int>());
         }
-        public DiceResponse roll (Dictionary<string, int> stats)
+        public DiceResponse Roll (Dictionary<string, int> stats)
         {
             int total = 0;
             string desc = "";
 
-            foreach (var dp in dice)
+            foreach (var dp in Dice)
             {
                 DiceResponse roll = dp.roll(stats);
                 int tempTot = roll.Total;
@@ -242,20 +236,20 @@ namespace ArkDice
                 }
             }
 
-            this.total = total;
-            this.description = "Rolled: " + total + ": " + desc;
+            this.Total = total;
+            this.Description = "Rolled: " + total + ": " + desc;
 
-            return new DiceResponse(true, total, description);
+            return new DiceResponse(true, total, Description);
         }
 
         //Generates a dice string that will be usable to recreate this instance of this class.
-        public string getDiceString()
+        public string GetDiceString()
         {
             string ret = "";
 
-            for (int a = 0; a < dice.Count; a++)
+            for (int a = 0; a < Dice.Count; a++)
             {
-                DicePile dp = dice[a];
+                DicePile dp = Dice[a];
                 int numDice = dp.getNumDice();
                 int dieSize = dp.getDieSize();
                 int bonus = dp.getBonus();
@@ -326,9 +320,9 @@ namespace ArkDice
 
         //The function we'll use to convert a string of dice values into an instance of this class.
         //Returns true on success, false on failure.
-        private bool parseDiceCollection (string diceString)
+        private bool ParseDiceCollection (string diceString)
         {
-            List<DicePile> renameme = parseDiceString (diceString);
+            List<DicePile> renameme = ParseDiceString (diceString);
 
             //error checking goes here.
 
@@ -339,7 +333,7 @@ namespace ArkDice
 
                 DicePile temp = dp.copyMe();
 
-                this.dice.Add(temp);
+                this.Dice.Add(temp);
             }
 
             return true;
@@ -348,7 +342,7 @@ namespace ArkDice
         //Parses the condition portion of a dice string.
         //to do: set something up somewhere to be able to handle dicepile level stuff and dicecollection level
             //probably adjust the regex that splits off individual dicepile chunks to only include conditions starting with "(if:"
-        private List<DiceCondition> parseDiceCondition (string condition)
+        private List<DiceCondition> ParseDiceCondition (string condition)
         {
             //Expected formats:
                 //(if: scope operator targetnumber dicestring)
@@ -445,7 +439,7 @@ namespace ArkDice
         }
 
         //Underlying function: translates one chunk of a dice string into a DicePile instance.
-        private DicePile parseDicePile (string dicePile)
+        private DicePile ParseDicePile (string dicePile)
         {
             DicePile ret = new DicePile(0);
 
@@ -625,7 +619,7 @@ namespace ArkDice
             //Handle any conditions specified.
             if (matches.Groups[10].Value.Length > 0)
             {
-                List<DiceCondition> conditions = parseDiceCondition(matches.Groups[10].Value);
+                List<DiceCondition> conditions = ParseDiceCondition(matches.Groups[10].Value);
                 ret.setConditions(conditions);
             }
             else
@@ -638,7 +632,7 @@ namespace ArkDice
         }
 
         //Underlying function: splits a dice string into chunks that can each be converted into one single DicePile instance.
-        private List<DicePile> parseDiceString (string diceString)
+        private List<DicePile> ParseDiceString (string diceString)
         {
             List<DicePile> ret = new List<DicePile>();
 
@@ -667,7 +661,7 @@ namespace ArkDice
                 {
                     continue;
                 }
-                DicePile temp = parseDicePile(chunk);
+                DicePile temp = ParseDicePile(chunk);
 
                 ret.Add(temp);
             }

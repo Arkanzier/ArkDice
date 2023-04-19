@@ -977,7 +977,7 @@ namespace Character //change to ArkDice?
         {
             Dictionary<string, int> stats = this.GetGeneralStatistics();
 
-            DiceResponse resp = dc.roll(stats);
+            DiceResponse resp = dc.Roll(stats);
 
             return resp;
         }

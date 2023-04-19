@@ -84,17 +84,12 @@ namespace Simple_Dice_Roller
         //Handlers for the buttons in the abilities list.
         private void AbilitiesArea_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            //var senderGrid = (DataGridView)sender;
-
-            //MessageBox.Show("Button clicked: row is " + e.RowIndex.ToString());
-            //MessageBox.Show("Button clicked: col is " + e.ColumnIndex.ToString());
+            //Do we need to manually do something to make the row selected?
 
             int colIndex = e.ColumnIndex;
             string colName = AbilitiesArea.Columns[colIndex].Name;
 
             //MessageBox.Show("Button clicked: col is " + colName);
-
-            //Need to figure out 
 
             int rowNum = e.RowIndex;
             //string aaaa = AbilitiesArea2.Rows[rowNum].Cells["NameCol"].ToString();
@@ -237,7 +232,7 @@ namespace Simple_Dice_Roller
 
                 bool flatBonus = (d == "d") ? false : true;
 
-                bool temp = currentDice.addOneDie(dieSize, subtract, advdisint, flatBonus);
+                bool temp = currentDice.AddOneDie(dieSize, subtract, advdisint, flatBonus);
 
                 //error checking?
                 if (!temp)
@@ -373,7 +368,7 @@ namespace Simple_Dice_Roller
         //Redo the most recent roll.
         private void RerollButton_Click(object sender, EventArgs e)
         {
-            DiceResponse resp = lastDice.roll();
+            DiceResponse resp = lastDice.Roll();
             outputTotal.Text = "Rolled " + resp.Total;
             LogMessage(resp.Description);
         }
@@ -462,11 +457,11 @@ namespace Simple_Dice_Roller
             else
             {
                 //Roll dice added via the buttons.
-                DiceResponse resp = currentDice.roll();
+                DiceResponse resp = currentDice.Roll();
                 outputTotal.Text = "Rolled " + resp.Total;
                 LogMessage(resp.Description);
 
-                UpdateLastDice(currentDice.getDiceString());
+                UpdateLastDice(currentDice.GetDiceString());
 
                 currentDice = new DiceCollection();
                 UpdateDiceArrayDisplay();
@@ -655,7 +650,7 @@ namespace Simple_Dice_Roller
         //
         private void UpdateDiceArrayDisplay()
         {
-            DiceArrayDisplay.Text = currentDice.getDiceString();
+            DiceArrayDisplay.Text = currentDice.GetDiceString();
         }
 
         private void UpdateHealthDisplay()
@@ -677,7 +672,7 @@ namespace Simple_Dice_Roller
         private void UpdateLastDice(string diceString)
         {
             lastDice = new DiceCollection(diceString);
-            LastRollDiceString.Text = lastDice.getDiceString();
+            LastRollDiceString.Text = lastDice.GetDiceString();
         }
 
         //Sets the appropriate bonuses into the labels for the various stat, save, and skill buttons.
@@ -746,8 +741,8 @@ namespace Simple_Dice_Roller
         private void ProcessTextInput(string diceString)
         {
             DiceCollection dice = new DiceCollection(diceString);
-            outputDescription.Text = dice.getDescription();
-            DiceResponse resp = dice.roll();
+            outputDescription.Text = dice.GetDescription();
+            DiceResponse resp = dice.Roll();
             //dice.roll();
             //outputTotal.Text = "The total is " + dice.getTotal();
             //outputTotal.Text = "Rolled " + dice.getTotal();

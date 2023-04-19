@@ -353,7 +353,7 @@ namespace Character
 
             foreach (DiceCollection d in this.Dice)
             {
-                DiceResponse resp = d.roll(stats);
+                DiceResponse resp = d.Roll(stats);
                 if (resp.Success == false)
                 {
                     //to do: decide what I want to do here.
@@ -378,7 +378,7 @@ namespace Character
 
             foreach (DiceCollection d in this.Dice)
             {
-                DiceResponse resp = d.roll();
+                DiceResponse resp = d.Roll();
                 Total += resp.Total;
                 Description += resp.Description;
 
@@ -435,7 +435,7 @@ namespace Character
             //We're going to temporarily just list the first dice string.
             if (Dice.Count > 0)
             {
-                return Dice[0].getDiceString();
+                return Dice[0].GetDiceString();
             } else
             {
                 return "none";
