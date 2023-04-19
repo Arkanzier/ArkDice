@@ -1184,7 +1184,7 @@ namespace Character //change to ArkDice?
             for (int a = 0; a < num; a++)
             {
                 DicePile HD = new DicePile(size, 1);
-                DiceResponse resp = HD.roll();
+                DiceResponse resp = HD.Roll();
                 int amount = resp.Total;
 
                 if (!ignoreCon)

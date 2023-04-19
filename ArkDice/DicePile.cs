@@ -6,13 +6,13 @@ namespace ArkDice
 {
     public class DicePile
     {
-        private int dieSize;
-        private int numDice;
-        private int numAdv;
-        private int numDis;
-        private int flatBonus;
-        private string dynamicBonus;
-        private int multiplier;
+        public int DieSize { get; set; }
+        public int NumDice { get; set; }
+        public int NumAdv { get; set; }
+        public int NumDis { get; set; }
+        public int FlatBonus { get; set; }
+        public string DynamicBonus { get; set; }
+        public int Multiplier { get; set; }
         //change to bool positive?
         //change to float/double so we can do division with it?
             //at that point, it might be better to find another way.
@@ -23,12 +23,12 @@ namespace ArkDice
         //private int[] mapping;
         //still to be done.
 
-        private List<DiceCondition> conditions;
+        public List<DiceCondition> Conditions { get; set; }
 
         //These two are used by the program to temporarily store values that get generated.
         //These aren't needed anymore, but I'll leave them in for now because they're not really hurting anything.
-        private int total;
-        private string description;
+        public int Total { get; set; }
+        public string Description { get; set; }
 
         //potential bonuses to be able to handle:
             //statmod
@@ -64,31 +64,31 @@ namespace ArkDice
         //-------- -------- -------- -------- -------- -------- -------- -------- 
         public DicePile (int dieSize, int numDice, int bonus, string dynamicBonus, int numAdv, int numDis, int multiplier, List<DiceCondition> conditions)
         {
-            this.dieSize = dieSize;
-            this.numDice = numDice;
-            this.flatBonus = bonus;
-            this.dynamicBonus = dynamicBonus;
-            this.numAdv = numAdv;
-            this.numDis = numDis;
-            this.multiplier = multiplier;
-            this.conditions = conditions;
+            this.DieSize = dieSize;
+            this.NumDice = numDice;
+            this.FlatBonus = bonus;
+            this.DynamicBonus = dynamicBonus;
+            this.NumAdv = numAdv;
+            this.NumDis = numDis;
+            this.Multiplier = multiplier;
+            this.Conditions = conditions;
 
-            this.total = 0;
-            this.description = "";
+            this.Total = 0;
+            this.Description = "";
         }
         public DicePile(int dieSize, int numDice = 0, int bonus = 0, string dynamicBonus = "", int numAdv = 0, int numDis = 0, int multiplier = 1)
         {
-            this.dieSize = dieSize;
-            this.numDice = numDice;
-            this.flatBonus = bonus;
-            this.dynamicBonus = dynamicBonus;
-            this.numAdv = numAdv;
-            this.numDis = numDis;
-            this.multiplier = multiplier;
-            this.conditions = new List<DiceCondition>();
+            this.DieSize = dieSize;
+            this.NumDice = numDice;
+            this.FlatBonus = bonus;
+            this.DynamicBonus = dynamicBonus;
+            this.NumAdv = numAdv;
+            this.NumDis = numDis;
+            this.Multiplier = multiplier;
+            this.Conditions = new List<DiceCondition>();
 
-            this.total = 0;
-            this.description = "";
+            this.Total = 0;
+            this.Description = "";
         }
 
         //public DicePile (string dieSize, int numDice = 0, int bonus = 0, int numAdv = 0, int numDis = 0)
@@ -104,33 +104,33 @@ namespace ArkDice
         //Public functions
         //-------- -------- -------- -------- -------- -------- -------- -------- 
         //Returns a duplicate of this DicePile.
-        public DicePile copyMe()
+        public DicePile CopyMe()
         {
-            DicePile ret = new DicePile(this.dieSize, this.numDice, this.flatBonus, this.dynamicBonus, this.numAdv, this.numDis, this.multiplier);
+            DicePile ret = new DicePile(this.DieSize, this.NumDice, this.FlatBonus, this.DynamicBonus, this.NumAdv, this.NumDis, this.Multiplier);
 
             return ret;
         }
 
         //Wrapper for the other roll() function for when we have no stats to pass in.
-        public DiceResponse roll ()
+        public DiceResponse Roll ()
         {
             Dictionary<string, int> empty = new Dictionary<string, int>();
-            return roll(empty);
+            return Roll(empty);
         }
 
         //Rolls this collection of dice and returns the total.
         //stats is expected to receive data in the format outputted by Character.GetGeneralStatistics()
-        public DiceResponse roll (Dictionary<string, int> stats)
+        public DiceResponse Roll (Dictionary<string, int> stats)
         {
-            int numToRoll = this.numDice + this.numAdv + this.numDis;
+            int numToRoll = this.NumDice + this.NumAdv + this.NumDis;
 
             //to do: check stats before returning.
             //revamp function so the dice section merely gets skipped, rather than exiting early?
 
-            string desc = getDiceString();
+            string desc = GetDiceString();
             int ret = 0;
 
-            if (dieSize > 0)
+            if (DieSize > 0)
             {
                 desc += " (";
 
@@ -143,9 +143,9 @@ namespace ArkDice
                     //Generate a random number from 1 to dieSize.
                     //If we get this far, dieSize should be at least 1.
                     int roll = 1;
-                    if (dieSize > 1)
+                    if (DieSize > 1)
                     {
-                        roll = rand.Next(1, dieSize+1);
+                        roll = rand.Next(1, DieSize +1);
                     }
 
                     //error checking? logging?
@@ -162,8 +162,8 @@ namespace ArkDice
                 Array.Sort(rolls);
 
                 //Calculate the total, excluding those dropped for adv/dis.
-                int start = this.numAdv;
-                int end = this.numDice + this.numAdv;
+                int start = this.NumAdv;
+                int end = this.NumDice + this.NumAdv;
 
                 for (int d = start; d < end; d++)
                 {
@@ -177,19 +177,19 @@ namespace ArkDice
             }
 
             //Add flat bonus
-            ret += flatBonus;
-            if (dynamicBonus.Length> 0)
+            ret += FlatBonus;
+            if (DynamicBonus.Length> 0)
             {
                 //Check the character's stats that were passed in.
-                if (stats.ContainsKey(dynamicBonus))
+                if (stats.ContainsKey(DynamicBonus))
                 {
-                    ret += stats[dynamicBonus];
+                    ret += stats[DynamicBonus];
                 }
-                else if (dynamicBonus.Substring(0, 10) == "profifprof")
+                else if (DynamicBonus.Substring(0, 10) == "profifprof")
                 {
                     //First we'll pull out the thing we're supposed to check for.
                     //This will be from the 12th character (index 11) and go strlen-12 characters
-                    string thing = dynamicBonus.Substring(11, dynamicBonus.Length - 12);
+                    string thing = DynamicBonus.Substring(11, DynamicBonus.Length - 12);
 
                     //desc += "Adding " + thing;
 
@@ -213,13 +213,13 @@ namespace ArkDice
                 }   //if dynamic bonus is profifprof(whatever)
             }   //if there's a dynamic bonus
 
-            ret *= this.multiplier;
+            ret *= this.Multiplier;
 
             //Calculate the description for non-dice options.
-            if (dieSize== 0)
+            if (DieSize == 0)
             {
                 //We're not including dice, list whatever we are using.
-                if (dynamicBonus.Length > 0)
+                if (DynamicBonus.Length > 0)
                 {
                     desc += " (" + ret + ")";
                 }
@@ -287,55 +287,45 @@ namespace ArkDice
             ret *= this.multiplier;
             */
 
-            this.total = ret;
+            this.Total = ret;
 
-            this.description = desc;
+            this.Description = desc;
 
-            return new DiceResponse(true, this.total, this.description);
+            return new DiceResponse(true, this.Total, this.Description);
         }
 
-        public string getDiceString ()
+        public string GetDiceString ()
         {
             string ret = "";
 
-            if (numDice > 0)
+            if (NumDice > 0)
             {
-                ret = numDice.ToString() + "d" + dieSize.ToString();
-                if (numAdv> 0)
+                ret = NumDice.ToString() + "d" + DieSize.ToString();
+                if (NumAdv> 0)
                 {
-                    ret += " adv" + numAdv;
+                    ret += " adv" + NumAdv;
                 }
-                if (numDis > 0)
+                if (NumDis > 0)
                 {
-                    ret += " dis" + numDis;
+                    ret += " dis" + NumDis;
                 }
             }
-            else if (dynamicBonus.Length > 0)
+            else if (DynamicBonus.Length > 0)
             {
-                ret = dynamicBonus;
+                ret = DynamicBonus;
             }
             else
             {
-                ret = flatBonus.ToString();
+                ret = FlatBonus.ToString();
             }
 
             return ret;
         }
 
-        public int getTotal()
-        {
-            return this.total;
-        }
-
-        public string getDescription()
-        {
-            return this.description;
-        }
-
 
         //Overloading operators, and related functions.
         //-------- -------- -------- -------- -------- -------- -------- -------- 
-        public DicePile combine (DicePile other)
+        public DicePile Combine (DicePile other)
         {
             //
             return this;
@@ -347,17 +337,17 @@ namespace ArkDice
         public bool sameType (DicePile other)
         {
             //I don't think there are any circumstances where it would be appropriate to combine two piles with adv and/or dis.
-            if (this.numAdv > 0 || other.getNumAdv() > 0)
+            if (this.NumAdv > 0 || other.NumAdv > 0)
             {
                 return false;
             }
-            if (this.numDis > 0 || other.getNumDis() > 0)
+            if (this.NumDis > 0 || other.NumDis > 0)
             {
                 return false;
             }
 
             //Obviously the two piles need to be the same size of dice.
-            if (this.dieSize != other.getDieSize())
+            if (this.DieSize != other.DieSize)
             {
                 return false;
             }
@@ -392,79 +382,6 @@ namespace ArkDice
 
         //Simple getter/setter functions.
         //-------- -------- -------- -------- -------- -------- -------- -------- 
-        public int getBonus()
-        {
-            return this.flatBonus;
-        }
-
-        public string getDynamicBonus()
-        {
-            return this.dynamicBonus;
-        }
-
-        public int getDieSize()
-        {
-            return this.dieSize;
-        }
-
-        public int getMultiplier()
-        {
-            return this.multiplier;
-        }
-
-        public int getNumAdv()
-        {
-            return this.numAdv;
-        }
-
-        public int getNumDice()
-        {
-            return this.numDice;
-        }
-
-        public int getNumDis()
-        {
-            return this.numDis;
-        }
-
-        public void setBonus(int bonus)
-        {
-            this.flatBonus = bonus;
-        }
-
-        public void setDynamicBonus(string bonus)
-        {
-            this.dynamicBonus = bonus;
-        }
-
-        public void setDieSize(int dieSize)
-        {
-            this.dieSize = dieSize;
-        }
-
-        public void setMultiplier(int multiplier)
-        {
-            this.multiplier = multiplier;
-        }
-
-        public void setNumAdv(int numAdv)
-        {
-            this.numAdv = numAdv;
-        }
-
-        public void setNumDice(int numDice)
-        {
-            this.numDice = numDice;
-        }
-
-        public void setNumDis(int numDis)
-        {
-            this.numDis = numDis;
-        }
-
-        public void setConditions (List<DiceCondition> conditions)
-        {
-            this.conditions = conditions;
-        }
+        //Does this even need any?
     }
 }

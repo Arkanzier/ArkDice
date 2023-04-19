@@ -9,13 +9,13 @@ namespace ArkDice
 {
     public class DiceCollection
     {
-        private List<DicePile> Dice { get; set; }
+        public List<DicePile> Dice { get; set; }
 
-        private List<DiceCondition> Conditions { get; set; }
+        public List<DiceCondition> Conditions { get; set; }
 
         //These two are used by the program to temporarily store values that get generated.
-        private int Total { get; set; }
-        private string Description { get; set; }
+        public int Total { get; set; }
+        public string Description { get; set; }
 
         //To add eventually:
         //Functions for adding/removing dice matching certain descriptions without outside functions needing to interact with the list.
@@ -67,37 +67,37 @@ namespace ArkDice
         {
             foreach (DicePile pile in Dice)
             {
-                if (flatBonus && pile.getDieSize() == 0)
+                if (flatBonus && pile.DieSize == 0)
                 {
                     int multiplier2fuckyou = (subtract) ? -1 : 1;
 
                     dieSize *= multiplier2fuckyou;
 
-                    pile.setBonus(pile.getBonus() + dieSize);
+                    pile.FlatBonus += dieSize;
                     
                     //error checking?
 
                     return true;
                 }
-                else if (pile.getDieSize() == dieSize)
+                else if (pile.DieSize == dieSize)
                 {
                     int numToAdd = (subtract) ? -1 : 1;
 
                     if (advdis == 0)
                     {
-                        pile.setNumDice(pile.getNumDice() + numToAdd);
+                        pile.NumDice += numToAdd;
                         //We don't have a way to check if that worked, so we'll assume it did.
                         return true;
                     }
                     else if (advdis > 0)
                     {
-                        pile.setNumAdv(pile.getNumAdv() + numToAdd);
+                        pile.NumAdv += numToAdd;
                         //We don't have a way to check if that worked, so we'll assume it did.
                         return true;
                     }
                     else if (advdis < 0)
                     {
-                        pile.setNumDis(pile.getNumDis() + numToAdd);
+                        pile.NumDis += numToAdd;
                         //We don't have a way to check if that worked, so we'll assume it did.
                         return true;
                     }
@@ -137,9 +137,9 @@ namespace ArkDice
 
             for (int a = 0; a < Dice.Count(); a++)
             {
-                int size = Dice[a].getDieSize();
-                int adv = Dice[a].getNumAdv();
-                int dis = Dice[a].getNumDis();
+                int size = Dice[a].DieSize;
+                int adv = Dice[a].NumAdv;
+                int dis = Dice[a].NumDis;
                 if (adv > 0 || dis > 0)
                 {
                     //Adding dice to piles with advantage and/or disadvantage throws off the math, so we're not going to do it.
@@ -148,7 +148,7 @@ namespace ArkDice
 
                 if (size == dieSize)
                 {
-                    int newNum = Dice[a].getNumDice() + numDice;
+                    int newNum = Dice[a].NumDice + numDice;
                     if (newNum <= 0)
                     {
                         //We're going to remove this entry.
@@ -158,7 +158,7 @@ namespace ArkDice
                     else
                     {
                         //We're going to increase/reduce this entry without removing it.
-                        Dice[a].setNumDice(newNum);
+                        Dice[a].NumDice =newNum;
                         return true;
                     }
                 }
@@ -214,7 +214,7 @@ namespace ArkDice
 
             foreach (var dp in Dice)
             {
-                DiceResponse roll = dp.roll(stats);
+                DiceResponse roll = dp.Roll(stats);
                 int tempTot = roll.Total;
                 string tempDesc = roll.Description;
 
@@ -223,7 +223,7 @@ namespace ArkDice
                 {
                     //Something is already here, we'll add a + or -.
                     string symbol = "+";
-                    if (dp.getMultiplier() == -1)
+                    if (dp.Multiplier == -1)
                     {
                         symbol = "-";
                     }
@@ -250,14 +250,14 @@ namespace ArkDice
             for (int a = 0; a < Dice.Count; a++)
             {
                 DicePile dp = Dice[a];
-                int numDice = dp.getNumDice();
-                int dieSize = dp.getDieSize();
-                int bonus = dp.getBonus();
-                string dynamicBonus = dp.getDynamicBonus();
+                int numDice = dp.NumDice;
+                int dieSize = dp.DieSize;
+                int bonus = dp.FlatBonus;
+                string dynamicBonus = dp.DynamicBonus;
 
-                int numAdv = dp.getNumAdv();
-                int numDis = dp.getNumDis();
-                int multiplier = dp.getMultiplier();
+                int numAdv = dp.NumAdv;
+                int numDis = dp.NumDis;
+                int multiplier = dp.Multiplier;
 
                 //+ or -, if necessary.
                 if (multiplier < 0)
@@ -331,7 +331,7 @@ namespace ArkDice
                 //Create a duplicate of the DicePile and add it to the list.
                 //We won't do anything to combine stuff under the assumption that the user probably wants things the way they wrote it.
 
-                DicePile temp = dp.copyMe();
+                DicePile temp = dp.CopyMe();
 
                 this.Dice.Add(temp);
             }
@@ -516,40 +516,40 @@ namespace ArkDice
                 if (matches.Groups[1].Value == "-") {
                     multiplier = -1;
                 }
-                ret.setMultiplier(multiplier);
+                ret.Multiplier = multiplier;
             }
 
             //Number of dice, if present.
             if (matches.Groups[2].Value.Length > 0)
             {
                 int numDice = Int32.Parse(matches.Groups[2].Value);
-                ret.setNumDice(numDice);
+                ret.NumDice = numDice;
             }
             else if (matches.Groups[3].Value.Length > 0)
             {
                 //It looks like we got something in the format "dX" so we'll set the number of dice to 1.
-                ret.setNumDice(1);
+                ret.NumDice = 1;
             }
 
             //Die size, if present.
             if (matches.Groups[3].Value.Length > 0)
             {
                 int dieSize = Int32.Parse(matches.Groups[3].Value);
-                ret.setDieSize(dieSize);
+                ret.DieSize = dieSize;
             }
 
             //Flat bonus, if present.
             if (matches.Groups[4].Value.Length > 0)
             {
                 int bonus = Int32.Parse(matches.Groups[4].Value);
-                ret.setBonus(bonus);
+                ret.FlatBonus = bonus;
             }
 
             //Dynamic bonus, if present
             if (matches.Groups[5].Value.Length > 0)
             {
                 string dynamicBonus = matches.Groups[5].Value;
-                ret.setDynamicBonus(dynamicBonus);
+                ret.DynamicBonus = dynamicBonus;
             }
 
             //Adv/Dis, if present.
@@ -613,14 +613,14 @@ namespace ArkDice
                 }
             }
             //Now we actually set the numbers we found.
-            ret.setNumAdv(numAdv);
-            ret.setNumDis(numDis);
+            ret.NumAdv = numAdv;
+            ret.NumDis = numDis;
 
             //Handle any conditions specified.
             if (matches.Groups[10].Value.Length > 0)
             {
                 List<DiceCondition> conditions = ParseDiceCondition(matches.Groups[10].Value);
-                ret.setConditions(conditions);
+                ret.Conditions = conditions;
             }
             else
             {
