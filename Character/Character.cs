@@ -1446,6 +1446,23 @@ namespace Character //change to ArkDice?
             return this.Abilities;
         }
 
+        //
+        public Ability GetAbilityByID (string abilityID)
+        {
+            for (int a = 0; a <  this.Abilities.Count; a++)
+            {
+                if (Abilities[a].ID == abilityID)
+                {
+                    return Abilities[a];
+                }
+            }
+
+            //what to return when it's not found?
+            //change it to returning the ability by reference?
+            //return new Ability();
+            return null;
+        }
+
         public List<Ability> GetBasicAbilities ()
         {
             return this.BasicAbilities;

@@ -4,16 +4,24 @@ using System.Reflection.PortableExecutable;
 
 namespace ArkDice
 {
+    //This class represents one or more dice of the same size, or a non-die bonus to a roll.
     public class DicePile
     {
+        //Number of sides per die.
         public int DieSize { get; set; }
+        //The number of dice.
         public int NumDice { get; set; }
+        //This many additional dice will be rolled, and then this many of the lowest rolls will be dropped.
         public int NumAdv { get; set; }
+        //This many additional dice will be rolled, and then this many of the highest rolls will be dropped.
         public int NumDis { get; set; }
+        //A flat, unchanging bonus to a roll (ie: +4)
         public int FlatBonus { get; set; }
+        //A bonus to a roll based on some external condition, like a character's stats.
         public string DynamicBonus { get; set; }
+        //The total of the roll will be multiplied by this number.
+        //Should generally be either 1 or -1 to represent positive or negative, but other values can be used if necessary.
         public int Multiplier { get; set; }
-        //change to bool positive?
         //change to float/double so we can do division with it?
             //at that point, it might be better to find another way.
 
@@ -23,23 +31,13 @@ namespace ArkDice
         //private int[] mapping;
         //still to be done.
 
+        //Coming soon?
         public List<DiceCondition> Conditions { get; set; }
 
         //These two are used by the program to temporarily store values that get generated.
-        //These aren't needed anymore, but I'll leave them in for now because they're not really hurting anything.
+        //These theoretically aren't needed anymore, but I'll leave them in for now because they're not really hurting anything.
         public int Total { get; set; }
         public string Description { get; set; }
-
-        //potential bonuses to be able to handle:
-            //statmod
-            //statscore
-            //prof
-                //just prof or make it so it'll calculate prof/no and add prof/0?
-                    //and expertise?
-                    //probably just prof, certainly for now.
-            //level?
-            //use some type of array, probably of strings, and parse them later.
-                //make the roll() function take an optional dictionary of character details.
 
         //consider dropping bonus and finding a different way to represent it.
             //if die size is 0, treat num dice as the bonus?
@@ -48,14 +46,15 @@ namespace ArkDice
 
         //possibly add a descriptor
             //so we can have things like 1d8 + 1 slashing + 3d6 fire and it'll output something like "4 slashing + 10 fire = 14"
-            //just have it be applied to everything before it.
+            //just have it be applied to everything before it but after the previous descriptor.
+                //if I do this, add an option for a 'no descriptor' keyword. "nodescriptor" ?
             //how to identify descriptors and separate them from other stuff?
                 //maybe require that they be wrapped in square brackets or something.
                     //manually specify no type by adding [] after a chunk.
                 //maybe require that the dice chunk(s) and the descriptor both be wrapped in the same square brackets.
                     //ie: 4d6 + [2d6 + 1 fire] + [1d8 slashing]
                     //then expect that the type will be the last part
-            //have it be smart enough to combine like types at some point in the process.
+            //have it be smart enough to combine like types at some point in the process?
                 //probably after rolling, so the description contains the dice in the order they were specified.
                 //set up an object or something and set up an index in it for each type specified?
 
@@ -294,6 +293,7 @@ namespace ArkDice
             return new DiceResponse(true, this.Total, this.Description);
         }
 
+        //Returns a string that, if fed into the appropriate function in a DiceCollection instance, will get a duplicate of this.
         public string GetDiceString ()
         {
             string ret = "";
@@ -325,6 +325,7 @@ namespace ArkDice
 
         //Overloading operators, and related functions.
         //-------- -------- -------- -------- -------- -------- -------- -------- 
+        //Combines this object with another DicePile.
         public DicePile Combine (DicePile other)
         {
             //

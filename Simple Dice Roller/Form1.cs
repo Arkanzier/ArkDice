@@ -26,27 +26,20 @@ namespace Simple_Dice_Roller
         //Columns: name -> total -> description
         //maybe timestamp too?
 
+        //Hold the character that's loaded.
         internal Character.Character loadedCharacter;
 
+        //Holds the collection of dice that are currently selected via the dice roller tab.
         internal DiceCollection currentDice;
 
+        //Hold the most recently rolled collection of dice from the dice roller tab.
         internal DiceCollection lastDice;
 
-        //something for storing the previous roll.
-        //by string?
-        //DiceCollection?
-        //also add a button to trigger rolling the last roll.
-        //put a display somewhere to indicate what it is, in case people forget?
-        //something to store the dice being collected via the various dice buttons, once I add them.
-        //also a button to trigger that.
-        //make it the same button as the one hooked to the text box?
-        //that would require deciding how to handle when there's stuff for both, but that should be doable enough.
-        //i'll want some kind of visual representation of the collection of dice that's been added up.
-        //since it'll be a string anyway, use this for the 'previous roll' variable?
-        //how much effort do I want to put in toward compacting this?
-        //ie: if the user hits d6 -> d4 -> d6, should this display d6+d4+d6 or 2d6+d4?
-        //I like the second one, but that might be a pain if I'm actually storing things as a string only.
+        //Holds information about which rows in AbilitiesArea to display extra information for.
+        //The key is the row's ID value.
+        //The other one is the chunk of text to display.
 
+        Dictionary<string, Panel> AbilitiesAreaDetails;
 
         //Constructor(s):
         //-------- -------- -------- -------- -------- -------- -------- -------- 
@@ -75,6 +68,8 @@ namespace Simple_Dice_Roller
 
             //Stores the last-rolled collection of dice from the dice roller.
             lastDice = new DiceCollection();
+
+            AbilitiesAreaDetails = new Dictionary<string, Panel>();
         }
 
 
@@ -133,8 +128,19 @@ namespace Simple_Dice_Roller
             {
 
             }
+            else
+            {
+                //We don't want to redraw everything.
+                return;
+            }
 
             //Update everything in case stuff changed.
+            //to do:
+            //redo any sorting or whatever that was done, after running these.
+            //sorting
+            //row selection
+            //row height changing
+            //Move DisplayAbility or whatever outside of DisplayCharacter, and just call them all separately?
             DisplayCharacter(loadedCharacter);
             DisplayClassList(loadedCharacter);
             UpdateHealthDisplay();
@@ -510,12 +516,126 @@ namespace Simple_Dice_Roller
 
         private void TestButton_Click(object sender, EventArgs e)
         {
-            //string resp = loadedCharacter.ToString();
-            //MessageBox.Show(resp);
-            //loadedCharacter.RegainHD("half");
-            loadedCharacter.RechargeAbilities("long rest");
-            DisplayClassList(loadedCharacter);
-            DisplayAbilities(loadedCharacter);
+            //testing listviews
+            /*
+            ListViewTest.Columns.Add("Col1", 100, HorizontalAlignment.Left);
+            ListViewTest.Columns.Add("Col2", 50, HorizontalAlignment.Left);
+            ListViewTest.Columns.Add("Col3ccccc", 200, HorizontalAlignment.Left);
+
+            string[] temp = { "row 1", "second box", "aaa" };
+            ListViewTest.Items.Add(new ListViewItem(temp));
+
+            ListViewItem templvi = new ListViewItem("row 2");
+            templvi.SubItems.Add("#2");
+            templvi.SubItems.Add("Programmatically added");
+            ListViewTest.Items.Add(templvi);
+
+            temp = new[] { "row 3", "333", "trace" };
+            ListViewTest.Items.Add(new ListViewItem(temp));
+
+            temp = new[] { "row 4", "this row has only 2 columns" };
+            ListViewItem lvi = new ListViewItem(temp);
+            ListViewTest.Items.Add(lvi);
+            ListViewTest.Items[3].SubItems[1].Text = "#1";
+            //this is, in fact, the proper way to access a cell and change it's text.
+
+            //ListViewTest.Items[3].ListView.Columns[2].Dispose();
+            //This gets rid of the column for all rows.
+
+            //ListViewTest.Items.Add(new ListViewItem(new ListView()));
+
+            //ListViewTest.Groups.Add(new ListViewGroup("group goes here"));
+            //ListViewTest.Groups.Add(new ListViewGroup("this is a second group"));
+            */
+
+            //----------------
+            //Testing creating a second form as a popup
+            /*
+            var formPopup = new Form();
+            formPopup.Show(this);
+            */
+            //Creates a new window, I don't want that.
+
+            //Testing creating a panel as a popup
+            /*
+            Panel myPanel = new Panel();
+            myPanel.Width = 100;
+            myPanel.Height = 100;
+            myPanel.Location = new Point (1, 1);
+            myPanel.BringToFront();
+            
+            myPanel.Show();
+            myPanel.Visible = true;
+            */
+            //Does nothing, apparently
+
+            /*
+            //Getting ahold of the row location and dimensions:
+            //double top = AbilitiesArea.CurrentRow.AccessibilityObject.Bounds.Top;
+            //double right = AbilitiesArea.CurrentRow.AccessibilityObject.Bounds.Right;
+            //double bottom = AbilitiesArea.CurrentRow.AccessibilityObject.Bounds.Bottom;
+            //double left = AbilitiesArea.CurrentRow.AccessibilityObject.Bounds.Left;
+            double top = AbilitiesArea.Rows[1].AccessibilityObject.Bounds.Top;
+            double right = AbilitiesArea.Rows[1].AccessibilityObject.Bounds.Right;
+            double bottom = AbilitiesArea.Rows[1].AccessibilityObject.Bounds.Bottom;
+            double left = AbilitiesArea.Rows[1].AccessibilityObject.Bounds.Left;
+
+            //MessageBox.Show("This row's edges are " + top + "-" + bottom + " vertically and " + left + "-" + right + " horizontally.");
+
+            double width = right - left;
+            double height = bottom - top;
+
+            left = 0;
+            top = 0;
+            height = 100;
+            width = 100;
+
+            //MessageBox.Show("Going to draw box starting at " + left + ", " + top + " and it will be " + width + " px wide and " + height + " px tall.");
+
+            //Draw a box on top of that row, except the 25px at the top.
+            System.Drawing.SolidBrush brush = new System.Drawing.SolidBrush(System.Drawing.Color.Blue);
+            System.Drawing.Graphics formGraphics;
+            formGraphics = this.CreateGraphics();
+            Rectangle rect = new Rectangle((int)left, (int)top, (int)width, (int)height);
+            formGraphics.FillRectangle(brush, rect);
+            //rect.BringToFront();
+            //This works, but it draws the box behind the datagridview.
+
+            brush.Dispose();
+            formGraphics.Dispose();
+
+            //DataGridView dgv = new DataGridView();
+            //dgv.Columns.Add("theone", "the one");
+            //AbilitiesArea.Rows[1].CreateCells(dgv);
+                //row provided already belongs to a datagridview
+                //fuckin duh
+            */
+
+
+            //This works, but:
+            //it fills one cell's position.
+            //it doesn't scroll with the table.
+            /*
+            DateTimePicker dtp = new DateTimePicker();
+            dtp.Value = DateTime.Now.AddDays(-10);
+            //add DateTimePicker into the control collection of the DataGridView
+            this.AbilitiesArea.Controls.Add(dtp);
+            //set its location and size to fit the cell
+            dtp.Location = this.AbilitiesArea.GetCellDisplayRectangle(0, 3, true).Location;
+            dtp.Size = this.AbilitiesArea.GetCellDisplayRectangle(0, 3, true).Size;
+            */
+
+            //Testing big single detail panel
+            /*
+            if (AbilityDetailPanel.Visible)
+            {
+                AbilityDetailPanel.Visible = false;
+            }
+            else
+            {
+                DisplayAbilityDetails("FontofMagic");
+            }
+            */
         }
 
 
@@ -550,6 +670,11 @@ namespace Simple_Dice_Roller
                 //And disappear when they click another row.
                 //Make sure the user can scroll horizontally when relevant.
             }
+
+            //Prevent the program from auto-selecting the first row.
+            //Doesn't seem to work. Multiselect only?
+            //AbilitiesArea.ClearSelection();
+            //AbilitiesArea.CurrentCell = null;
         }
 
         //Display a character's info in the character tab.
@@ -772,6 +897,190 @@ namespace Simple_Dice_Roller
         private void CharacterTab_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void AbilitiesArea_SelectionChanged(object sender, EventArgs e)
+        {
+            //change to a 'when a row is clicked' ?
+
+            //MessageBox.Show("Selection changed");
+            //to do: ignore the autoselect when the user first switches to that tab.
+            //set it to not autoselect the first row initially?
+
+
+
+            //get rid of this one?
+        }
+
+        private void AbilitiesArea_Scroll(object sender, ScrollEventArgs e)
+        {
+            UpdateAbilitiesAreaDetails();
+            //to do: does this trigger before or after scrolling?
+        }
+
+        //Handles the positioning of abilities area detail thingies, including for scrolling.
+        private void UpdateAbilitiesAreaDetails()
+        {
+            //MessageBox.Show("UpdateAbilitiesAreaDetails()");
+            foreach (var thingy in AbilitiesAreaDetails)
+            {
+                string id = thingy.Key;
+                Panel detailArea = thingy.Value;
+
+                int rowIndex = GetIndexForRow(id);
+
+                //Get the location and dimensions to set this.
+                int top = AbilitiesArea.Rows[rowIndex].AccessibilityObject.Bounds.Top;
+                int left = AbilitiesArea.Rows[rowIndex].AccessibilityObject.Bounds.Left;
+                int bottom = AbilitiesArea.Rows[rowIndex].AccessibilityObject.Bounds.Bottom;
+                int right = AbilitiesArea.Rows[rowIndex].AccessibilityObject.Bounds.Right;
+
+                //test: get the grid's location and subtract that
+                int gridTop = AbilitiesArea.AccessibilityObject.Bounds.Top;
+                int gridLeft = AbilitiesArea.AccessibilityObject.Bounds.Left;
+
+                if (top > bottom)
+                {
+                    //This row is too short for this.
+                    //complain?
+                    return;
+                    //to do: change to just hiding this one and moving on?
+                }
+
+                int height = bottom - top;
+                int width = right - left;
+                //to do: add up all column widths?
+                //this is going to the edge of the grid, not to the visible edge of the row.
+
+                //We need to account for the fact that we set position relative to the grid.
+                top -= gridTop;
+                left -= gridLeft;
+
+                //Leave ourselves 25px of row to click on.
+                height -= 25;
+                top += 25;
+
+                //MessageBox.Show("Setting panel to " + left + "," + top + " and " + width + "x" + height);
+
+                Rectangle rect = new Rectangle(left, top, width, height);
+
+                //Now set the panel's size and location.
+                detailArea.Bounds = rect;
+                detailArea.Visible = true;
+                detailArea.BringToFront();
+            }
+        }
+
+        //Looks up the index for the AbilitiesArea row with a particular ID.
+        //Returns the row's index if found, or -1 if not.
+        //to do: make it take in some indicator of which grid it should reference.
+        private int GetIndexForRow(string id)
+        {
+            //Look up the index of the id column
+            int colIndex = AbilitiesArea.Columns["Abilities_IDCol"].Index;
+            //MessageBox.Show("Column index is " + colIndex);
+            if (colIndex < 0)
+            {
+                //complain
+                return -1;
+            }
+
+            for (int a = 0; a < AbilitiesArea.Rows.Count; a++)
+            {
+                if (AbilitiesArea.Rows[a].Cells[colIndex].Value.ToString() == id)
+                {
+                    return a;
+                }
+            }
+
+            return -1;
+        }
+
+        //Displays or hides the detail view for any given row in AbilitiesArea.
+        //to do: pass in a grid for this to reference.
+        private void ToggleGridExpand(int rowNum)
+        {
+            //Expand the row.
+            if (AbilitiesArea.Rows[rowNum].Height > 100)
+            {
+                //Shrink the row back to normal.
+                //to do: there's probably a function or something for getting this thing's preferred height.
+                //look that up and use it.
+                AbilitiesArea.Rows[rowNum].Height = AbilitiesArea.Rows[rowNum].GetPreferredHeight(rowNum, DataGridViewAutoSizeRowMode.AllCellsExceptHeader, true);
+
+                //Remove this panel from the list.
+                string? id = AbilitiesArea.Rows[rowNum].Cells["Abilities_IDCol"].Value.ToString();
+                if (id == null)
+                {
+                    //complain
+                    return;
+                }
+                AbilitiesAreaDetails[id].Dispose();
+            }
+            else
+            {
+
+                string? id = AbilitiesArea.Rows[rowNum].Cells["Abilities_IDCol"].Value.ToString();
+                string? text = AbilitiesArea.Rows[rowNum].Cells["Abilities_TextCol"].Value.ToString();
+
+                if (id == null || text == null)
+                {
+                    //Log something?
+                    return;
+                }
+
+                //Expand the row.
+                AbilitiesArea.Rows[rowNum].Height = AbilitiesArea.Rows[rowNum].Height + 100;
+
+                //Create an appropriate panel and add it to the list.
+                //to do: write a function for this
+                //to do: set up a function for when the panel is clicked: treat that like clicking the row again.
+                Panel newPanel = new Panel();
+                Label newLabel = new Label();
+                newLabel.Text = text;
+                newLabel.Left = 6;
+                newLabel.Top = 6;
+                //set height and width to the panel's height and width -12 each
+                newLabel.Width = AbilitiesArea.Rows[0].AccessibilityObject.Bounds.Width - 12;
+                newLabel.Height = 88; //hardcoded 100px height - 12px for margins = 88px
+                newPanel.Controls.Add(newLabel);
+                AbilitiesArea.Controls.Add(newPanel);
+                AbilitiesAreaDetails[id] = newPanel;
+            }
+
+            UpdateAbilitiesAreaDetails();
+        }
+
+        private void AbilitiesArea_CellMouseUp(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            //If the user clicks and drags, this triggers on the one where they let go.
+            //Leave that alone?
+            //Also watch where they start clicking and require that they be the same row?
+            //Make this do nothing if the user moves the mouse more than x px while the button is down?
+
+            //Check if this row is currently selected.
+            int rowNum = e.RowIndex;
+            if (rowNum < 0)
+            {
+                return;
+            }
+            //MessageBox.Show("Clicked on row " + rowNum);
+            if (AbilitiesArea.SelectedRows.Count == 0)
+            {
+                //The row just got unselected somehow.
+                //I don't think this is possible without multiselect.
+            }
+            else if (AbilitiesArea.SelectedRows[0].Index != rowNum)
+            {
+                //A different row just got selected.
+                //Can this happen?
+                ToggleGridExpand(rowNum);
+            }
+            else
+            {
+                //This row just got selected.
+                ToggleGridExpand(rowNum);
+            }
         }
     }
 }

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
             rollDice = new Button();
             outputTotal = new Label();
             diceStringBox = new TextBox();
@@ -129,7 +130,6 @@
             CharLabel_Damage = new Label();
             Char_Health = new Label();
             CharLabel_Health = new Label();
-            TestButton = new Button();
             Button_SaveCharacter = new Button();
             Char_Prof = new Label();
             CharLabel_Prof = new Label();
@@ -197,8 +197,10 @@
             Abilities_Plus1Col = new DataGridViewButtonColumn();
             Abilities_Minus1Col = new DataGridViewButtonColumn();
             MagicTab = new TabPage();
+            ListViewTest = new ListView();
             label8 = new Label();
             label7 = new Label();
+            TestButton = new Button();
             MainTabArea.SuspendLayout();
             DiceTab.SuspendLayout();
             CharacterTab.SuspendLayout();
@@ -1083,7 +1085,6 @@
             CharacterTab.Controls.Add(CharLabel_Damage);
             CharacterTab.Controls.Add(Char_Health);
             CharacterTab.Controls.Add(CharLabel_Health);
-            CharacterTab.Controls.Add(TestButton);
             CharacterTab.Controls.Add(Button_SaveCharacter);
             CharacterTab.Controls.Add(Char_Prof);
             CharacterTab.Controls.Add(CharLabel_Prof);
@@ -1379,16 +1380,6 @@
             CharLabel_Health.Size = new Size(45, 15);
             CharLabel_Health.TabIndex = 59;
             CharLabel_Health.Text = "Health:";
-            // 
-            // TestButton
-            // 
-            TestButton.Location = new Point(559, 139);
-            TestButton.Name = "TestButton";
-            TestButton.Size = new Size(75, 23);
-            TestButton.TabIndex = 58;
-            TestButton.Text = "Test";
-            TestButton.UseVisualStyleBackColor = true;
-            TestButton.Click += TestButton_Click;
             // 
             // Button_SaveCharacter
             // 
@@ -1952,12 +1943,26 @@
             AbilitiesArea.AllowUserToDeleteRows = false;
             AbilitiesArea.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             AbilitiesArea.Columns.AddRange(new DataGridViewColumn[] { Abilities_NumberCol, Abilities_IDCol, Abilities_NameCol, Abilities_TextCol, Abilities_RechargeCol, Abilities_DiceCol, Abilities_UsesCol, Abilities_UseButtonCol, Abilities_Plus1Col, Abilities_Minus1Col });
+            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.TopLeft;
+            dataGridViewCellStyle1.BackColor = SystemColors.Window;
+            dataGridViewCellStyle1.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            dataGridViewCellStyle1.ForeColor = SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = DataGridViewTriState.False;
+            AbilitiesArea.DefaultCellStyle = dataGridViewCellStyle1;
+            AbilitiesArea.EditMode = DataGridViewEditMode.EditProgrammatically;
             AbilitiesArea.Location = new Point(6, 6);
+            AbilitiesArea.MultiSelect = false;
             AbilitiesArea.Name = "AbilitiesArea";
             AbilitiesArea.RowTemplate.Height = 25;
-            AbilitiesArea.Size = new Size(729, 520);
+            AbilitiesArea.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            AbilitiesArea.Size = new Size(760, 523);
             AbilitiesArea.TabIndex = 20;
             AbilitiesArea.CellContentClick += AbilitiesArea_CellContentClick;
+            AbilitiesArea.CellMouseUp += AbilitiesArea_CellMouseUp;
+            AbilitiesArea.Scroll += AbilitiesArea_Scroll;
+            AbilitiesArea.SelectionChanged += AbilitiesArea_SelectionChanged;
             // 
             // Abilities_NumberCol
             // 
@@ -2022,6 +2027,7 @@
             // 
             // MagicTab
             // 
+            MagicTab.Controls.Add(ListViewTest);
             MagicTab.Controls.Add(label8);
             MagicTab.Controls.Add(label7);
             MagicTab.Location = new Point(4, 24);
@@ -2032,10 +2038,20 @@
             MagicTab.Text = "Magic";
             MagicTab.UseVisualStyleBackColor = true;
             // 
+            // ListViewTest
+            // 
+            ListViewTest.FullRowSelect = true;
+            ListViewTest.Location = new Point(61, 77);
+            ListViewTest.Name = "ListViewTest";
+            ListViewTest.Size = new Size(493, 316);
+            ListViewTest.TabIndex = 2;
+            ListViewTest.UseCompatibleStateImageBehavior = false;
+            ListViewTest.View = View.Details;
+            // 
             // label8
             // 
             label8.AutoSize = true;
-            label8.Location = new Point(168, 146);
+            label8.Location = new Point(272, 14);
             label8.Name = "label8";
             label8.Size = new Size(125, 15);
             label8.TabIndex = 1;
@@ -2044,11 +2060,21 @@
             // label7
             // 
             label7.AutoSize = true;
-            label7.Location = new Point(124, 58);
+            label7.Location = new Point(121, 14);
             label7.Name = "label7";
             label7.Size = new Size(102, 15);
             label7.TabIndex = 0;
             label7.Text = "Spell slots go here";
+            // 
+            // TestButton
+            // 
+            TestButton.Location = new Point(697, 578);
+            TestButton.Name = "TestButton";
+            TestButton.Size = new Size(75, 23);
+            TestButton.TabIndex = 58;
+            TestButton.Text = "Test";
+            TestButton.UseVisualStyleBackColor = true;
+            TestButton.Click += TestButton_Click;
             // 
             // Form1
             // 
@@ -2057,6 +2083,7 @@
             ClientSize = new Size(804, 833);
             Controls.Add(MainTabArea);
             Controls.Add(outputDescription);
+            Controls.Add(TestButton);
             Name = "Form1";
             MainTabArea.ResumeLayout(false);
             DiceTab.ResumeLayout(false);
@@ -2120,16 +2147,6 @@
         private TabPage AbilitiesTab;
         private DataGridView AbilitiesArea;
         private DataGridView BasicAbilitiesArea;
-        private DataGridViewTextBoxColumn Abilities_NumberCol;
-        private DataGridViewTextBoxColumn Abilities_IDCol;
-        private DataGridViewTextBoxColumn Abilities_NameCol;
-        private DataGridViewTextBoxColumn Abilities_TextCol;
-        private DataGridViewTextBoxColumn Abilities_RechargeCol;
-        private DataGridViewTextBoxColumn Abilities_DiceCol;
-        private DataGridViewTextBoxColumn Abilities_UsesCol;
-        private DataGridViewButtonColumn Abilities_UseButtonCol;
-        private DataGridViewButtonColumn Abilities_Plus1Col;
-        private DataGridViewButtonColumn Abilities_Minus1Col;
         private DataGridViewTextBoxColumn Basic_NumberCol;
         private DataGridViewTextBoxColumn Basic_IDCol;
         private DataGridViewTextBoxColumn Basic_NameCol;
@@ -2246,5 +2263,16 @@
         private DataGridViewButtonColumn SpendHDButton;
         private DataGridViewButtonColumn AddHDButton;
         private DataGridViewButtonColumn SubtractHDButton;
+        private ListView ListViewTest;
+        private DataGridViewTextBoxColumn Abilities_NumberCol;
+        private DataGridViewTextBoxColumn Abilities_IDCol;
+        private DataGridViewTextBoxColumn Abilities_NameCol;
+        private DataGridViewTextBoxColumn Abilities_TextCol;
+        private DataGridViewTextBoxColumn Abilities_RechargeCol;
+        private DataGridViewTextBoxColumn Abilities_DiceCol;
+        private DataGridViewTextBoxColumn Abilities_UsesCol;
+        private DataGridViewButtonColumn Abilities_UseButtonCol;
+        private DataGridViewButtonColumn Abilities_Plus1Col;
+        private DataGridViewButtonColumn Abilities_Minus1Col;
     }
 }
