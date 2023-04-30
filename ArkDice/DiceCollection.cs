@@ -3,6 +3,9 @@ using System.Reflection.PortableExecutable;
 using System.Text.RegularExpressions;
 using System.Transactions;
 using static System.Formats.Asn1.AsnWriter;
+using System.Text.Json;
+using System.Collections;
+using System.Text.Json.Serialization;
 //using System.Windows.Forms;
 
 namespace ArkDice
@@ -14,7 +17,9 @@ namespace ArkDice
         public List<DiceCondition> Conditions { get; set; }
 
         //These two are used by the program to temporarily store values that get generated.
+        [JsonIgnore]
         public int Total { get; set; }
+        [JsonIgnore]
         public string Description { get; set; }
 
         //To add eventually:
@@ -22,13 +27,17 @@ namespace ArkDice
         //Just specify a dice string or provide a DicePile or whatever and this will search it's own list to modify, add, or remove a DicePile as needed.
 
         //Constructor(s)
-        public DiceCollection (string diceString = "")
+        [JsonConstructor]
+        public DiceCollection()
         {
-            Dice = new List<DicePile> ();
+            Dice = new List<DicePile>();
+            Conditions = new List<DiceCondition>();
             Total = 0;
             Description = "";
-            Conditions = new List<DiceCondition> ();
-
+        }
+        public DiceCollection (string diceString = "")
+            : this()
+        {
             //It's possible for there to be 'no dice string' in things.
             //This is represented by specifying 'false' for the dice string.
             if (diceString.ToLower() == "false")

@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using System.Reflection.Metadata.Ecma335;
 using System.Reflection.PortableExecutable;
+using System.Text.Json.Serialization;
 
 namespace ArkDice
 {
@@ -36,31 +37,47 @@ namespace ArkDice
 
         //These two are used by the program to temporarily store values that get generated.
         //These theoretically aren't needed anymore, but I'll leave them in for now because they're not really hurting anything.
+        [JsonIgnore]
         public int Total { get; set; }
+        [JsonIgnore]
         public string Description { get; set; }
 
         //consider dropping bonus and finding a different way to represent it.
-            //if die size is 0, treat num dice as the bonus?
-            //We're generally only going to need it once or twice in a given string, even if it's very long.
-            //It makes sense to be able to split on every + and almost every -
+        //if die size is 0, treat num dice as the bonus?
+        //We're generally only going to need it once or twice in a given string, even if it's very long.
+        //It makes sense to be able to split on every + and almost every -
 
         //possibly add a descriptor
-            //so we can have things like 1d8 + 1 slashing + 3d6 fire and it'll output something like "4 slashing + 10 fire = 14"
-            //just have it be applied to everything before it but after the previous descriptor.
-                //if I do this, add an option for a 'no descriptor' keyword. "nodescriptor" ?
-            //how to identify descriptors and separate them from other stuff?
-                //maybe require that they be wrapped in square brackets or something.
-                    //manually specify no type by adding [] after a chunk.
-                //maybe require that the dice chunk(s) and the descriptor both be wrapped in the same square brackets.
-                    //ie: 4d6 + [2d6 + 1 fire] + [1d8 slashing]
-                    //then expect that the type will be the last part
-            //have it be smart enough to combine like types at some point in the process?
-                //probably after rolling, so the description contains the dice in the order they were specified.
-                //set up an object or something and set up an index in it for each type specified?
+        //so we can have things like 1d8 + 1 slashing + 3d6 fire and it'll output something like "4 slashing + 10 fire = 14"
+        //just have it be applied to everything before it but after the previous descriptor.
+        //if I do this, add an option for a 'no descriptor' keyword. "nodescriptor" ?
+        //how to identify descriptors and separate them from other stuff?
+        //maybe require that they be wrapped in square brackets or something.
+        //manually specify no type by adding [] after a chunk.
+        //maybe require that the dice chunk(s) and the descriptor both be wrapped in the same square brackets.
+        //ie: 4d6 + [2d6 + 1 fire] + [1d8 slashing]
+        //then expect that the type will be the last part
+        //have it be smart enough to combine like types at some point in the process?
+        //probably after rolling, so the description contains the dice in the order they were specified.
+        //set up an object or something and set up an index in it for each type specified?
 
 
         //Constructor(s)
         //-------- -------- -------- -------- -------- -------- -------- -------- 
+        [JsonConstructor]
+        public DicePile ()
+        {
+            DieSize = 0;
+            NumDice = 0;
+            NumAdv = 0;
+            NumDis = 0;
+            FlatBonus = 0;
+            DynamicBonus = "";
+            Multiplier = 0;
+            Conditions = new List<DiceCondition> ();
+            Total = 0;
+            Description = "";
+        }
         public DicePile (int dieSize, int numDice, int bonus, string dynamicBonus, int numAdv, int numDis, int multiplier, List<DiceCondition> conditions)
         {
             this.DieSize = dieSize;

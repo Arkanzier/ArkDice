@@ -57,11 +57,7 @@ namespace Simple_Dice_Roller
             string filepath = folderpath + "Tiriel.char";
             string contents = File.ReadAllText(filepath);
 
-            //Stores the currently loaded character.
-            Character.Character currentCharacter = new Character.Character(contents);
-            loadedCharacter = currentCharacter;
-            //MessageBox.Show(currentCharacter.ToString());
-            DisplayCharacter(currentCharacter);
+            AbilitiesAreaDetails = new Dictionary<string, Panel>();
 
             //Currently selected dice for the dice roller.
             currentDice = new DiceCollection();
@@ -69,449 +65,71 @@ namespace Simple_Dice_Roller
             //Stores the last-rolled collection of dice from the dice roller.
             lastDice = new DiceCollection();
 
-            AbilitiesAreaDetails = new Dictionary<string, Panel>();
+            //Stores the currently loaded character.
+            Character.Character currentCharacter = new Character.Character(contents);
+            loadedCharacter = currentCharacter;
+            //MessageBox.Show(currentCharacter.ToString());
+            DisplayCharacter(currentCharacter);
         }
 
 
-        //Functions that get called by the form:
+        //Misc functions
         //-------- -------- -------- -------- -------- -------- -------- -------- 
-
-        //Handlers for the buttons in the abilities list.
-        private void AbilitiesArea_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        //Display the log messages in the log messages area.
+        private void DisplayMessages()
         {
-            //Do we need to manually do something to make the row selected?
+            string text = "";
 
-            int colIndex = e.ColumnIndex;
-            string colName = AbilitiesArea.Columns[colIndex].Name;
-
-            //MessageBox.Show("Button clicked: col is " + colName);
-
-            int rowNum = e.RowIndex;
-            //string aaaa = AbilitiesArea2.Rows[rowNum].Cells["NameCol"].ToString();
-            string abilityID = "init";
-            try
+            foreach (string message in logMessages)
             {
-                abilityID = AbilitiesArea.Rows[rowNum].Cells[1].Value.ToString();
-                //MessageBox.Show ("Found ability ID " + abilityID);
-            }
-            catch
-            {
-                abilityID = "null";
-            }
-
-            //MessageBox.Show("Button clicked: col is " + abilityID);
-
-            //to do: consider doing this by the column index instead.
-            if (colName == "Abilities_UseButtonCol")
-            {
-                DiceResponse resp = loadedCharacter.UseAbility(abilityID);
-                LogMessage(resp.Description);
-                //MessageBox.Show(resp.description);
-                //to do: check if description is actually present.
-                //maybe change the class and it's getters so it'll do something special if I call getDescription() when there isn't a description?
-                //with monotype variables I don't think that's going to do a lot, so maybe not.
-                if (resp.Success)
+                if (text != "")
                 {
-                    //MessageBox.Show("Ability used: total is " + resp.total + " and string is " + resp.description);
+                    text += "\r\n";
                 }
-                else
-                {
-                    //MessageBox.Show("Failed to use ability");
-                }
-
-            }
-            else if (colName == "PlusButtonCol")
-            {
-
-            }
-            else if (colName == "MinusButtonCol")
-            {
-
-            }
-            else
-            {
-                //We don't want to redraw everything.
-                return;
+                text += message;
             }
 
-            //Update everything in case stuff changed.
-            //to do:
-            //redo any sorting or whatever that was done, after running these.
-            //sorting
-            //row selection
-            //row height changing
-            //Move DisplayAbility or whatever outside of DisplayCharacter, and just call them all separately?
-            DisplayCharacter(loadedCharacter);
-            DisplayClassList(loadedCharacter);
-            UpdateHealthDisplay();
+            outputDescription.Text = text;
         }
 
-        //Dice roller functions: adding dice.
-        private void AddDice(object sender, EventArgs e)
+        //Looks up the index for the AbilitiesArea row with a particular ID.
+        //Returns the row's index if found, or -1 if not.
+        //to do: make it take in some indicator of which grid it should reference.
+        private int GetIndexForRow(string id)
         {
-            //Things we might get:
-            //Add / remove 1 die of a particular size.
-            //Add / remove multiple dice of a particular size?
-            //Add / remove 1 die of advantage or disadvantage in a particular size.
-            //Subtract a die from the result?
-            //Format:
-            //Starts with basic command. Tells this what to do with the rest of it.
-            //add - adds the specified dice to the pile
-            //remove - removes the specified dice from the pile
-            //set? - sets the pile to what's in the dice string
-            //Then adv/dis modifier, if applicable
-            //Ends with dice string
-            //positive / no symbol to make them regular dice, negative to make them negative.
-
-
-
-            var btn = sender as Button;
-            if (btn == null)
+            //Look up the index of the id column
+            int colIndex = AbilitiesArea.Columns["Abilities_IDCol"].Index;
+            //MessageBox.Show("Column index is " + colIndex);
+            if (colIndex < 0)
             {
-                //Complain to a log file?
-                return;
+                //complain
+                return -1;
             }
-            var tag = btn.Tag as string;
-            if (tag == null)
+
+            for (int a = 0; a < AbilitiesArea.Rows.Count; a++)
             {
-                //Complain to a log file?
-                return;
-            }
-            //MessageBox.Show(tag);
-            //comes through as string, set the buttons up with dice strings in the standard format in their Tag attribute
-            tag = tag.Trim();
-
-            //Parse the relevant bits out of the string.
-            //What we're looking for:
-            //Starts with a command, probably add or subtract but might be set.
-            //May contain adv or dis next, but not necessarily.
-            //Then there will be either dX or X
-            string regex = "^([a-zA-Z]+)\\s*(adv|dis|)\\s*(d?)(\\d+)$";
-            //Match matches = Regex.Match(tag, regex, RegexOptions.IgnoreCase);
-            Match matches = Regex.Match(tag, regex, RegexOptions.IgnoreCase);
-            //Matches should be:
-            //0: full match
-            //1: command
-            //2: adv or dis or empty string
-            //3: d or not
-            //4: die size or flat number
-
-            if (matches.Success)
-            {
-                string command = matches.Groups[1].Value;
-                string advdis = matches.Groups[2].Value;
-                string d = matches.Groups[3].Value;
-                string number = matches.Groups[4].Value;
-
-                int advdisint = 0;
-                if (advdis == "adv")
+                if (AbilitiesArea.Rows[a].Cells[colIndex].Value.ToString() == id)
                 {
-                    advdisint = 1;
-                    //MessageBox.Show("Doing advantage");
-                }
-                else if (advdis == "dis")
-                {
-                    advdisint = -1;
-                    //MessageBox.Show("Doing disadvantage");
-                }
-                else
-                {
-                    //MessageBox.Show("Doing regular dice");
-                }
-
-                bool subtract = false;
-                if (command == "add")
-                {
-                    //Great
-                }
-                else if (command == "subtract")
-                {
-                    subtract = true;
-                }
-
-                int dieSize = 0;
-                if (!int.TryParse(number, out dieSize))
-                {
-                    //Complain to a log file?
-                    return;
-                }
-
-                bool flatBonus = (d == "d") ? false : true;
-
-                bool temp = currentDice.AddOneDie(dieSize, subtract, advdisint, flatBonus);
-
-                //error checking?
-                if (!temp)
-                {
-                    MessageBox.Show("Adding die failed.");
+                    return a;
                 }
             }
 
-            UpdateDiceArrayDisplay();
+            return -1;
         }
 
-        private void ClassesArea_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        //Add a message to the log area, plus some related logic.
+        private void LogMessage(string message)
         {
-            //First we figure out which button was clicked.
-            //Column:
-            int colIndex = e.ColumnIndex;
-            string colName = ClassesArea.Columns[colIndex].Name;
+            logMessages.Insert(0, message);
 
-            //Row:
-            int rowNum = e.RowIndex;
-            string className;
-            string subclassName;
-            try
+            //We'll limit the log to the most recent 20 rows for readability.
+            //This will also prevent ballooning memory usage if the program is used very heavily.
+            while (logMessages.Count > 20)
             {
-                className = ClassesArea.Rows[rowNum].Cells[0].Value.ToString();
-                subclassName = ClassesArea.Rows[rowNum].Cells[1].Value.ToString();
-                //MessageBox.Show ("Found class ID " + className + " (" + subclassName + ")");
-            }
-            catch
-            {
-                className = "";
-                subclassName = "";
-            }
-            className ??= "";
-            //MessageBox.Show("Button clicked is " + colName + " column for class " + className + " (" + subclassName + ")");
-
-            if (colName == "SpendHDButton")
-            {
-                DiceResponse resp = loadedCharacter.SpendHDByClass(className, 1, false);
-                if (resp.Success)
-                {
-                    //MessageBox.Show("HD response:" + resp.Total);
-                }
-                else
-                {
-                    //MessageBox.Show("HD spending failed.");
-                }
-
-                LogMessage(resp.Description);
-
-                //We also want to update the HP display.
-                UpdateHealthDisplay();
-            }
-            else if (colName == "AddHDButton")
-            {
-                loadedCharacter.AddOrSubtractHDForClass(className, 1);
-            }
-            else if (colName == "SubtractHDButton")
-            {
-                loadedCharacter.AddOrSubtractHDForClass(className, -1);
+                logMessages.RemoveAt(logMessages.Count - 1);
             }
 
-            //update the display.
-            DisplayClassList(loadedCharacter);
-
-            //it's doing 3 healing every time
-            //it's not decrementing the hd
-        }
-
-        //Deal damage to the active character.
-        private void Damage(object sender, EventArgs e)
-        {
-            //Collect the amount to deal.
-            var btn = sender as Button;
-            if (btn == null)
-            {
-                //Complain to a log file?
-                return;
-            }
-            var tag = btn.Tag as string;
-            if (tag == null)
-            {
-                //Complain to a log file?
-                return;
-            }
-            tag = tag.Trim();
-
-            int amount;
-            Int32.TryParse(tag, out amount);
-
-            loadedCharacter.Damage(amount);
-            UpdateHealthDisplay();
-        }
-
-        //Someone typed something into the dice string textbox.
-        //We want to be able to do stuff when the enter key is pressed.
-        private void diceStringBox_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-            {
-                e.SuppressKeyPress = true;
-                string diceString = diceStringBox.Text;
-                ProcessTextInput(diceString);
-                diceStringBox.Text = "";
-            }
-        }
-
-        //Heal the active character.
-        private void Heal(object sender, EventArgs e)
-        {
-            //Collect the amount to deal.
-            var btn = sender as Button;
-            if (btn == null)
-            {
-                //Complain to a log file?
-                return;
-            }
-            var tag = btn.Tag as string;
-            if (tag == null)
-            {
-                //Complain to a log file?
-                return;
-            }
-            tag = tag.Trim();
-
-            int amount;
-            Int32.TryParse(tag, out amount);
-
-            loadedCharacter.Heal(amount);
-            UpdateHealthDisplay();
-        }
-
-        //Redo the most recent roll.
-        private void RerollButton_Click(object sender, EventArgs e)
-        {
-            DiceResponse resp = lastDice.Roll();
-            outputTotal.Text = "Rolled " + resp.Total;
-            LogMessage(resp.Description);
-        }
-
-        //Onclick event used for 'click button to roll stat/skill/whatever' buttons.
-        private void RollDice(object sender, EventArgs e)
-        {
-            //Collect the dice to roll
-            var btn = sender as Button;
-            if (btn == null)
-            {
-                //Complain to a log file?
-                return;
-            }
-            var tag = btn.Tag as string;
-            if (tag == null)
-            {
-                //Complain to a log file?
-                return;
-            }
-            //MessageBox.Show("Rolling dice based off tag " + tag);
-
-            //comes through as string, set the buttons up with dice strings in the standard format in their Tag attribute
-            tag = tag.Trim();
-
-            //Parse the relevant bits out of the string.
-            //What we're looking for:
-            //Starts with a command, probably roll, but I might add other stuff later.
-            //Then there will be some form of dice string.
-            string regex = "^([a-zA-Z]+)\\s+(.+)$";
-            //Match matches = Regex.Match(tag, regex, RegexOptions.IgnoreCase);
-            Match matches = Regex.Match(tag, regex, RegexOptions.IgnoreCase);
-            //Matches should be:
-            //0: full match
-            //1: command
-            //2: dice string
-
-            if (matches.Success)
-            {
-                string command = matches.Groups[1].Value;
-                string diceString = matches.Groups[2].Value;
-                //MessageBox.Show("Found command " + command + " and dice string " + diceString);
-
-                command = command.Trim();
-                command = command.ToLower();
-
-                if (command == "roll")
-                {
-                    DiceCollection d = new DiceCollection(diceString);
-                    DiceResponse resp = loadedCharacter.RollForCharacter(d);
-
-                    outputTotal.Text = "Rolled " + resp.Total;
-                    LogMessage(resp.Description);
-
-                    //rolls for d20+0 seem to be 1-19, investigate
-                    //make sure there's stuff to support 'prof bonus if proficient' type commands in dice strings
-                    //whatever + profifprof(thing) + whatever ?
-                    //thing would then be the name of a skill, or a stat + 'save' ie 'strsave', or a weapon name, or whatever
-
-                    UpdateDiceArrayDisplay();
-                }
-                else
-                {
-                    //Complain to a log file?
-                    MessageBox.Show("Error: unsupported command");
-                }
-            }
-            else
-            {
-                MessageBox.Show("Could not parse command.");
-            }
-        }
-
-        //The 'roll dice' button got clicked.
-        private void RollDice_Click(object sender, EventArgs e)
-        {
-            string diceString = diceStringBox.Text;
-            if (diceString.Length > 0)
-            {
-                //We prioritize text typed into the textbox.
-                ProcessTextInput(diceString);
-                diceStringBox.Text = "";
-
-                UpdateLastDice(diceString);
-            }
-            else
-            {
-                //Roll dice added via the buttons.
-                DiceResponse resp = currentDice.Roll();
-                outputTotal.Text = "Rolled " + resp.Total;
-                LogMessage(resp.Description);
-
-                UpdateLastDice(currentDice.GetDiceString());
-
-                currentDice = new DiceCollection();
-                UpdateDiceArrayDisplay();
-            }
-        }
-
-        //Gives or sets temp HP
-        //Give: sets the character's temp HP to the number specified, unless it's already higher.
-        //Set: sets the character's temp HP to the number specified, even if it's already higher.
-        private void TempHP(object sender, EventArgs e)
-        {
-            //First figure out whether to add or set temp HP.
-            //give is true, set is false.
-            var btn = sender as Button;
-            if (btn == null)
-            {
-                //Complain to a log file?
-                return;
-            }
-            var tag = btn.Tag as string;
-            if (tag == null)
-            {
-                //Complain to a log file?
-                return;
-            }
-            //MessageBox.Show(tag);
-            //comes through as string, set the buttons up with dice strings in the standard format in their Tag attribute
-            tag = tag.Trim();
-            bool onlyIncrease = (tag == "give") ? true : false;
-            //to do: flip this around?
-
-
-            //Then get the number from the text box.
-            String temp = Textbox_TempHP.Text;
-            if (temp.Trim().Length == 0)
-            {
-                return;
-            }
-            int number;
-            Int32.TryParse(temp, out number);
-
-            //Then call the function.
-            loadedCharacter.SetTempHP(number, onlyIncrease);
-            UpdateHealthDisplay();
+            DisplayMessages();
         }
 
         private void TestButton_Click(object sender, EventArgs e)
@@ -638,43 +256,282 @@ namespace Simple_Dice_Roller
             */
         }
 
-
-        //Functions that do stuff to the form:
-        //-------- -------- -------- -------- -------- -------- -------- -------- 
-        //Display a character's abilities in the abilities tab.
-        private void DisplayAbilities(Character.Character character)
+        //Displays or hides the detail view for any given row in AbilitiesArea.
+        //to do: pass in a grid for this to reference.
+        private void ToggleGridExpand(int rowNum)
         {
-            AbilitiesArea.Rows.Clear();
-
-            for (int a = 0; a < character.GetAbilities().Count(); a++)
+            //Expand the row.
+            if (AbilitiesArea.Rows[rowNum].Height > 100)
             {
-                Ability thisAbility = character.GetAbilities()[a];
-                string id = thisAbility.ID;
-                string name = thisAbility.Name;
-                string text = thisAbility.Text;
-                string recharge = thisAbility.RechargeCondition;
-                string dice = thisAbility.getDiceString();
-                string usesString = thisAbility.getUsesString();
+                //Shrink the row back to normal.
+                //to do: there's probably a function or something for getting this thing's preferred height.
+                //look that up and use it.
+                AbilitiesArea.Rows[rowNum].Height = AbilitiesArea.Rows[rowNum].GetPreferredHeight(rowNum, DataGridViewAutoSizeRowMode.AllCellsExceptHeader, true);
 
-                string[] allOfRow = { (a + 1).ToString(), id, name, text, recharge, dice, usesString, "Use", "+1", "-1" };
-                AbilitiesArea.Rows.Add(allOfRow);
+                //Remove this panel from the list.
+                string? id = AbilitiesArea.Rows[rowNum].Cells["Abilities_IDCol"].Value.ToString();
+                if (id == null)
+                {
+                    //complain
+                    return;
+                }
+                AbilitiesAreaDetails[id].Dispose();
+            }
+            else
+            {
 
-                //Clicks handled by AbilitiesArea_CellContentClick()
+                string? id = AbilitiesArea.Rows[rowNum].Cells["Abilities_IDCol"].Value.ToString();
+                string? text = AbilitiesArea.Rows[rowNum].Cells["Abilities_TextCol"].Value.ToString();
 
-                //To do:
-                //Consider making the default sort order column hidden.
-                //How will the user indicate they want the grid sorted by it, then?
-                //Actually hook up the abilities.
-                //Add an invisible column for the ID and do it by that?
-                //Eventually: hide the text column and make it appear when the user clicks the row.
-                //And disappear when they click another row.
-                //Make sure the user can scroll horizontally when relevant.
+                if (id == null || text == null)
+                {
+                    //Log something?
+                    return;
+                }
+
+                //Expand the row.
+                AbilitiesArea.Rows[rowNum].Height = AbilitiesArea.Rows[rowNum].Height + 100;
+
+                //Create an appropriate panel and add it to the list.
+                //to do: write a function for this
+                //to do: set up a function for when the panel is clicked: treat that like clicking the row again.
+                Panel newPanel = new Panel();
+                Label newLabel = new Label();
+                newLabel.Text = text;
+                newLabel.Left = 6;
+                newLabel.Top = 6;
+                //set height and width to the panel's height and width -12 each
+                newLabel.Width = AbilitiesArea.Rows[0].AccessibilityObject.Bounds.Width - 12;
+                newLabel.Height = 88; //hardcoded 100px height - 12px for margins = 88px
+                newPanel.Controls.Add(newLabel);
+                AbilitiesArea.Controls.Add(newPanel);
+                AbilitiesAreaDetails[id] = newPanel;
             }
 
-            //Prevent the program from auto-selecting the first row.
-            //Doesn't seem to work. Multiselect only?
-            //AbilitiesArea.ClearSelection();
-            //AbilitiesArea.CurrentCell = null;
+            UpdateAbilitiesAreaDetails();
+        }
+
+
+        //-------- -------- -------- -------- -------- -------- -------- -------- 
+
+        #region Dice Tab
+
+        //The function that adds or removes dice
+        private void AddDice(object sender, EventArgs e)
+        {
+            //Things we might get:
+            //Add / remove 1 die of a particular size.
+            //Add / remove multiple dice of a particular size?
+            //Add / remove 1 die of advantage or disadvantage in a particular size.
+            //Subtract a die from the result?
+            //Format:
+            //Starts with basic command. Tells this what to do with the rest of it.
+            //add - adds the specified dice to the pile
+            //remove - removes the specified dice from the pile
+            //set? - sets the pile to what's in the dice string
+            //Then adv/dis modifier, if applicable
+            //Ends with dice string
+            //positive / no symbol to make them regular dice, negative to make them negative.
+
+
+
+            var btn = sender as Button;
+            if (btn == null)
+            {
+                //Complain to a log file?
+                return;
+            }
+            var tag = btn.Tag as string;
+            if (tag == null)
+            {
+                //Complain to a log file?
+                return;
+            }
+            //MessageBox.Show(tag);
+            //comes through as string, set the buttons up with dice strings in the standard format in their Tag attribute
+            tag = tag.Trim();
+
+            //Parse the relevant bits out of the string.
+            //What we're looking for:
+            //Starts with a command, probably add or subtract but might be set.
+            //May contain adv or dis next, but not necessarily.
+            //Then there will be either dX or X
+            string regex = "^([a-zA-Z]+)\\s*(adv|dis|)\\s*(d?)(\\d+)$";
+            //Match matches = Regex.Match(tag, regex, RegexOptions.IgnoreCase);
+            Match matches = Regex.Match(tag, regex, RegexOptions.IgnoreCase);
+            //Matches should be:
+            //0: full match
+            //1: command
+            //2: adv or dis or empty string
+            //3: d or not
+            //4: die size or flat number
+
+            if (matches.Success)
+            {
+                string command = matches.Groups[1].Value;
+                string advdis = matches.Groups[2].Value;
+                string d = matches.Groups[3].Value;
+                string number = matches.Groups[4].Value;
+
+                int advdisint = 0;
+                if (advdis == "adv")
+                {
+                    advdisint = 1;
+                    //MessageBox.Show("Doing advantage");
+                }
+                else if (advdis == "dis")
+                {
+                    advdisint = -1;
+                    //MessageBox.Show("Doing disadvantage");
+                }
+                else
+                {
+                    //MessageBox.Show("Doing regular dice");
+                }
+
+                bool subtract = false;
+                if (command == "add")
+                {
+                    //Great
+                }
+                else if (command == "subtract")
+                {
+                    subtract = true;
+                }
+
+                int dieSize = 0;
+                if (!int.TryParse(number, out dieSize))
+                {
+                    //Complain to a log file?
+                    return;
+                }
+
+                bool flatBonus = (d == "d") ? false : true;
+
+                bool temp = currentDice.AddOneDie(dieSize, subtract, advdisint, flatBonus);
+
+                //error checking?
+                if (!temp)
+                {
+                    MessageBox.Show("Adding die failed.");
+                }
+            }
+
+            UpdateDiceArrayDisplay();
+        }
+
+        //Someone typed something into the dice string textbox.
+        //We want to be able to do stuff when the enter key is pressed.
+        private void diceStringBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.SuppressKeyPress = true;
+                string diceString = diceStringBox.Text;
+                ProcessTextInput(diceString);
+                diceStringBox.Text = "";
+            }
+        }
+
+        //Translate a dice string into some rolls.
+        private void ProcessTextInput(string diceString)
+        {
+            DiceCollection dice = new DiceCollection(diceString);
+            outputDescription.Text = dice.GetDescription();
+            DiceResponse resp = dice.Roll();
+            //dice.roll();
+            //outputTotal.Text = "The total is " + dice.getTotal();
+            //outputTotal.Text = "Rolled " + dice.getTotal();
+            outputTotal.Text = "Rolled " + resp.Total;
+            //logMessage (dice.getDescription());
+            LogMessage(resp.Description);
+
+            UpdateLastDice(diceString);
+        }
+
+        //Redo the most recent roll.
+        private void RerollButton_Click(object sender, EventArgs e)
+        {
+            DiceResponse resp = lastDice.Roll();
+            outputTotal.Text = "Rolled " + resp.Total;
+            LogMessage(resp.Description);
+        }
+
+        //The 'roll dice' button got clicked.
+        private void RollDice_Click(object sender, EventArgs e)
+        {
+            string diceString = diceStringBox.Text;
+            if (diceString.Length > 0)
+            {
+                //We prioritize text typed into the textbox.
+                ProcessTextInput(diceString);
+                diceStringBox.Text = "";
+
+                UpdateLastDice(diceString);
+            }
+            else
+            {
+                //Roll dice added via the buttons.
+                DiceResponse resp = currentDice.Roll();
+                outputTotal.Text = "Rolled " + resp.Total;
+                LogMessage(resp.Description);
+
+                UpdateLastDice(currentDice.GetDiceString());
+
+                currentDice = new DiceCollection();
+                UpdateDiceArrayDisplay();
+            }
+        }
+
+        //Displays the collection of dice currently selected in the dice roller.
+        private void UpdateDiceArrayDisplay()
+        {
+            DiceArrayDisplay.Text = currentDice.GetDiceString();
+        }
+
+        //Updates the display for the most recent collection of dice.
+        private void UpdateLastDice(string diceString)
+        {
+            lastDice = new DiceCollection(diceString);
+            LastRollDiceString.Text = lastDice.GetDiceString();
+        }
+
+        #endregion
+
+        //-------- -------- -------- -------- -------- -------- -------- -------- 
+
+        #region Character Tab: General
+
+        //The onclick even for the save button. Saves the character.
+        private void Button_SaveCharacter_Click(object sender, EventArgs e)
+        {
+            string filepath = "C:\\Users\\david\\Programs\\Simple Dice Roller\\Tiriel.char";
+            loadedCharacter.Save(filepath);
+        }
+
+        //Deal damage to the active character.
+        private void Damage(object sender, EventArgs e)
+        {
+            //Collect the amount to deal.
+            var btn = sender as Button;
+            if (btn == null)
+            {
+                //Complain to a log file?
+                return;
+            }
+            var tag = btn.Tag as string;
+            if (tag == null)
+            {
+                //Complain to a log file?
+                return;
+            }
+            tag = tag.Trim();
+
+            int amount;
+            Int32.TryParse(tag, out amount);
+
+            loadedCharacter.Damage(amount);
+            UpdateHealthDisplay();
         }
 
         //Display a character's info in the character tab.
@@ -731,53 +588,141 @@ namespace Simple_Dice_Roller
             //...
         }
 
-        //Displays the currently loaded character's classes in the form.
-        private void DisplayClassList(Character.Character character)
+        //Heal the active character.
+        private void Heal(object sender, EventArgs e)
         {
-            ClassesArea.Rows.Clear();
-
-            for (int a = 0; a < character.Classes.Count; a++)
+            //Collect the amount to deal.
+            var btn = sender as Button;
+            if (btn == null)
             {
-                ClassLevel thisClass = character.Classes[a];
-
-                string name = thisClass.Name;
-                //MessageBox.Show("Processing class " + name);
-                string subclass = thisClass.Subclass;
-                int level = thisClass.Level;
-                string levelString = level.ToString();
-                string hd = thisClass.CurrentHD.ToString() + " / " + thisClass.Level.ToString() + "d" + thisClass.HDSize.ToString();
-                string spendButton = "Spend";
-                string plusButton = "+1";
-                string minusButton = "-1";
-
-                string[] row = { name, subclass, levelString, hd, spendButton, plusButton, minusButton };
-                ClassesArea.Rows.Add(row);
+                //Complain to a log file?
+                return;
             }
+            var tag = btn.Tag as string;
+            if (tag == null)
+            {
+                //Complain to a log file?
+                return;
+            }
+            tag = tag.Trim();
+
+            int amount;
+            Int32.TryParse(tag, out amount);
+
+            loadedCharacter.Heal(amount);
+            UpdateHealthDisplay();
         }
 
-        //Display the log messages in the log messages area.
-        private void DisplayMessages()
+        //Onclick event used for 'click button to roll stat/skill/whatever' buttons.
+        private void RollDice(object sender, EventArgs e)
         {
-            string text = "";
-
-            foreach (string message in logMessages)
+            //Collect the dice to roll
+            var btn = sender as Button;
+            if (btn == null)
             {
-                if (text != "")
+                //Complain to a log file?
+                return;
+            }
+            var tag = btn.Tag as string;
+            if (tag == null)
+            {
+                //Complain to a log file?
+                return;
+            }
+            //MessageBox.Show("Rolling dice based off tag " + tag);
+
+            //comes through as string, set the buttons up with dice strings in the standard format in their Tag attribute
+            tag = tag.Trim();
+
+            //Parse the relevant bits out of the string.
+            //What we're looking for:
+            //Starts with a command, probably roll, but I might add other stuff later.
+            //Then there will be some form of dice string.
+            string regex = "^([a-zA-Z]+)\\s+(.+)$";
+            //Match matches = Regex.Match(tag, regex, RegexOptions.IgnoreCase);
+            Match matches = Regex.Match(tag, regex, RegexOptions.IgnoreCase);
+            //Matches should be:
+            //0: full match
+            //1: command
+            //2: dice string
+
+            if (matches.Success)
+            {
+                string command = matches.Groups[1].Value;
+                string diceString = matches.Groups[2].Value;
+                //MessageBox.Show("Found command " + command + " and dice string " + diceString);
+
+                command = command.Trim();
+                command = command.ToLower();
+
+                if (command == "roll")
                 {
-                    text += "\r\n";
+                    DiceCollection d = new DiceCollection(diceString);
+                    DiceResponse resp = loadedCharacter.RollForCharacter(d);
+
+                    outputTotal.Text = "Rolled " + resp.Total;
+                    LogMessage(resp.Description);
+
+                    //rolls for d20+0 seem to be 1-19, investigate
+                    //make sure there's stuff to support 'prof bonus if proficient' type commands in dice strings
+                    //whatever + profifprof(thing) + whatever ?
+                    //thing would then be the name of a skill, or a stat + 'save' ie 'strsave', or a weapon name, or whatever
+
+                    UpdateDiceArrayDisplay();
                 }
-                text += message;
+                else
+                {
+                    //Complain to a log file?
+                    MessageBox.Show("Error: unsupported command");
+                }
             }
-
-            outputDescription.Text = text;
+            else
+            {
+                MessageBox.Show("Could not parse command.");
+            }
         }
 
-        //
-        private void UpdateDiceArrayDisplay()
+        //Gives or sets temp HP
+        //Give: sets the character's temp HP to the number specified, unless it's already higher.
+        //Set: sets the character's temp HP to the number specified, even if it's already higher.
+        private void TempHP(object sender, EventArgs e)
         {
-            DiceArrayDisplay.Text = currentDice.GetDiceString();
+            //First figure out whether to add or set temp HP.
+            //give is true, set is false.
+            var btn = sender as Button;
+            if (btn == null)
+            {
+                //Complain to a log file?
+                return;
+            }
+            var tag = btn.Tag as string;
+            if (tag == null)
+            {
+                //Complain to a log file?
+                return;
+            }
+            //MessageBox.Show(tag);
+            //comes through as string, set the buttons up with dice strings in the standard format in their Tag attribute
+            tag = tag.Trim();
+            bool onlyIncrease = (tag == "give") ? true : false;
+            //to do: flip this around?
+
+
+            //Then get the number from the text box.
+            String temp = Textbox_TempHP.Text;
+            if (temp.Trim().Length == 0)
+            {
+                return;
+            }
+            int number;
+            Int32.TryParse(temp, out number);
+
+            //Then call the function.
+            loadedCharacter.SetTempHP(number, onlyIncrease);
+            UpdateHealthDisplay();
         }
 
+        //Displays the character's current + temp HP out of their max HP.
         private void UpdateHealthDisplay()
         {
             string healthString;
@@ -791,13 +736,6 @@ namespace Simple_Dice_Roller
             }
 
             Char_Health.Text = healthString;
-        }
-
-        //
-        private void UpdateLastDice(string diceString)
-        {
-            lastDice = new DiceCollection(diceString);
-            LastRollDiceString.Text = lastDice.GetDiceString();
         }
 
         //Sets the appropriate bonuses into the labels for the various stat, save, and skill buttons.
@@ -842,85 +780,353 @@ namespace Simple_Dice_Roller
 
         }
 
-        //function to update the last die roll stored + indicator?
+        #endregion
 
+        #region Character Tab: Classes Area
+        //This region covers the list of classes on the character tab.
 
-        //Underlying functions that other stuff calls:
-        //-------- -------- -------- -------- -------- -------- -------- -------- 
-        //Add a message to the log area, plus some related logic.
-        private void LogMessage(string message)
+        //Handles the onclick code for the classes list DataGridView.
+        private void ClassesArea_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            logMessages.Insert(0, message);
+            //First we figure out which button was clicked.
+            //Column:
+            int colIndex = e.ColumnIndex;
+            string colName = ClassesArea.Columns[colIndex].Name;
 
-            //We'll limit the log to the most recent 20 rows for readability.
-            //This will also prevent ballooning memory usage if the program is used very heavily.
-            while (logMessages.Count > 20)
+            //Row:
+            int rowNum = e.RowIndex;
+            string className;
+            string subclassName;
+            try
             {
-                logMessages.RemoveAt(logMessages.Count - 1);
+                className = ClassesArea.Rows[rowNum].Cells[0].Value.ToString();
+                subclassName = ClassesArea.Rows[rowNum].Cells[1].Value.ToString();
+                //MessageBox.Show ("Found class ID " + className + " (" + subclassName + ")");
+            }
+            catch
+            {
+                className = "";
+                subclassName = "";
+            }
+            className ??= "";
+            //MessageBox.Show("Button clicked is " + colName + " column for class " + className + " (" + subclassName + ")");
+
+            if (colName == "SpendHDButton")
+            {
+                DiceResponse resp = loadedCharacter.SpendHDByClass(className, 1, false);
+                if (resp.Success)
+                {
+                    //MessageBox.Show("HD response:" + resp.Total);
+                }
+                else
+                {
+                    //MessageBox.Show("HD spending failed.");
+                }
+
+                LogMessage(resp.Description);
+
+                //We also want to update the HP display.
+                UpdateHealthDisplay();
+            }
+            else if (colName == "AddHDButton")
+            {
+                loadedCharacter.AddOrSubtractHDForClass(className, 1);
+            }
+            else if (colName == "SubtractHDButton")
+            {
+                loadedCharacter.AddOrSubtractHDForClass(className, -1);
             }
 
-            DisplayMessages();
+            //update the display.
+            DisplayClassList(loadedCharacter);
+
+            //it's doing 3 healing every time
+            //it's not decrementing the hd
         }
 
-        //Translate a dice string into some rolls.
-        private void ProcessTextInput(string diceString)
+        //Displays the currently loaded character's classes in the form.
+        private void DisplayClassList(Character.Character character)
         {
-            DiceCollection dice = new DiceCollection(diceString);
-            outputDescription.Text = dice.GetDescription();
-            DiceResponse resp = dice.Roll();
-            //dice.roll();
-            //outputTotal.Text = "The total is " + dice.getTotal();
-            //outputTotal.Text = "Rolled " + dice.getTotal();
-            outputTotal.Text = "Rolled " + resp.Total;
-            //logMessage (dice.getDescription());
-            LogMessage(resp.Description);
+            ClassesArea.Rows.Clear();
 
-            UpdateLastDice(diceString);
+            for (int a = 0; a < character.Classes.Count; a++)
+            {
+                ClassLevel thisClass = character.Classes[a];
+
+                string name = thisClass.Name;
+                //MessageBox.Show("Processing class " + name);
+                string subclass = thisClass.Subclass;
+                int level = thisClass.Level;
+                string levelString = level.ToString();
+                string hd = thisClass.CurrentHD.ToString() + " / " + thisClass.Level.ToString() + "d" + thisClass.HDSize.ToString();
+                string spendButton = "Spend";
+                string plusButton = "+1";
+                string minusButton = "-1";
+
+                string[] row = { name, subclass, levelString, hd, spendButton, plusButton, minusButton };
+                ClassesArea.Rows.Add(row);
+            }
         }
 
-        private void Char_Name_Click(object sender, EventArgs e)
+        #endregion
+
+        //-------- -------- -------- -------- -------- -------- -------- -------- 
+
+        #region Abilities Tab
+
+        //Handlers for the buttons in the abilities list.
+        private void AbilitiesArea_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
+            //Do we need to manually do something to make the row selected?
 
+            int colIndex = e.ColumnIndex;
+            if (colIndex < 0)
+            {
+                //Complain to a log file?
+                return;
+            }
+            string colName = AbilitiesArea.Columns[colIndex].Name;
+
+            //MessageBox.Show("Button clicked: col is " + colName);
+
+            int rowNum = e.RowIndex;
+            string? abilityID = AbilitiesArea.Rows[rowNum].Cells[1].Value.ToString();
+            if (abilityID == null)
+            {
+                //Complain to a log file?
+                return;
+            }
+
+            //MessageBox.Show("Button clicked: col is " + abilityID);
+
+            //to do: consider doing this by the column index instead.
+            if (colName == "Abilities_UseButtonCol")
+            {
+                DiceResponse resp = loadedCharacter.UseAbility(abilityID);
+                LogMessage(resp.Description);
+                //MessageBox.Show(resp.description);
+                //to do: check if description is actually present.
+                //maybe change the class and it's getters so it'll do something special if I call getDescription() when there isn't a description?
+                //with monotype variables I don't think that's going to do a lot, so maybe not.
+                if (resp.Success)
+                {
+                    //MessageBox.Show("Ability used: total is " + resp.total + " and string is " + resp.description);
+                }
+                else
+                {
+                    //MessageBox.Show("Failed to use ability");
+                }
+
+            }
+            else if (colName == "Abilities_Plus1Col")
+            {
+                bool resp = loadedCharacter.ChangeAbilityUses(abilityID, 1);
+                if (resp)
+                {
+                    //MessageBox.Show("Successfully added 1 use to " + abilityID);
+                } else
+                {
+                    //MessageBox.Show("Failed to add 1 use to " + abilityID);
+                }
+            }
+            else if (colName == "Abilities_Minus1Col")
+            {
+                bool resp = loadedCharacter.ChangeAbilityUses(abilityID, -1);
+                if (resp)
+                {
+                    //MessageBox.Show("Successfully subtracted 1 use from " + abilityID);
+                }
+                else
+                {
+                    //MessageBox.Show("Failed to subtract 1 use from " + abilityID);
+                }
+            }
+            else
+            {
+                //We don't want to redraw everything.
+                return;
+            }
+
+            //Update everything in case stuff changed.
+            //to do:
+            //redo any sorting or whatever that was done, after running these.
+            //sorting
+            //row selection
+            //row height changing
+            //Move DisplayAbility or whatever outside of DisplayCharacter, and just call them all separately?
+            DisplayCharacter(loadedCharacter);
+            DisplayClassList(loadedCharacter);
+            UpdateHealthDisplay();
         }
 
-        private void Char_Race_Click(object sender, EventArgs e)
+        //Used to trigger the expansion / contraction of rows for the details views.
+        private void AbilitiesArea_CellMouseUp(object sender, DataGridViewCellMouseEventArgs e)
         {
+            //If the user clicks and drags, this triggers on the one where they let go.
+            //Leave that alone?
+            //Also watch where they start clicking and require that they be the same row?
+            //Make this do nothing if the user moves the mouse more than x px while the button is down?
 
+            //Check if this row is currently selected.
+            int rowNum = e.RowIndex;
+            if (rowNum < 0)
+            {
+                return;
+            }
+            //MessageBox.Show("Clicked on row " + rowNum);
+
+            //Exclude the 3 button columns.
+            int colIndex = e.ColumnIndex;
+            string colName = AbilitiesArea.Columns[colIndex].Name;
+            if (colName == "Abilities_UseButtonCol" || colName == "Abilities_Plus1Col" || colName == "Abilities_Minus1Col")
+            {
+                return;
+            }
+
+            if (AbilitiesArea.SelectedRows.Count == 0)
+            {
+                //The row just got unselected somehow.
+                //I don't think this is possible without multiselect.
+            }
+            else if (AbilitiesArea.SelectedRows[0].Index != rowNum)
+            {
+                //A different row just got selected.
+                //Can this happen?
+                ToggleGridExpand(rowNum);
+            }
+            else
+            {
+                //This row just got selected.
+                ToggleGridExpand(rowNum);
+            }
         }
 
-        private void Button_SaveCharacter_Click(object sender, EventArgs e)
-        {
-            string filepath = "C:\\Users\\david\\Programs\\Simple Dice Roller\\Tiriel.char";
-            loadedCharacter.Save(filepath);
-        }
-
-        private void CharacterTab_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void AbilitiesArea_SelectionChanged(object sender, EventArgs e)
-        {
-            //change to a 'when a row is clicked' ?
-
-            //MessageBox.Show("Selection changed");
-            //to do: ignore the autoselect when the user first switches to that tab.
-            //set it to not autoselect the first row initially?
-
-
-
-            //get rid of this one?
-        }
-
+        //Triggered when the abilities list scrolls. Updates the positions of any ability detail panels.
         private void AbilitiesArea_Scroll(object sender, ScrollEventArgs e)
         {
             UpdateAbilitiesAreaDetails();
-            //to do: does this trigger before or after scrolling?
+        }
+
+        private void AbilitiesArea_Sorted(object sender, EventArgs e)
+        {
+            UpdateAbilitiesAreaDetails();
+        }
+
+        private void AbilitiesArea_SortCompare(object sender, DataGridViewSortCompareEventArgs e)
+        {
+            int colIndex = e.Column.Index;
+            string colName = AbilitiesArea.Columns[colIndex].Name;
+
+            //Sorting abilities generally revolves around more than just the column in question, so we need the abilities in question.
+            int index1 = e.RowIndex1;
+            int index2 = e.RowIndex2;
+
+            //Get the two ids here
+            string? id1 = AbilitiesArea.Rows[index1].Cells["Abilities_IDCol"].Value.ToString();
+            string? id2 = AbilitiesArea.Rows[index2].Cells["Abilities_IDCol"].Value.ToString();
+            if (id1 == null || id2 == null)
+            {
+                //Something has gone wrong, let the auto sort handle it because maybe it'll be right.
+                return;
+            }
+
+            Ability ability1 = loadedCharacter.GetAbilityByID(id1);
+            Ability ability2 = loadedCharacter.GetAbilityByID(id2);
+
+            string sortcol = AbilitiesArea.SortedColumn.Name;
+            string sortdir = AbilitiesArea.SortOrder.ToString();
+            //Will be "Ascending" or "Descending"
+
+            //MessageBox.Show("Sorting by column " + sortcol + " in direction " + sortdir);
+
+            //to do: is reversing the direction supposed to be handled here, or is it done automatically?
+            //that answer will change how we need to sort stuff re: display tiers.
+
+            bool sortReverse = (sortdir == "Ascending") ? false : true;
+
+            if (colName == "Abilities_NameCol")
+            {
+                e.Handled = true;
+                e.SortResult = ability1.Compare(ability2, "name", sortReverse);
+                return;
+            }
+            else if (colName == "Abilities_RechargeCol")
+            {
+                e.Handled = true;
+                e.SortResult = ability1.Compare(ability2, "rechargecondition", sortReverse);
+                return;
+            }
+            else if (colName == "Abilities_DiceCol")
+            {
+                e.Handled = true;
+                e.SortResult = ability1.Compare(ability2, "dice", sortReverse);
+                return;
+            }
+            else if (colName == "Abilities_UsesCol")
+            {
+                e.Handled = true;
+                e.SortResult = ability1.Compare(ability2, "usescol", sortReverse);
+                return;
+            }
+            else
+            {
+                //Unsupported column, let it be sorted automatically.
+            }
+        }
+
+        //Display a character's abilities in the abilities tab.
+        private void DisplayAbilities(Character.Character character)
+        {
+            AbilitiesArea.Rows.Clear();
+
+            for (int a = 0; a < character.GetAbilities().Count(); a++)
+            {
+                Ability thisAbility = character.GetAbilities()[a];
+                string id = thisAbility.ID;
+                string name = thisAbility.Name;
+                string text = thisAbility.Text;
+                string recharge = thisAbility.RechargeCondition;
+                string dice = thisAbility.getDiceString();
+                string usesString = thisAbility.getUsesString();
+                string usesChange = thisAbility.UsesChange.ToString();
+
+                //string[] allOfRow = { (a + 1).ToString(), id, name, text, recharge, dice, usesString, "Use", "+1", "-1" };
+                //AbilitiesArea.Rows.Add(allOfRow);
+
+                AbilitiesArea.Rows.Insert(a, a + 1, id, name, text, recharge, dice, usesString, usesChange, "Use", "+1", "-1");
+
+                //DataGridViewRow row = new DataGridViewRow();
+                //row.Cells.Add(new DataGridViewTextBoxCell());
+                //row.Cells[0].Value = a + 1;
+                //row.Cells.Add(new DataGridViewCell (id));
+
+                //Clicks handled by AbilitiesArea_CellContentClick()
+
+                //To do:
+                //Consider making the default sort order column hidden.
+                //How will the user indicate they want the grid sorted by it, then?
+                //Actually hook up the abilities.
+                //Add an invisible column for the ID and do it by that?
+                //Eventually: hide the text column and make it appear when the user clicks the row.
+                //And disappear when they click another row.
+                //Make sure the user can scroll horizontally when relevant.
+            }
+
+            //Prevent the program from auto-selecting the first row.
+            //Doesn't seem to work. Multiselect only?
+            //AbilitiesArea.ClearSelection();
+            //AbilitiesArea.CurrentCell = null;
         }
 
         //Handles the positioning of abilities area detail thingies, including for scrolling.
         private void UpdateAbilitiesAreaDetails()
         {
+            if (AbilitiesAreaDetails == null || AbilitiesAreaDetails.Count == 0)
+            {
+                //We're already done.
+                return;
+            }
+
             //MessageBox.Show("UpdateAbilitiesAreaDetails()");
             foreach (var thingy in AbilitiesAreaDetails)
             {
@@ -971,116 +1177,37 @@ namespace Simple_Dice_Roller
             }
         }
 
-        //Looks up the index for the AbilitiesArea row with a particular ID.
-        //Returns the row's index if found, or -1 if not.
-        //to do: make it take in some indicator of which grid it should reference.
-        private int GetIndexForRow(string id)
+        #endregion
+
+        //-------- -------- -------- -------- -------- -------- -------- -------- 
+
+        #region Magic Tab
+
+        #endregion
+
+        //-------- -------- -------- -------- -------- -------- -------- -------- 
+
+
+
+
+
+
+
+        //Things to move elsewhere
+        //-------- -------- -------- -------- -------- -------- -------- -------- 
+        private void Char_Name_Click(object sender, EventArgs e)
         {
-            //Look up the index of the id column
-            int colIndex = AbilitiesArea.Columns["Abilities_IDCol"].Index;
-            //MessageBox.Show("Column index is " + colIndex);
-            if (colIndex < 0)
-            {
-                //complain
-                return -1;
-            }
 
-            for (int a = 0; a < AbilitiesArea.Rows.Count; a++)
-            {
-                if (AbilitiesArea.Rows[a].Cells[colIndex].Value.ToString() == id)
-                {
-                    return a;
-                }
-            }
-
-            return -1;
         }
 
-        //Displays or hides the detail view for any given row in AbilitiesArea.
-        //to do: pass in a grid for this to reference.
-        private void ToggleGridExpand(int rowNum)
+        private void Char_Race_Click(object sender, EventArgs e)
         {
-            //Expand the row.
-            if (AbilitiesArea.Rows[rowNum].Height > 100)
-            {
-                //Shrink the row back to normal.
-                //to do: there's probably a function or something for getting this thing's preferred height.
-                //look that up and use it.
-                AbilitiesArea.Rows[rowNum].Height = AbilitiesArea.Rows[rowNum].GetPreferredHeight(rowNum, DataGridViewAutoSizeRowMode.AllCellsExceptHeader, true);
 
-                //Remove this panel from the list.
-                string? id = AbilitiesArea.Rows[rowNum].Cells["Abilities_IDCol"].Value.ToString();
-                if (id == null)
-                {
-                    //complain
-                    return;
-                }
-                AbilitiesAreaDetails[id].Dispose();
-            }
-            else
-            {
-
-                string? id = AbilitiesArea.Rows[rowNum].Cells["Abilities_IDCol"].Value.ToString();
-                string? text = AbilitiesArea.Rows[rowNum].Cells["Abilities_TextCol"].Value.ToString();
-
-                if (id == null || text == null)
-                {
-                    //Log something?
-                    return;
-                }
-
-                //Expand the row.
-                AbilitiesArea.Rows[rowNum].Height = AbilitiesArea.Rows[rowNum].Height + 100;
-
-                //Create an appropriate panel and add it to the list.
-                //to do: write a function for this
-                //to do: set up a function for when the panel is clicked: treat that like clicking the row again.
-                Panel newPanel = new Panel();
-                Label newLabel = new Label();
-                newLabel.Text = text;
-                newLabel.Left = 6;
-                newLabel.Top = 6;
-                //set height and width to the panel's height and width -12 each
-                newLabel.Width = AbilitiesArea.Rows[0].AccessibilityObject.Bounds.Width - 12;
-                newLabel.Height = 88; //hardcoded 100px height - 12px for margins = 88px
-                newPanel.Controls.Add(newLabel);
-                AbilitiesArea.Controls.Add(newPanel);
-                AbilitiesAreaDetails[id] = newPanel;
-            }
-
-            UpdateAbilitiesAreaDetails();
         }
 
-        private void AbilitiesArea_CellMouseUp(object sender, DataGridViewCellMouseEventArgs e)
+        private void CharacterTab_Click(object sender, EventArgs e)
         {
-            //If the user clicks and drags, this triggers on the one where they let go.
-            //Leave that alone?
-            //Also watch where they start clicking and require that they be the same row?
-            //Make this do nothing if the user moves the mouse more than x px while the button is down?
 
-            //Check if this row is currently selected.
-            int rowNum = e.RowIndex;
-            if (rowNum < 0)
-            {
-                return;
-            }
-            //MessageBox.Show("Clicked on row " + rowNum);
-            if (AbilitiesArea.SelectedRows.Count == 0)
-            {
-                //The row just got unselected somehow.
-                //I don't think this is possible without multiselect.
-            }
-            else if (AbilitiesArea.SelectedRows[0].Index != rowNum)
-            {
-                //A different row just got selected.
-                //Can this happen?
-                ToggleGridExpand(rowNum);
-            }
-            else
-            {
-                //This row just got selected.
-                ToggleGridExpand(rowNum);
-            }
         }
     }
 }

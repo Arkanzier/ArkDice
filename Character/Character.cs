@@ -635,7 +635,6 @@ namespace Character //change to ArkDice?
 
                     for (int a = 0; a < temp.GetArrayLength(); a++)
                     {
-                        //MessageBox.Show(temp[a].ToString());
                         Ability thisAbility = new Ability(temp[a].ToString());
                         Abilities.Add(thisAbility);
                     }
@@ -654,6 +653,7 @@ namespace Character //change to ArkDice?
             }
 
             CalculateProf();
+            SortAbilities();
         }
 
         //Currently only used by abilities for sending back lists of changes.
@@ -706,6 +706,27 @@ namespace Character //change to ArkDice?
 
             //If we got this far, that class isn't in the list.
             return false;
+        }
+
+        //Changes the number of uses remaining of the specified ability, by index.
+        public bool ChangeAbilityUses (int abilityIndex, int change)
+        {
+            if (abilityIndex >= Abilities.Count)
+            {
+                //Complain to a log file?
+                return false;
+            }
+            Ability ability = Abilities[abilityIndex];
+
+            return ability.ChangeUses(change);
+        }
+
+        //Changes the number of uses remaining of the specified ability, by ID.
+        public bool ChangeAbilityUses (string abilityID, int change)
+        {
+            int index = GetAbilityIndexByID (abilityID);
+
+            return ChangeAbilityUses(index, change);
         }
 
         //Deal damage to the character.
@@ -1245,6 +1266,20 @@ namespace Character //change to ArkDice?
             return true;
         }
 
+        //Sorts the List of Abilities into the default order, so we can just fetch it as is later.
+        private void SortAbilities ()
+        {
+            //Comparison<Ability> comparer = new Comparison<Ability>(Ability.Compare);
+            //Abilities.Sort(());
+            Abilities.Sort(CompareAbilities);
+            //look up how to write Comparison(Ability) comparison
+        }
+
+        private static int CompareAbilities (Ability one, Ability two)
+        {
+            return one.Compare(two);
+        }
+
         private bool SpendOneHDBySize (int size, bool ignoreCon = false)
         {
             for (int a = 0; a < Classes.Count; a++)
@@ -1439,6 +1474,7 @@ namespace Character //change to ArkDice?
             }
         }
 
+        //Returns a list of all abilities, in the default order.
         public List<Ability> GetAbilities ()
         {
             //to do: perhaps switch this over to something that just outputs data needed to render the things for the abilities.

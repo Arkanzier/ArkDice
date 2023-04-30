@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Xml.Schema;
 using ArkDice;
@@ -17,7 +19,7 @@ namespace Character
         public string Name { get; private set; }
 
         public string Action { get; private set; }
-        public List<DiceCollection> Dice { get; private set; }
+        public DiceCollection Dice { get; private set; }
 
         //Number of currently available uses / charges / whatever.
         public int Uses{ get; private set; }
@@ -29,8 +31,11 @@ namespace Character
         public int UsesChange { get; private set; }
 
         //These three are used by the program to temporarily store values that get generated.
+        [JsonIgnore]
         public int Total { get; private set; }
+        [JsonIgnore]
         public string Description { get; private set; }
+        [JsonIgnore]
         public Dictionary<string, string> Changes { get; private set; }
 
         public string RechargeCondition{ get; private set; }
@@ -38,6 +43,10 @@ namespace Character
             //Determines how much the thing recharges, when it recharges.
             //-1 for all? Just do 9999?
         public string Text{ get; private set; }
+
+        //Used to group abilities together when displayed.
+        //Lower-numbered tiers will be displayed first.
+        public int DisplayTier { get; private set; }
 
         //consider adding displayTier or something similar.
             //Decide how I want sorting to work.
@@ -95,12 +104,14 @@ namespace Character
             UsesChange = 0;
 
             Text = "";
-            Dice = new List<DiceCollection>();
+            Dice = new DiceCollection();
             RechargeCondition = "";
 
             Total = 0;
             Description = "";
             Changes = new Dictionary<string, string>();
+
+            DisplayTier = 10;
         }
         public Ability(string id, string text)
             : this ()
@@ -147,7 +158,7 @@ namespace Character
                         MaxUses = tempint;
                     }
                 }
-                if (root.TryGetProperty("CurrentUses", out temp))
+                if (root.TryGetProperty("Uses", out temp))
                 {
                     if (Int32.TryParse(temp.ToString(), out tempint))
                     {
@@ -165,8 +176,40 @@ namespace Character
                 if (root.TryGetProperty("Dice", out temp))
                 {
                     string temp2 = temp.ToString();
-                    DiceCollection aaa = new DiceCollection(temp2);
-                    Dice = new List<DiceCollection> { aaa };
+
+                    //temporary, lazy way of checking if this is a dice string or some json:
+                    //to do: make this better
+                    //replace this with a function that checks if something is a valid dice string?
+                    //replace this with checking stuff about the dice collection object?
+                        //can't rely on any given set of attributes not being what someone wants, give it a 'loaded successfully' attribute?
+
+                    if (temp2.Substring(0, 1) == "\"" || temp2.Substring(0, 1) == "{")
+                    {
+                        //Assume this is a serialized Ability object.
+                        DiceCollection? aaa = JsonSerializer.Deserialize<DiceCollection>(temp2);
+                        if (aaa == null)
+                        {
+                            //We can't parse this.
+                            Dice = new DiceCollection();
+                        }
+                        else
+                        {
+                            Dice = aaa;
+                        }
+                    } else
+                    {
+                        //Assume this is a dice string and treat it as such.
+                        DiceCollection aaa = new DiceCollection(temp2);
+                        Dice =  aaa;
+                    }
+                }
+
+                if (root.TryGetProperty("DisplayTier", out temp))
+                {
+                    if (Int32.TryParse(temp.ToString(), out tempint))
+                    {
+                        DisplayTier = tempint;
+                    }
                 }
             }
             catch
@@ -351,9 +394,7 @@ namespace Character
             Description = Name+": ";
             Changes = new Dictionary<string, string>();
 
-            foreach (DiceCollection d in this.Dice)
-            {
-                DiceResponse resp = d.Roll(stats);
+                DiceResponse resp = Dice.Roll(stats);
                 if (resp.Success == false)
                 {
                     //to do: decide what I want to do here.
@@ -364,7 +405,6 @@ namespace Character
                     Total += resp.Total;
                     Description += resp.Description;
                 }
-            }
 
             return new DiceResponse(true, Total, Description);
         }
@@ -376,14 +416,11 @@ namespace Character
             Changes = new Dictionary<string, string> ();
             int totalHealed = 0;
 
-            foreach (DiceCollection d in this.Dice)
-            {
-                DiceResponse resp = d.Roll();
+                DiceResponse resp = Dice.Roll();
                 Total += resp.Total;
                 Description += resp.Description;
 
                 totalHealed += Total;
-            }
 
             Changes["CurrentHP"] = totalHealed.ToString();
 
@@ -394,6 +431,304 @@ namespace Character
 
         //Other public functions
         //-------- -------- -------- -------- -------- -------- -------- -------- 
+        //Changes the number of uses remaining, within the bounds of 0 -> maximum.
+        public bool ChangeUses (int change)
+        {
+            if (change == 0)
+            {
+                return true;
+            }
+            else if (change < 0)
+            {
+                //We are reducing the number of uses remaining, 0 is our limit.
+                if (Uses + change >= 0)
+                {
+                    //We can make this change.
+                    Uses += change;
+                    return true;
+                } else
+                {
+                    //We can make some of this change.
+                    Uses = 0;
+                    return true;
+                }
+            } else if (change > 0)
+            {
+                //We are increasing the number of uses remaining, MaxUses is our limit.
+                if (Uses + change <= MaxUses)
+                {
+                    //We can make this change.
+                    Uses += change;
+                    return true;
+                } else
+                {
+                    //We can make some of this change.
+                    Uses = MaxUses;
+                    return true;
+                }
+            }
+
+            //We shouldn't be able to get here, but Visual Studio seems to think we can.
+            //I'll include this to shut it up.
+            return false;
+        }
+
+        //Used for sorting.
+        //Arguments:
+            //other: another Ability object to compare against.
+            //column: which attribute of the Ability class should be used to compare the two.
+            //reverse: used to indicate whether the thing in question is being sorted in ascending or descending order.
+                //This is so that Display Tiers can be sorted to the top / wherever as appropriate.
+            //DisplayTierPriority: disable this to make Display Tiers no longer override other sorting.
+        //Return values:
+            //If this is to appear before the other one, returns -1.
+            //If this is to appear after the other one, returns 1.
+            //If this is equal to the other one, including with tiebreakers, returns 0.
+        //Ties are broken by Name.
+        public int Compare (Ability other, string column = "DisplayTier", bool reverse = false, bool DisplayTierPriority = true)
+        {
+            column = column.ToLower();
+            int comparison;
+
+            if (DisplayTierPriority)
+            {
+                //We'll check display tiers to see if we can cut out early.
+                int temp = 0;
+                if (DisplayTier < other.DisplayTier)
+                {
+                    temp = -1;
+                } else if (DisplayTier > other.DisplayTier)
+                {
+                    temp = 1;
+                }
+
+                //If this is being sorted in reverse order we must manually reverse the display tiers.
+                if (reverse && temp != 0)
+                {
+                    return temp * -1;
+                }
+                else if (temp != 0)
+                {
+                    return temp;
+                }
+            }
+
+            //If we made it this far, these two abilities are the same display tier.
+            //We're going to have to actually compare them now.
+            //Note that the reverse argument is no longer relevant here.
+            switch (column)
+            {
+                case "":
+                    break;
+                case "id":
+                    comparison = String.Compare(this.ID, other.ID, StringComparison.OrdinalIgnoreCase);
+                    if (comparison < 0)
+                    {
+                        return -1;
+                    }
+                    else if (comparison > 0)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        //We need to do more comparisons.
+                        break;
+                    }
+                case "name":
+                    comparison = String.Compare(this.Name, other.Name, StringComparison.OrdinalIgnoreCase);
+                    if (comparison < 0)
+                    {
+                        return -1;
+                    }
+                    else if (comparison > 0)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        //We need to do more comparisons.
+                        break;
+                    }
+                case "action":
+                    comparison = String.Compare(this.Action, other.Action, StringComparison.OrdinalIgnoreCase);
+                    if (comparison < 0)
+                    {
+                        return -1;
+                    }
+                    else if (comparison > 0)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        //We need to do more comparisons.
+                        break;
+                    }
+                case "uses":
+                    if (Uses < other.Uses)
+                    {
+                        return -1;
+                    } else if (Uses > other.Uses)
+                    {
+                        return 1;
+                    } else
+                    {
+                        //We need to do more comparisons.
+                        break;
+                    }
+                case "maxuses":
+                    if (MaxUses < other.MaxUses)
+                    {
+                        return -1;
+                    }
+                    else if (MaxUses > other.MaxUses)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        //We need to do more comparisons.
+                        break;
+                    }
+                case "useschange":
+                    if (UsesChange < other.UsesChange)
+                    {
+                        return -1;
+                    }
+                    else if (UsesChange > other.UsesChange)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        //We need to do more comparisons.
+                        break;
+                    }
+                case "usescol":
+                    //Used for the Uses column on the Abilities list.
+                    //Start with current uses.
+                    if (Uses < other.Uses)
+                    {
+                        return -1;
+                    }
+                    else if (Uses > other.Uses)
+                    {
+                        return 1;
+                    }
+                    //Continue with max uses.
+                    if (MaxUses < other.MaxUses)
+                    {
+                        return -1;
+                    }
+                    else if (MaxUses > other.MaxUses)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        //We need to do more comparisons.
+                        break;
+                    }
+                case "text":
+                    comparison = String.Compare(this.Text, other.Text, StringComparison.OrdinalIgnoreCase);
+                    if (comparison < 0)
+                    {
+                        return -1;
+                    }
+                    else if (comparison > 0)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        //We need to do more comparisons.
+                        break;
+                    }
+                case "dice":
+                    comparison = String.Compare(this.Dice.ToString(), other.Dice.ToString(), StringComparison.OrdinalIgnoreCase);
+                    if (comparison < 0)
+                    {
+                        return -1;
+                    }
+                    else if (comparison > 0)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        //We need to do more comparisons.
+                        break;
+                    }
+                case "rechargecondition":
+                    comparison = String.Compare(this.RechargeCondition, other.RechargeCondition, StringComparison.OrdinalIgnoreCase);
+                    if (comparison < 0)
+                    {
+                        return -1;
+                    }
+                    else if (comparison > 0)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        //We need to do more comparisons.
+                        break;
+                    }
+                case "description":
+                    comparison = String.Compare(this.Description, other.Description, StringComparison.OrdinalIgnoreCase);
+                    if (comparison < 0)
+                    {
+                        return -1;
+                    }
+                    else if (comparison > 0)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        //We need to do more comparisons.
+                        break;
+                    }
+                case "displaytier":
+                    if (DisplayTier < other.DisplayTier)
+                    {
+                        return -1;
+                    }
+                    else if (DisplayTier > other.DisplayTier)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        //We need to do more comparisons.
+                        break;
+                    }
+                default:
+                    break;
+            }
+
+            //Break ties by name.
+            comparison = String.Compare(this.Name, other.Name, StringComparison.OrdinalIgnoreCase);
+            if (comparison < 0)
+            {
+                return -1;
+            }
+            else if (comparison > 0)
+            {
+                return 1;
+            }
+
+            //add more tiebreakers here
+                //dice string (standard string sort)?
+                //current uses?
+                //max uses?
+                    //before current uses?
+
+            //If we get here, we weren't able to see a difference between these two.
+            return 0;
+        }
+
         //Recharges the ability or not based on the specified event.
         public bool MaybeRecharge (string renameme)
         {
@@ -433,13 +768,7 @@ namespace Character
         public string getDiceString()
         {
             //We're going to temporarily just list the first dice string.
-            if (Dice.Count > 0)
-            {
-                return Dice[0].GetDiceString();
-            } else
-            {
-                return "none";
-            }
+            return Dice.GetDiceString();
         }
 
         public string getUsesString ()

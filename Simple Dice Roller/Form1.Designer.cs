@@ -186,6 +186,11 @@
             CharLabel_ID = new Label();
             AbilitiesTab = new TabPage();
             AbilitiesArea = new DataGridView();
+            MagicTab = new TabPage();
+            ListViewTest = new ListView();
+            label8 = new Label();
+            label7 = new Label();
+            TestButton = new Button();
             Abilities_NumberCol = new DataGridViewTextBoxColumn();
             Abilities_IDCol = new DataGridViewTextBoxColumn();
             Abilities_NameCol = new DataGridViewTextBoxColumn();
@@ -193,14 +198,10 @@
             Abilities_RechargeCol = new DataGridViewTextBoxColumn();
             Abilities_DiceCol = new DataGridViewTextBoxColumn();
             Abilities_UsesCol = new DataGridViewTextBoxColumn();
+            Abilities_ChangeCol = new DataGridViewTextBoxColumn();
             Abilities_UseButtonCol = new DataGridViewButtonColumn();
             Abilities_Plus1Col = new DataGridViewButtonColumn();
             Abilities_Minus1Col = new DataGridViewButtonColumn();
-            MagicTab = new TabPage();
-            ListViewTest = new ListView();
-            label8 = new Label();
-            label7 = new Label();
-            TestButton = new Button();
             MainTabArea.SuspendLayout();
             DiceTab.SuspendLayout();
             CharacterTab.SuspendLayout();
@@ -1942,7 +1943,7 @@
             AbilitiesArea.AllowUserToAddRows = false;
             AbilitiesArea.AllowUserToDeleteRows = false;
             AbilitiesArea.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            AbilitiesArea.Columns.AddRange(new DataGridViewColumn[] { Abilities_NumberCol, Abilities_IDCol, Abilities_NameCol, Abilities_TextCol, Abilities_RechargeCol, Abilities_DiceCol, Abilities_UsesCol, Abilities_UseButtonCol, Abilities_Plus1Col, Abilities_Minus1Col });
+            AbilitiesArea.Columns.AddRange(new DataGridViewColumn[] { Abilities_NumberCol, Abilities_IDCol, Abilities_NameCol, Abilities_TextCol, Abilities_RechargeCol, Abilities_DiceCol, Abilities_UsesCol, Abilities_ChangeCol, Abilities_UseButtonCol, Abilities_Plus1Col, Abilities_Minus1Col });
             dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.TopLeft;
             dataGridViewCellStyle1.BackColor = SystemColors.Window;
             dataGridViewCellStyle1.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
@@ -1962,68 +1963,8 @@
             AbilitiesArea.CellContentClick += AbilitiesArea_CellContentClick;
             AbilitiesArea.CellMouseUp += AbilitiesArea_CellMouseUp;
             AbilitiesArea.Scroll += AbilitiesArea_Scroll;
-            AbilitiesArea.SelectionChanged += AbilitiesArea_SelectionChanged;
-            // 
-            // Abilities_NumberCol
-            // 
-            Abilities_NumberCol.HeaderText = "";
-            Abilities_NumberCol.Name = "Abilities_NumberCol";
-            Abilities_NumberCol.Width = 50;
-            // 
-            // Abilities_IDCol
-            // 
-            Abilities_IDCol.HeaderText = "ID";
-            Abilities_IDCol.Name = "Abilities_IDCol";
-            Abilities_IDCol.Visible = false;
-            // 
-            // Abilities_NameCol
-            // 
-            Abilities_NameCol.HeaderText = "Name";
-            Abilities_NameCol.Name = "Abilities_NameCol";
-            Abilities_NameCol.Width = 150;
-            // 
-            // Abilities_TextCol
-            // 
-            Abilities_TextCol.HeaderText = "Text";
-            Abilities_TextCol.Name = "Abilities_TextCol";
-            // 
-            // Abilities_RechargeCol
-            // 
-            Abilities_RechargeCol.HeaderText = "Recharge";
-            Abilities_RechargeCol.Name = "Abilities_RechargeCol";
-            // 
-            // Abilities_DiceCol
-            // 
-            Abilities_DiceCol.HeaderText = "Dice";
-            Abilities_DiceCol.Name = "Abilities_DiceCol";
-            // 
-            // Abilities_UsesCol
-            // 
-            Abilities_UsesCol.HeaderText = "Uses";
-            Abilities_UsesCol.Name = "Abilities_UsesCol";
-            Abilities_UsesCol.Width = 75;
-            // 
-            // Abilities_UseButtonCol
-            // 
-            Abilities_UseButtonCol.HeaderText = "";
-            Abilities_UseButtonCol.Name = "Abilities_UseButtonCol";
-            Abilities_UseButtonCol.Width = 50;
-            // 
-            // Abilities_Plus1Col
-            // 
-            Abilities_Plus1Col.HeaderText = "";
-            Abilities_Plus1Col.Name = "Abilities_Plus1Col";
-            Abilities_Plus1Col.Resizable = DataGridViewTriState.True;
-            Abilities_Plus1Col.SortMode = DataGridViewColumnSortMode.Automatic;
-            Abilities_Plus1Col.Width = 25;
-            // 
-            // Abilities_Minus1Col
-            // 
-            Abilities_Minus1Col.HeaderText = "";
-            Abilities_Minus1Col.Name = "Abilities_Minus1Col";
-            Abilities_Minus1Col.Resizable = DataGridViewTriState.True;
-            Abilities_Minus1Col.SortMode = DataGridViewColumnSortMode.Automatic;
-            Abilities_Minus1Col.Width = 25;
+            AbilitiesArea.SortCompare += AbilitiesArea_SortCompare;
+            AbilitiesArea.Sorted += AbilitiesArea_Sorted;
             // 
             // MagicTab
             // 
@@ -2075,6 +2016,85 @@
             TestButton.Text = "Test";
             TestButton.UseVisualStyleBackColor = true;
             TestButton.Click += TestButton_Click;
+            // 
+            // Abilities_NumberCol
+            // 
+            Abilities_NumberCol.HeaderText = "#";
+            Abilities_NumberCol.Name = "Abilities_NumberCol";
+            Abilities_NumberCol.ToolTipText = "Default Sort Order";
+            Abilities_NumberCol.Width = 50;
+            // 
+            // Abilities_IDCol
+            // 
+            Abilities_IDCol.HeaderText = "ID";
+            Abilities_IDCol.Name = "Abilities_IDCol";
+            Abilities_IDCol.ToolTipText = "Ability Identifier";
+            Abilities_IDCol.Visible = false;
+            // 
+            // Abilities_NameCol
+            // 
+            Abilities_NameCol.HeaderText = "Name";
+            Abilities_NameCol.Name = "Abilities_NameCol";
+            Abilities_NameCol.ToolTipText = "Ability Name";
+            Abilities_NameCol.Width = 150;
+            // 
+            // Abilities_TextCol
+            // 
+            Abilities_TextCol.HeaderText = "Text";
+            Abilities_TextCol.Name = "Abilities_TextCol";
+            Abilities_TextCol.ToolTipText = "Ability Description";
+            Abilities_TextCol.Visible = false;
+            // 
+            // Abilities_RechargeCol
+            // 
+            Abilities_RechargeCol.HeaderText = "Recharge";
+            Abilities_RechargeCol.Name = "Abilities_RechargeCol";
+            Abilities_RechargeCol.ToolTipText = "When the ability recharges";
+            // 
+            // Abilities_DiceCol
+            // 
+            Abilities_DiceCol.HeaderText = "Dice";
+            Abilities_DiceCol.Name = "Abilities_DiceCol";
+            Abilities_DiceCol.ToolTipText = "Which dice the ability rolls";
+            // 
+            // Abilities_UsesCol
+            // 
+            Abilities_UsesCol.HeaderText = "Uses";
+            Abilities_UsesCol.Name = "Abilities_UsesCol";
+            Abilities_UsesCol.ToolTipText = "How many uses the ability has";
+            Abilities_UsesCol.Width = 75;
+            // 
+            // Abilities_ChangeCol
+            // 
+            Abilities_ChangeCol.HeaderText = "Change";
+            Abilities_ChangeCol.Name = "Abilities_ChangeCol";
+            Abilities_ChangeCol.ToolTipText = "How the uses change when activated";
+            Abilities_ChangeCol.Width = 50;
+            // 
+            // Abilities_UseButtonCol
+            // 
+            Abilities_UseButtonCol.HeaderText = "";
+            Abilities_UseButtonCol.Name = "Abilities_UseButtonCol";
+            Abilities_UseButtonCol.ToolTipText = "Use the Ability";
+            Abilities_UseButtonCol.Width = 50;
+            // 
+            // Abilities_Plus1Col
+            // 
+            Abilities_Plus1Col.HeaderText = "";
+            Abilities_Plus1Col.Name = "Abilities_Plus1Col";
+            Abilities_Plus1Col.Resizable = DataGridViewTriState.True;
+            Abilities_Plus1Col.SortMode = DataGridViewColumnSortMode.Automatic;
+            Abilities_Plus1Col.ToolTipText = "Add 1 Use";
+            Abilities_Plus1Col.Width = 25;
+            // 
+            // Abilities_Minus1Col
+            // 
+            Abilities_Minus1Col.HeaderText = "";
+            Abilities_Minus1Col.Name = "Abilities_Minus1Col";
+            Abilities_Minus1Col.Resizable = DataGridViewTriState.True;
+            Abilities_Minus1Col.SortMode = DataGridViewColumnSortMode.Automatic;
+            Abilities_Minus1Col.ToolTipText = "Remove 1 Use";
+            Abilities_Minus1Col.Width = 25;
             // 
             // Form1
             // 
@@ -2271,6 +2291,7 @@
         private DataGridViewTextBoxColumn Abilities_RechargeCol;
         private DataGridViewTextBoxColumn Abilities_DiceCol;
         private DataGridViewTextBoxColumn Abilities_UsesCol;
+        private DataGridViewTextBoxColumn Abilities_ChangeCol;
         private DataGridViewButtonColumn Abilities_UseButtonCol;
         private DataGridViewButtonColumn Abilities_Plus1Col;
         private DataGridViewButtonColumn Abilities_Minus1Col;
