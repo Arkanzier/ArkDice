@@ -38,10 +38,13 @@ namespace Character
         [JsonIgnore]
         public Dictionary<string, string> Changes { get; private set; }
 
+        //The condition for when this ability recharges it's uses.
         public string RechargeCondition{ get; private set; }
-        //consider adding a rechargeAmount variable.
-            //Determines how much the thing recharges, when it recharges.
-            //-1 for all? Just do 9999?
+        //How many uses this ability recharges each time it does so.
+        //Generally expected to be a dice string.
+            //Can also be "all" to recharge fully.
+            //Can also be "false" or "none" to not recharge automatically.
+        public string RechargeAmount { get; private set; }
         public string Text{ get; private set; }
 
         //Used to group abilities together when displayed.
@@ -106,6 +109,7 @@ namespace Character
             Text = "";
             Dice = new DiceCollection();
             RechargeCondition = "";
+            RechargeAmount = "all";
 
             Total = 0;
             Description = "";
@@ -145,6 +149,10 @@ namespace Character
                 if (root.TryGetProperty("RechargeCondition", out temp))
                 {
                     RechargeCondition = temp.ToString();
+                }
+                if (root.TryGetProperty("RechargeAmount", out temp))
+                {
+                    RechargeAmount = temp.ToString();
                 }
                 if (root.TryGetProperty("Action", out temp))
                 {
@@ -734,18 +742,53 @@ namespace Character
         {
             if (ShouldRecharge (renameme))
             {
-                return Recharge();
+                Recharge();
+                return true;
             }
 
             return false;
         }
         
         //Recharges the ability.
-        //to do: add more complexity than just 'all' for amount to recharge.
-        public bool Recharge()
+        //to do: switch return type to void, since this always returns true?
+        public void Recharge()
         {
-            Uses = MaxUses;
-            return true;
+            if (RechargeAmount.ToLower() == "all")
+            {
+                //Full recharge.
+                Uses = MaxUses;
+            }
+            else if (RechargeAmount.ToLower() == "false" || RechargeAmount.ToLower() == "none")
+            {
+                //No recharge.
+            } else
+            {
+                //Roll dice to determine recharge amount.
+                DiceCollection dc = new DiceCollection (RechargeAmount);
+                DiceResponse resp = dc.Roll();
+                if (resp.Total >= 0)
+                {
+                    //We're increasing the number of uses.
+                    if (Uses + resp.Total <= MaxUses)
+                    {
+                        Uses += resp.Total;
+                    }
+                    else
+                    {
+                        Uses = MaxUses;
+                    }
+                } else
+                {
+                    //We're decreasing the number of uses.
+                    if (Uses + resp.Total >= 0)
+                    {
+                        Uses += resp.Total;
+                    } else
+                    {
+                        Uses = 0;
+                    }
+                }
+            }
         }
 
         //Returns true if the ability should be recharged under the specified event, or false otherwise.
