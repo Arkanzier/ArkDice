@@ -401,7 +401,7 @@ namespace Simple_Dice_Roller
                     subtract = true;
                 }
 
-                int dieSize = 0;
+                int dieSize;
                 if (!int.TryParse(number, out dieSize))
                 {
                     //Complain to a log file?
@@ -418,6 +418,14 @@ namespace Simple_Dice_Roller
                     MessageBox.Show("Adding die failed.");
                 }
             }
+
+            UpdateDiceArrayDisplay();
+        }
+
+        //Removes all dice from the dice roller's current selection.
+        private void DiceRoller_Clear_Click(object sender, EventArgs e)
+        {
+            currentDice = new DiceCollection();
 
             UpdateDiceArrayDisplay();
         }

@@ -35,6 +35,7 @@
             outputDescription = new Label();
             MainTabArea = new TabControl();
             DiceTab = new TabPage();
+            DiceRoller_Clear = new Button();
             button42 = new Button();
             button41 = new Button();
             button40 = new Button();
@@ -266,6 +267,7 @@
             // 
             // DiceTab
             // 
+            DiceTab.Controls.Add(DiceRoller_Clear);
             DiceTab.Controls.Add(button42);
             DiceTab.Controls.Add(button41);
             DiceTab.Controls.Add(button40);
@@ -343,6 +345,16 @@
             DiceTab.TabIndex = 0;
             DiceTab.Text = "Dice";
             DiceTab.UseVisualStyleBackColor = true;
+            // 
+            // DiceRoller_Clear
+            // 
+            DiceRoller_Clear.Location = new Point(691, 6);
+            DiceRoller_Clear.Name = "DiceRoller_Clear";
+            DiceRoller_Clear.Size = new Size(75, 23);
+            DiceRoller_Clear.TabIndex = 73;
+            DiceRoller_Clear.Text = "Clear";
+            DiceRoller_Clear.UseVisualStyleBackColor = true;
+            DiceRoller_Clear.Click += DiceRoller_Clear_Click;
             // 
             // button42
             // 
@@ -2333,5 +2345,6 @@
         private DataGridView RechargesArea;
         private DataGridViewTextBoxColumn Recharge_Text;
         private DataGridViewButtonColumn Recharge_Button;
+        private Button DiceRoller_Clear;
     }
 }
