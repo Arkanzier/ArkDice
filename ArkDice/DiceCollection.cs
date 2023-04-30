@@ -78,9 +78,9 @@ namespace ArkDice
             {
                 if (flatBonus && pile.DieSize == 0)
                 {
-                    int multiplier2fuckyou = (subtract) ? -1 : 1;
+                    int thisMultiplier = (subtract) ? -1 : 1;
 
-                    dieSize *= multiplier2fuckyou;
+                    dieSize *= thisMultiplier;
 
                     pile.FlatBonus += dieSize;
                     
