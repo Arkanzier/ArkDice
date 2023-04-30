@@ -917,26 +917,23 @@ namespace Character //change to ArkDice?
 
         //Replenishes abilities and, on a long rest, also replenishes HD.
         //to do: find a better name for this?
-        public bool RechargeAbilities (string type)
+        public bool RechargeAbilities (string condition)
         {
-            type = type.ToLower();
-            if (type == "short rest")
+            condition = condition.ToLower();
+            if (condition == "short rest")
             {
                 //do short rest stuff
             }
-            else if (type == "long rest")
+            else if (condition == "long rest")
             {
                 //do short + long rest stuff
                 RegainHD("half");
-            } else
-            {
-                //check for stuff matching that name
             }
 
             //Replenish abilities as appropriate.
             for (int a = 0; a < Abilities.Count; a++)
             {
-                Abilities[a].MaybeRecharge(type);
+                Abilities[a].MaybeRecharge(condition);
             }
 
             return true;
@@ -1497,6 +1494,45 @@ namespace Character //change to ArkDice?
             //change it to returning the ability by reference?
             //return new Ability();
             return null;
+        }
+
+        //
+        public List<string> GetAbilityRechargeConditions ()
+        {
+            List<string> temp = new List<string> ();
+
+            for (int a = 0; a < Abilities.Count; a++)
+            {
+                string recharge = Abilities[a].RechargeCondition;
+                if (recharge.ToLower() == "long rest" || recharge.ToLower() == "short rest")
+                {
+                    //These are being hardcoded elsewhere
+                    continue;
+                } else if (recharge.ToLower() == "false" || recharge.ToLower() == "none" || recharge == "")
+                {
+                    //This ability has no recharge condition, exclude it from the list.
+                    continue;
+                }
+
+                if (temp.Contains(recharge)) {
+                    continue;
+                }
+
+                temp.Add (recharge);
+            }
+
+            //To do: how to make sure this ignores capitalization?
+            temp.Sort();
+
+            //We want to hardcode long and short rests to the beginning of the list.
+            List<string> ret = new List<string>();
+            ret.Add("Long Rest");
+            ret.Add("Short Rest");
+            for (int a = 0; a < temp.Count; a++)
+            {
+                ret.Add(temp[a]);
+            }
+            return ret;
         }
 
         public List<Ability> GetBasicAbilities ()

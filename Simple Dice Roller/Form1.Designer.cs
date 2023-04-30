@@ -103,6 +103,9 @@
             DiceArrayDisplay = new Label();
             LastRollLabel = new Label();
             CharacterTab = new TabPage();
+            RechargesArea = new DataGridView();
+            Recharge_Text = new DataGridViewTextBoxColumn();
+            Recharge_Button = new DataGridViewButtonColumn();
             ClassesArea = new DataGridView();
             ClassName = new DataGridViewTextBoxColumn();
             Subclass = new DataGridViewTextBoxColumn();
@@ -186,11 +189,6 @@
             CharLabel_ID = new Label();
             AbilitiesTab = new TabPage();
             AbilitiesArea = new DataGridView();
-            MagicTab = new TabPage();
-            ListViewTest = new ListView();
-            label8 = new Label();
-            label7 = new Label();
-            TestButton = new Button();
             Abilities_NumberCol = new DataGridViewTextBoxColumn();
             Abilities_IDCol = new DataGridViewTextBoxColumn();
             Abilities_NameCol = new DataGridViewTextBoxColumn();
@@ -202,9 +200,15 @@
             Abilities_UseButtonCol = new DataGridViewButtonColumn();
             Abilities_Plus1Col = new DataGridViewButtonColumn();
             Abilities_Minus1Col = new DataGridViewButtonColumn();
+            MagicTab = new TabPage();
+            ListViewTest = new ListView();
+            label8 = new Label();
+            label7 = new Label();
+            TestButton = new Button();
             MainTabArea.SuspendLayout();
             DiceTab.SuspendLayout();
             CharacterTab.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)RechargesArea).BeginInit();
             ((System.ComponentModel.ISupportInitialize)ClassesArea).BeginInit();
             ((System.ComponentModel.ISupportInitialize)BasicAbilitiesArea).BeginInit();
             AbilitiesTab.SuspendLayout();
@@ -1066,6 +1070,7 @@
             // 
             // CharacterTab
             // 
+            CharacterTab.Controls.Add(RechargesArea);
             CharacterTab.Controls.Add(ClassesArea);
             CharacterTab.Controls.Add(Char_ChaMod);
             CharacterTab.Controls.Add(Char_WisMod);
@@ -1143,6 +1148,35 @@
             CharacterTab.Text = "Character";
             CharacterTab.UseVisualStyleBackColor = true;
             CharacterTab.Click += CharacterTab_Click;
+            // 
+            // RechargesArea
+            // 
+            RechargesArea.AllowUserToAddRows = false;
+            RechargesArea.AllowUserToDeleteRows = false;
+            RechargesArea.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            RechargesArea.Columns.AddRange(new DataGridViewColumn[] { Recharge_Text, Recharge_Button });
+            RechargesArea.EditMode = DataGridViewEditMode.EditProgrammatically;
+            RechargesArea.Location = new Point(465, 46);
+            RechargesArea.MultiSelect = false;
+            RechargesArea.Name = "RechargesArea";
+            RechargesArea.RowTemplate.Height = 25;
+            RechargesArea.Size = new Size(301, 116);
+            RechargesArea.TabIndex = 79;
+            RechargesArea.CellContentClick += RechargesArea_CellContentClick;
+            // 
+            // Recharge_Text
+            // 
+            Recharge_Text.HeaderText = "Recharge Condition";
+            Recharge_Text.Name = "Recharge_Text";
+            Recharge_Text.Width = 150;
+            // 
+            // Recharge_Button
+            // 
+            Recharge_Button.HeaderText = "Trigger";
+            Recharge_Button.Name = "Recharge_Button";
+            Recharge_Button.Resizable = DataGridViewTriState.True;
+            Recharge_Button.SortMode = DataGridViewColumnSortMode.Automatic;
+            Recharge_Button.Width = 75;
             // 
             // ClassesArea
             // 
@@ -1384,7 +1418,7 @@
             // 
             // Button_SaveCharacter
             // 
-            Button_SaveCharacter.Location = new Point(640, 139);
+            Button_SaveCharacter.Location = new Point(691, 21);
             Button_SaveCharacter.Name = "Button_SaveCharacter";
             Button_SaveCharacter.Size = new Size(75, 23);
             Button_SaveCharacter.TabIndex = 57;
@@ -1395,7 +1429,7 @@
             // Char_Prof
             // 
             Char_Prof.AutoSize = true;
-            Char_Prof.Location = new Point(508, 71);
+            Char_Prof.Location = new Point(289, 319);
             Char_Prof.Name = "Char_Prof";
             Char_Prof.Size = new Size(29, 15);
             Char_Prof.TabIndex = 56;
@@ -1404,7 +1438,7 @@
             // CharLabel_Prof
             // 
             CharLabel_Prof.AutoSize = true;
-            CharLabel_Prof.Location = new Point(485, 56);
+            CharLabel_Prof.Location = new Point(266, 304);
             CharLabel_Prof.Name = "CharLabel_Prof";
             CharLabel_Prof.Size = new Size(102, 15);
             CharLabel_Prof.TabIndex = 55;
@@ -1966,57 +2000,6 @@
             AbilitiesArea.SortCompare += AbilitiesArea_SortCompare;
             AbilitiesArea.Sorted += AbilitiesArea_Sorted;
             // 
-            // MagicTab
-            // 
-            MagicTab.Controls.Add(ListViewTest);
-            MagicTab.Controls.Add(label8);
-            MagicTab.Controls.Add(label7);
-            MagicTab.Location = new Point(4, 24);
-            MagicTab.Name = "MagicTab";
-            MagicTab.Padding = new Padding(3);
-            MagicTab.Size = new Size(772, 532);
-            MagicTab.TabIndex = 3;
-            MagicTab.Text = "Magic";
-            MagicTab.UseVisualStyleBackColor = true;
-            // 
-            // ListViewTest
-            // 
-            ListViewTest.FullRowSelect = true;
-            ListViewTest.Location = new Point(61, 77);
-            ListViewTest.Name = "ListViewTest";
-            ListViewTest.Size = new Size(493, 316);
-            ListViewTest.TabIndex = 2;
-            ListViewTest.UseCompatibleStateImageBehavior = false;
-            ListViewTest.View = View.Details;
-            // 
-            // label8
-            // 
-            label8.AutoSize = true;
-            label8.Location = new Point(272, 14);
-            label8.Name = "label8";
-            label8.Size = new Size(125, 15);
-            label8.TabIndex = 1;
-            label8.Text = "List of spells goes here";
-            // 
-            // label7
-            // 
-            label7.AutoSize = true;
-            label7.Location = new Point(121, 14);
-            label7.Name = "label7";
-            label7.Size = new Size(102, 15);
-            label7.TabIndex = 0;
-            label7.Text = "Spell slots go here";
-            // 
-            // TestButton
-            // 
-            TestButton.Location = new Point(697, 578);
-            TestButton.Name = "TestButton";
-            TestButton.Size = new Size(75, 23);
-            TestButton.TabIndex = 58;
-            TestButton.Text = "Test";
-            TestButton.UseVisualStyleBackColor = true;
-            TestButton.Click += TestButton_Click;
-            // 
             // Abilities_NumberCol
             // 
             Abilities_NumberCol.HeaderText = "#";
@@ -2096,6 +2079,57 @@
             Abilities_Minus1Col.ToolTipText = "Remove 1 Use";
             Abilities_Minus1Col.Width = 25;
             // 
+            // MagicTab
+            // 
+            MagicTab.Controls.Add(ListViewTest);
+            MagicTab.Controls.Add(label8);
+            MagicTab.Controls.Add(label7);
+            MagicTab.Location = new Point(4, 24);
+            MagicTab.Name = "MagicTab";
+            MagicTab.Padding = new Padding(3);
+            MagicTab.Size = new Size(772, 532);
+            MagicTab.TabIndex = 3;
+            MagicTab.Text = "Magic";
+            MagicTab.UseVisualStyleBackColor = true;
+            // 
+            // ListViewTest
+            // 
+            ListViewTest.FullRowSelect = true;
+            ListViewTest.Location = new Point(61, 77);
+            ListViewTest.Name = "ListViewTest";
+            ListViewTest.Size = new Size(493, 316);
+            ListViewTest.TabIndex = 2;
+            ListViewTest.UseCompatibleStateImageBehavior = false;
+            ListViewTest.View = View.Details;
+            // 
+            // label8
+            // 
+            label8.AutoSize = true;
+            label8.Location = new Point(272, 14);
+            label8.Name = "label8";
+            label8.Size = new Size(125, 15);
+            label8.TabIndex = 1;
+            label8.Text = "List of spells goes here";
+            // 
+            // label7
+            // 
+            label7.AutoSize = true;
+            label7.Location = new Point(121, 14);
+            label7.Name = "label7";
+            label7.Size = new Size(102, 15);
+            label7.TabIndex = 0;
+            label7.Text = "Spell slots go here";
+            // 
+            // TestButton
+            // 
+            TestButton.Location = new Point(697, 578);
+            TestButton.Name = "TestButton";
+            TestButton.Size = new Size(75, 23);
+            TestButton.TabIndex = 58;
+            TestButton.Text = "Test";
+            TestButton.UseVisualStyleBackColor = true;
+            TestButton.Click += TestButton_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -2110,6 +2144,7 @@
             DiceTab.PerformLayout();
             CharacterTab.ResumeLayout(false);
             CharacterTab.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)RechargesArea).EndInit();
             ((System.ComponentModel.ISupportInitialize)ClassesArea).EndInit();
             ((System.ComponentModel.ISupportInitialize)BasicAbilitiesArea).EndInit();
             AbilitiesTab.ResumeLayout(false);
@@ -2295,5 +2330,8 @@
         private DataGridViewButtonColumn Abilities_UseButtonCol;
         private DataGridViewButtonColumn Abilities_Plus1Col;
         private DataGridViewButtonColumn Abilities_Minus1Col;
+        private DataGridView RechargesArea;
+        private DataGridViewTextBoxColumn Recharge_Text;
+        private DataGridViewButtonColumn Recharge_Button;
     }
 }

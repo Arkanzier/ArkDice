@@ -70,6 +70,8 @@ namespace Simple_Dice_Roller
             loadedCharacter = currentCharacter;
             //MessageBox.Show(currentCharacter.ToString());
             DisplayCharacter(currentCharacter);
+
+            DrawRecharges();
         }
 
 
@@ -870,6 +872,51 @@ namespace Simple_Dice_Roller
 
         #endregion
 
+        #region Character Tab: Recharge Area
+
+        private void DrawRecharges()
+        {
+            RechargesArea.Rows.Clear();
+
+            List<string> recharges = loadedCharacter.GetAbilityRechargeConditions();
+
+            for (int a = 0; a < recharges.Count; a++)
+            {
+                RechargesArea.Rows.Add(recharges[a], "Trigger");
+            }
+        }
+
+        //Handles the onclick code for the recharge list DataGridView.
+        private void RechargesArea_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            //First we figure out which button was clicked.
+            //Column:
+            int colIndex = e.ColumnIndex;
+            string colName = RechargesArea.Columns[colIndex].Name;
+
+            //Row:
+            int rowNum = e.RowIndex;
+            string? rechargeCondition = RechargesArea.Rows[rowNum].Cells[0].Value.ToString();
+
+            if (rechargeCondition == null)
+            {
+                //Complain to a log file?
+                return;
+            }
+
+            //MessageBox.Show("Button clicked is " + colName + " column for class " + className + " (" + subclassName + ")");
+
+            if (colName == "Recharge_Button")
+            {
+                loadedCharacter.RechargeAbilities(rechargeCondition);
+            }
+
+            DisplayClassList(loadedCharacter);
+            DisplayAbilities(loadedCharacter);
+        }
+
+        #endregion
+
         //-------- -------- -------- -------- -------- -------- -------- -------- 
 
         #region Abilities Tab
@@ -924,7 +971,8 @@ namespace Simple_Dice_Roller
                 if (resp)
                 {
                     //MessageBox.Show("Successfully added 1 use to " + abilityID);
-                } else
+                }
+                else
                 {
                     //MessageBox.Show("Failed to add 1 use to " + abilityID);
                 }
