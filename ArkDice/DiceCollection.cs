@@ -74,39 +74,76 @@ namespace ArkDice
             //to add / remove regular dice, just click the appropriate +/- buttons
         public bool AddOneDie (int dieSize, bool subtract = false, int advdis = 0, bool flatBonus = false)
         {
-            foreach (DicePile pile in Dice)
+            //foreach (DicePile pile in Dice)
+            for (int a = 0; a < Dice.Count; a++)
             {
+                DicePile pile = Dice[a];
                 if (flatBonus && pile.DieSize == 0)
                 {
                     int thisMultiplier = (subtract) ? -1 : 1;
 
                     dieSize *= thisMultiplier;
 
-                    pile.FlatBonus += dieSize;
-                    
+                    Dice[a].FlatBonus += dieSize;
+
                     //error checking?
+
+                    //Check if this bonus is now 0. If so, get rid of it.
+                    if (Dice[a].FlatBonus == 0)
+                    {
+                        Dice.RemoveAt(a);
+                    }
 
                     return true;
                 }
                 else if (pile.DieSize == dieSize)
                 {
-                    int numToAdd = (subtract) ? -1 : 1;
+                    //Figure out whether we're adding dice or subtracting them.
+                    //We add if subtract and the multiplier match.
+                    int numToAdd;
+                    if (!subtract && pile.Multiplier > 0 || subtract && pile.Multiplier < 0)
+                    {
+                        //We might be adding dice that get added to the total.
+                        //We might be adding dice that get removed from the total.
+                        //Either way, we want to make the number bigger.
+                        numToAdd = 1;
+                    } else
+                    {
+                        //We might be removing dice that get added to the total.
+                        //We might be removing dice that get subtracted from the total.
+                        numToAdd = -1;
+                    }
+
+                    //int numToAdd = (subtract) ? -1 : 1;
+                    //to do:
+                    //if the multipliers are both negative, add instead
+
+                    //logic:
+                        //if adding and the multiplier is positive, add
+                        //if subtracting and the multiplier is negative, add
+                        //otherwise, subtract
 
                     if (advdis == 0)
                     {
-                        pile.NumDice += numToAdd;
+                        Dice[a].NumDice += numToAdd;
                         //We don't have a way to check if that worked, so we'll assume it did.
+
+                        //Check if this now has 0 dice. If so, get rid of it.
+                        if (Dice[a].NumDice == 0)
+                        {
+                            Dice.RemoveAt(a);
+                        }
                         return true;
                     }
                     else if (advdis > 0)
                     {
-                        pile.NumAdv += numToAdd;
+                        Dice[a].NumAdv += numToAdd;
                         //We don't have a way to check if that worked, so we'll assume it did.
                         return true;
                     }
                     else if (advdis < 0)
                     {
-                        pile.NumDis += numToAdd;
+                        Dice[a].NumDis += numToAdd;
                         //We don't have a way to check if that worked, so we'll assume it did.
                         return true;
                     }
