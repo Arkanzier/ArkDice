@@ -1,4 +1,7 @@
-﻿namespace Spell
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+
+namespace Character
 {
     //Stores one spell.
     public class Spell
@@ -49,11 +52,12 @@
 
         //to add:
         //something to store dice collections + descriptors for them.
-            //ie: for Fireball, store 8d6 with the descriptor "Fire damage"
+        //ie: for Fireball, store 8d6 with the descriptor "Fire damage"
 
 
         //Constructors
         //-------- -------- -------- -------- -------- -------- -------- -------- 
+        [JsonConstructor]
         public Spell()
         {
             ID = "";
@@ -76,7 +80,49 @@
             : this()
         {
             ID = id;
-            //look up the spell by ID within a db of spells, then load it's info.
+        }
+        public Spell(string id, string folderpath)
+            : this()
+        {
+            ID = id;
+            //We'll attempt to load this spell from the library on disk.
+            string filepath = folderpath + id + ".dat";
+
+            if (folderpath.Last() != '\\')
+            {
+                folderpath += "\\";
+            }
+            folderpath += "dat\\spells\\";
+            this.LoadFromFile(folderpath);
+        }
+        public Spell (string id, Dictionary<string, Spell> library)
+            : this()
+        {
+            //We attempt to load the spell from the library.
+            if (library.ContainsKey (id))
+            {
+                this.Copy (library[id]);
+            }
+        }
+        public Spell(string id, Dictionary<string, Spell> library, string folderpath)
+            : this()
+        {
+            //We attempt to load the spell from the library.
+            if (library.ContainsKey(id))
+            {
+                if (this.Copy(library[id]))
+                {
+                    return;
+                }
+            }
+
+            //Check if there's a file for this spell specifically.
+            if (folderpath.Last() != '\\')
+            {
+                folderpath += "\\";
+            }
+            folderpath += "dat\\spells\\";
+            this.LoadFromFile(folderpath);
         }
 
         public Spell(string id, string name, int level, bool vocal, bool somatic, bool material, string action, string description, string upcastingBenefit, string range, int duration, bool concentration = false, string book = "", int page = 0)
@@ -100,14 +146,69 @@
             this.Page = page;
         }
 
-        public Spell (string id, string name)
-            : this()
-        {
-            this.ID = id;
-            this.Name= name;
-        }
+        //Add one that takes a json string?
 
         //
         //-------- -------- -------- -------- -------- -------- -------- -------- 
+
+        public bool Copy (Spell other)
+        {
+            //Check for a few key fields and return false if they're not present?
+            
+            ID = other.ID;
+            Name = other.Name;
+            Level = other.Level;
+            Vocal = other.Vocal;
+            Somatic = other.Somatic;
+            Material = other.Material;
+            ExpensiveMaterial = other.ExpensiveMaterial;
+            Action = other.Action;
+            Description = other.Description;
+            UpcastingBenefit = other.UpcastingBenefit;
+            Range = other.Range;
+            Duration = other.Duration;
+            Concentration = other.Concentration;
+            Book = other.Book;
+            Page = other.Page;
+
+            return true;
+        }
+
+        //Attempts to load this spell from a file.
+        public bool LoadFromFile (string folderpath)
+        {
+            char lastchar = folderpath.Last();
+            if (lastchar != '\\')
+            {
+                folderpath += "\\";
+            }
+            string filepath = folderpath + ID;
+
+            //Check if the file even exists.
+            if (!File.Exists (filepath))
+            {
+                return false;
+            }
+
+            //Attempt to load the file.
+            string jsonstring = File.ReadAllText (filepath);
+
+            //Convert the JSON to a Spell object.
+            var deserializerOptions = new JsonSerializerOptions
+            {
+                NumberHandling = JsonNumberHandling.AllowReadingFromString
+            };
+
+            Spell? deserialized = JsonSerializer.Deserialize<Spell>(jsonstring, deserializerOptions);
+
+            if (deserialized == null)
+            {
+                return false;
+            }
+
+            this.Copy(deserialized);
+
+            return true;
+        }
     }
 }

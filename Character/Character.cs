@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.Design;
+﻿using System.Collections.Immutable;
+using System.ComponentModel.Design;
 using System.Drawing;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -91,6 +92,8 @@ namespace Character //change to ArkDice?
         public List<Ability> BasicAbilities { get; private set; }
         //Text describing passive abilities the character has.
         public List<string> Passives { get; private set; }
+
+        public List<Spell> Spells { get; private set; }
 
         //Constructor(s):
         //-------- -------- -------- -------- -------- -------- -------- -------- 
@@ -913,6 +916,42 @@ namespace Character //change to ArkDice?
             }
 
             return true;
+        }
+
+        //Attempts to load the character's spells from 
+        public bool LoadSpells (Dictionary<string, Spell> library, string folderpath = "")
+        {
+            bool foundAll = true;
+
+            for (int a = 0; a < Spells.Count; a++)
+            {
+                //If this spell is already loaded, continue;
+                    //How to check this?
+                        //Just do this based off whether there's a Name loaded? Description?
+                if (Spells[a].Name != "")
+                {
+                    //Assume this spell is already loaded and, therefore, we're already done with this one.
+                    continue;
+                    //to do: think about which condition(s) to use.
+                        //Check Description instead? As well?
+                        //Can't count on book / page number.
+                        //Can't count on V/S/M or other M.
+                        //...
+
+                }
+
+                if (library.ContainsKey(Spells[a].Name))
+                {
+
+                }
+                //Attempt to load this spell from library.
+                //If folderpath == "", continue;
+                //Attempt to load this spell from file.
+
+                //move all this to a function within Spell?
+            }
+
+            return foundAll;
         }
 
         //Replenishes abilities and, on a long rest, also replenishes HD.

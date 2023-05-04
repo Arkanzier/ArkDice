@@ -6,6 +6,7 @@ using System.Text;
 using System.IO.Compression;
 using System.Text.RegularExpressions;
 using Microsoft.VisualBasic.ApplicationServices;
+using System.Text.Json;
 
 namespace Simple_Dice_Roller
 {
@@ -41,6 +42,9 @@ namespace Simple_Dice_Roller
 
         Dictionary<string, Panel> AbilitiesAreaDetails;
 
+        //Stores a list of spells to make them easy to load later on.
+        Dictionary<string, Character.Spell> SpellsLibrary;
+
         //Constructor(s):
         //-------- -------- -------- -------- -------- -------- -------- -------- 
         public Form1()
@@ -54,6 +58,19 @@ namespace Simple_Dice_Roller
             //C:\Users\david\source\repos\ArkDice\Simple Dice Roller\bin\Debug\net6.0-windows
 
             string folderpath = "C:\\Users\\david\\Programs\\Simple Dice Roller\\";
+            //to do:
+            //load this from a file or something.
+            //make this a global variable?
+
+            //A collection of spell information so we can load them by ID.
+            SpellsLibrary = new Dictionary<string, Spell>();
+
+            LoadSpellsLibrary(folderpath);
+
+            //function to parse the json and load the spells.
+            //idea: change this setup to there being one file per spell, and then load that file on demand.
+            //is that going to be worth the performance hit for loading a bunch of files at once?
+
             string filepath = folderpath + "Tiriel.char";
             string contents = File.ReadAllText(filepath);
 
@@ -117,6 +134,47 @@ namespace Simple_Dice_Roller
             }
 
             return -1;
+        }
+
+        //
+        private bool LoadSpellsLibrary (string folderpath)
+        {
+            if (folderpath.Last() != '\\')
+            {
+                folderpath += "\\";
+            }
+            string filepath = folderpath + "dat\\Spells.dat";
+
+            if (File.Exists(filepath))
+            {
+                string spellContents = File.ReadAllText(filepath);
+                try
+                {
+                    List<Spell>? temp = JsonSerializer.Deserialize<List<Spell>>(spellContents);
+
+                    if (temp == null)
+                    {
+                        //Complain to a log file?
+                        return false;
+                    } else
+                    {
+                        //Copy temp's contents into SpellsLibrary.
+                        for (int a = 0; a < temp.Count; a++)
+                        {
+                            string id = temp[a].ID.ToString();
+                            SpellsLibrary[id] = temp[a];
+                        }
+                        return true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    SpellsLibrary = new Dictionary<string, Spell>();
+                    return false;
+                }
+            }
+
+            return false;
         }
 
         //Add a message to the log area, plus some related logic.

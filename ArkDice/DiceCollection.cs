@@ -74,7 +74,6 @@ namespace ArkDice
             //to add / remove regular dice, just click the appropriate +/- buttons
         public bool AddOneDie (int dieSize, bool subtract = false, int advdis = 0, bool flatBonus = false)
         {
-            //foreach (DicePile pile in Dice)
             for (int a = 0; a < Dice.Count; a++)
             {
                 DicePile pile = Dice[a];
