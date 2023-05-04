@@ -71,8 +71,8 @@ namespace Simple_Dice_Roller
             //idea: change this setup to there being one file per spell, and then load that file on demand.
             //is that going to be worth the performance hit for loading a bunch of files at once?
 
-            string filepath = folderpath + "Tiriel.char";
-            string contents = File.ReadAllText(filepath);
+            //string filepath = folderpath + "Tiriel.char";
+            //string contents = File.ReadAllText(filepath);
 
             AbilitiesAreaDetails = new Dictionary<string, Panel>();
 
@@ -83,7 +83,8 @@ namespace Simple_Dice_Roller
             lastDice = new DiceCollection();
 
             //Stores the currently loaded character.
-            Character.Character currentCharacter = new Character.Character(contents);
+            //Character.Character currentCharacter = new Character.Character(contents);
+            Character.Character currentCharacter = new Character.Character("Tiriel", folderpath);
             loadedCharacter = currentCharacter;
             //MessageBox.Show(currentCharacter.ToString());
             DisplayCharacter(currentCharacter);

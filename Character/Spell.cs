@@ -148,9 +148,10 @@ namespace Character
 
         //Add one that takes a json string?
 
-        //
+        //Public functions
         //-------- -------- -------- -------- -------- -------- -------- -------- 
 
+        //Copies the contents of another spell into this one.
         public bool Copy (Spell other)
         {
             //Check for a few key fields and return false if they're not present?
@@ -174,7 +175,23 @@ namespace Character
             return true;
         }
 
+        //Checks if the spell has been loaded.
+        public bool IsLoaded ()
+        {
+            if (ID == "" || Name == "")
+            {
+                return false;
+            }
+
+            //to do: add more checks?
+            //add a bool to track this instead of looking at data fields?
+
+            //If we get here, it's probably been loaded.
+            return true;
+        }
+
         //Attempts to load this spell from a file.
+        //This is it's own function so that we can call it later and get a boolean response.
         public bool LoadFromFile (string folderpath)
         {
             char lastchar = folderpath.Last();

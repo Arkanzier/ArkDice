@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.ComponentModel.Design;
 using System.Drawing;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
@@ -146,33 +147,42 @@ namespace Character //change to ArkDice?
             Abilities = new List<Ability>();
             BasicAbilities = new List<Ability>();
             Passives = new List<string>();
+            Spells = new List<Spell>();
 
             CalculateProf();
         }
 
-        //public Character (string filename)
-        //{
-        //    //load "/Characters/" + filename
-        //    //parse it's contents
-        //    //load the stuff into this
-        //}
-        //take the 'load from json' stuff from the other constructor, make it a function, and then call it here and there?
-
-        //Load a character from a JSON string.
-        public Character(string json)
+        //temp
+        //the int argument exists solely to allow c# to differentiate between this and the json, folderpath constructor.
+        public Character (string charID, string folderpath = "")
             : this()
         {
+            if (folderpath != "" && folderpath.Last() != '\\')
+            {
+                folderpath += "\\";
+            }
+            string filepath = folderpath + "Characters\\" + charID + ".char";
+
+            if (!File.Exists (filepath))
+            {
+                //Complain to a log file.
+                return;
+            }
+
+            string json = File.ReadAllText (filepath);
+
+            if (json == "" || json == null)
+            {
+                //Complain to a log file.
+                return;
+            }
+
             //to do: look into making this work with deserialize.
             //will i have to make a struct with the same attributes and then write a function to copy stuff from there to here?
 
             //Temporarily removed.
             //Doesn't work, I'm guessing it requires public setters to work but I don't want those.
             
-            if (json == null)
-            {
-                return;
-            }
-
             /*
             try
             {
@@ -384,91 +394,6 @@ namespace Character //change to ArkDice?
                         }
                     }
                 }
-                /*
-                if (root.TryGetProperty("Saves", out temp))
-                {
-                    Saves = new int[6];
-                    JsonElement temp2 = new JsonElement();
-                    if (temp.TryGetProperty("strength", out temp2))
-                    {
-                        //saveProfs[0] = temp2.GetBoolean();
-                        bool tempbool = temp2.GetBoolean();
-                        if (tempbool)
-                        {
-                            Saves[0] = 1;
-                        }
-                        else
-                        {
-                            Saves[0] = 0;
-                        }
-                    }
-                    if (temp.TryGetProperty("dexterity", out temp2))
-                    {
-                        //saveProfs[1] = temp2.GetBoolean();
-                        bool tempbool = temp2.GetBoolean();
-                        if (tempbool)
-                        {
-                            Saves[1] = 1;
-                        }
-                        else
-                        {
-                            Saves[1] = 0;
-                        }
-                    }
-                    if (temp.TryGetProperty("constitution", out temp2))
-                    {
-                        //saveProfs[2] = temp2.GetBoolean();
-                        bool tempbool = temp2.GetBoolean();
-                        if (tempbool)
-                        {
-                            Saves[2] = 1;
-                        }
-                        else
-                        {
-                            Saves[2] = 0;
-                        }
-                    }
-                    if (temp.TryGetProperty("intelligence", out temp2))
-                    {
-                        //saveProfs[3] = temp2.GetBoolean();
-                        bool tempbool = temp2.GetBoolean();
-                        if (tempbool)
-                        {
-                            Saves[3] = 1;
-                        }
-                        else
-                        {
-                            Saves[3] = 0;
-                        }
-                    }
-                    if (temp.TryGetProperty("wisdom", out temp2))
-                    {
-                        //saveProfs[4] = temp2.GetBoolean();
-                        bool tempbool = temp2.GetBoolean();
-                        if (tempbool)
-                        {
-                            Saves[4] = 1;
-                        }
-                        else
-                        {
-                            Saves[4] = 0;
-                        }
-                    }
-                    if (temp.TryGetProperty("charisma", out temp2))
-                    {
-                        //saveProfs[5] = temp2.GetBoolean();
-                        bool tempbool = temp2.GetBoolean();
-                        if (tempbool)
-                        {
-                            Saves[5] = 1;
-                        }
-                        else
-                        {
-                            Saves[5] = 0;
-                        }
-                    }
-                }
-                */
 
                 //Skills
                 //to do: set up a way to automatically get these indices.
@@ -647,6 +572,18 @@ namespace Character //change to ArkDice?
 
                 //passives goes here
 
+                //Spells
+                if (root.TryGetProperty ("Spells", out temp))
+                {
+                    Spells = new List<Spell>();
+
+                    for (int a = 0; a < temp.GetArrayLength(); a++)
+                    {
+                        Spell thisSpell = new Spell(temp[a].ToString());
+                        Spells.Add(thisSpell);
+                    }
+                }
+
             }
             catch
             {
@@ -659,13 +596,7 @@ namespace Character //change to ArkDice?
             SortAbilities();
         }
 
-        //Currently only used by abilities for sending back lists of changes.
-        public Character(string id, string name)
-            : this()
-        {
-            this.ID = id;
-            this.Name = name;
-        }
+        
 
 
         //Public functions:
@@ -708,6 +639,28 @@ namespace Character //change to ArkDice?
             }
 
             //If we got this far, that class isn't in the list.
+            return false;
+        }
+
+        //Checks if there's a spell under the specified ID and, if so, adds it to Spells.
+        public bool AddSpellByID (string id, Dictionary<string, Spell> library, string folderpath)
+        {
+            //Create the spell object and check if it's in the library.
+            Spell temp = new Spell(id, library);
+
+            if (temp.IsLoaded())
+            {
+                Spells.Add(temp);
+                return true;
+            }
+
+            //Check if there's a file with the spell's info.
+            if (temp.LoadFromFile (folderpath))
+            {
+                Spells.Add(temp);
+                return true;
+            }
+
             return false;
         }
 
@@ -916,42 +869,6 @@ namespace Character //change to ArkDice?
             }
 
             return true;
-        }
-
-        //Attempts to load the character's spells from 
-        public bool LoadSpells (Dictionary<string, Spell> library, string folderpath = "")
-        {
-            bool foundAll = true;
-
-            for (int a = 0; a < Spells.Count; a++)
-            {
-                //If this spell is already loaded, continue;
-                    //How to check this?
-                        //Just do this based off whether there's a Name loaded? Description?
-                if (Spells[a].Name != "")
-                {
-                    //Assume this spell is already loaded and, therefore, we're already done with this one.
-                    continue;
-                    //to do: think about which condition(s) to use.
-                        //Check Description instead? As well?
-                        //Can't count on book / page number.
-                        //Can't count on V/S/M or other M.
-                        //...
-
-                }
-
-                if (library.ContainsKey(Spells[a].Name))
-                {
-
-                }
-                //Attempt to load this spell from library.
-                //If folderpath == "", continue;
-                //Attempt to load this spell from file.
-
-                //move all this to a function within Spell?
-            }
-
-            return foundAll;
         }
 
         //Replenishes abilities and, on a long rest, also replenishes HD.
