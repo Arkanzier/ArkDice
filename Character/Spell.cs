@@ -14,6 +14,8 @@ namespace Character
         public string Name { get; set; }
         //The spell's level, 0 for cantrip.
         public int Level { get;  set; }
+        //The spell's school
+        public string School { get; set; }
 
         //Components
         //-------- -------- -------- -------- -------- -------- -------- -------- 
@@ -66,6 +68,7 @@ namespace Character
             ID = "";
             Name = "";
             Level = 0;
+            School = "";
             Vocal = false;
             Somatic = false;
             Material = false;
@@ -241,6 +244,21 @@ namespace Character
                         //We need to do more comparisons.
                         break;
                     }
+                case "school":
+                    comparison = String.Compare(this.School, other.School, StringComparison.OrdinalIgnoreCase);
+                    if (comparison < 0)
+                    {
+                        return -1;
+                    }
+                    else if (comparison > 0)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        //We need to do more comparisons.
+                        break;
+                    }
                 case "vocal":
                     if (!Vocal && other.Vocal)
                     {
@@ -317,13 +335,108 @@ namespace Character
                         //We need to do more comparisons.
                         break;
                     }
-                //description
-                //upcastingbenefit
-                //range
-                //duration
-                //concentration
-                //book
-                //page
+                case "description":
+                    comparison = String.Compare(this.Description, other.Description, StringComparison.OrdinalIgnoreCase);
+                    if (comparison < 0)
+                    {
+                        return -1;
+                    }
+                    else if (comparison > 0)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        //We need to do more comparisons.
+                        break;
+                    }
+                case "upcastingbenefit":
+                    comparison = String.Compare(this.UpcastingBenefit, other.UpcastingBenefit, StringComparison.OrdinalIgnoreCase);
+                    if (comparison < 0)
+                    {
+                        return -1;
+                    }
+                    else if (comparison > 0)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        //We need to do more comparisons.
+                        break;
+                    }
+                case "range":
+                    comparison = String.Compare(this.Range, other.Range, StringComparison.OrdinalIgnoreCase);
+                    if (comparison < 0)
+                    {
+                        return -1;
+                    }
+                    else if (comparison > 0)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        //We need to do more comparisons.
+                        break;
+                    }
+                case "duration":
+                    if (Duration < other.Duration)
+                    {
+                        return -1;
+                    }
+                    else if (Duration > other.Duration)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        //We need to do more comparisons.
+                        break;
+                    }
+                case "concentration":
+                    if (!Concentration && other.Concentration)
+                    {
+                        return -1;
+                    }
+                    else if (Concentration && !other.Concentration)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        //We need to do more comparisons.
+                        break;
+                    }
+                case "book":
+                    comparison = String.Compare(this.Book, other.Book, StringComparison.OrdinalIgnoreCase);
+                    if (comparison < 0)
+                    {
+                        return -1;
+                    }
+                    else if (comparison > 0)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        //We need to do more comparisons.
+                        break;
+                    }
+                case "page":
+                    if (Page < other.Page)
+                    {
+                        return -1;
+                    }
+                    else if (Page > other.Page)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        //We need to do more comparisons.
+                        break;
+                    }
                 default:
                     break;
             }
@@ -361,6 +474,7 @@ namespace Character
             ID = other.ID;
             Name = other.Name;
             Level = other.Level;
+            School = other.School;
             Vocal = other.Vocal;
             Somatic = other.Somatic;
             Material = other.Material;

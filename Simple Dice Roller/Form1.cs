@@ -1309,6 +1309,7 @@ namespace Simple_Dice_Roller
                 string id = thisSpell.ID;
                 string name = thisSpell.Name;
                 int level = thisSpell.Level;
+                string school = thisSpell.School;
                 bool vocal = thisSpell.Vocal;
                 string vocalString = (vocal == true) ? "X" : "";
                 bool somatic = thisSpell.Somatic;
@@ -1322,6 +1323,9 @@ namespace Simple_Dice_Roller
                 string upcastingBenefit = thisSpell.UpcastingBenefit;
                 string range = thisSpell.Range;
                 int duration = thisSpell.Duration;
+                string durationString = (duration > 0) ? duration.ToString() : "";
+                //extra logic
+                    //convert to 1 minute / 1 hour / etc as appropriate?
                 bool concentration = thisSpell.Concentration;
                 string concentrationString = (concentration == true) ? "X" : "";
                 string book = thisSpell.Book;
@@ -1330,10 +1334,10 @@ namespace Simple_Dice_Roller
 
                 //to do:
                 //add hidden columns for description and upcasting benefit
-                    //and more?
+                //and more?
                 //how to display book and page? Details view only?
 
-                SpellsArea.Rows.Insert (a, a+1, name, "school", range, duration, concentrationString, vocalString, somaticString, materialString, action);
+                SpellsArea.Rows.Insert(a, a + 1, id, name, level, school, range, durationString, concentrationString, vocalString, somaticString, materialString, action, description, upcastingBenefit, "Cast", "Upcast", book, page);
             }
         }
 
