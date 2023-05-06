@@ -71,9 +71,6 @@ namespace Simple_Dice_Roller
             //idea: change this setup to there being one file per spell, and then load that file on demand.
             //is that going to be worth the performance hit for loading a bunch of files at once?
 
-            //string filepath = folderpath + "Tiriel.char";
-            //string contents = File.ReadAllText(filepath);
-
             AbilitiesAreaDetails = new Dictionary<string, Panel>();
 
             //Currently selected dice for the dice roller.
@@ -84,7 +81,7 @@ namespace Simple_Dice_Roller
 
             //Stores the currently loaded character.
             //Character.Character currentCharacter = new Character.Character(contents);
-            Character.Character currentCharacter = new Character.Character("Tiriel", folderpath);
+            Character.Character currentCharacter = new Character.Character("Tiriel", SpellsLibrary, folderpath);
             loadedCharacter = currentCharacter;
             //MessageBox.Show(currentCharacter.ToString());
             DisplayCharacter(currentCharacter);
@@ -138,7 +135,7 @@ namespace Simple_Dice_Roller
         }
 
         //
-        private bool LoadSpellsLibrary (string folderpath)
+        private bool LoadSpellsLibrary(string folderpath)
         {
             if (folderpath.Last() != '\\')
             {
@@ -157,7 +154,8 @@ namespace Simple_Dice_Roller
                     {
                         //Complain to a log file?
                         return false;
-                    } else
+                    }
+                    else
                     {
                         //Copy temp's contents into SpellsLibrary.
                         for (int a = 0; a < temp.Count; a++)
@@ -634,6 +632,8 @@ namespace Simple_Dice_Roller
             DisplayClassList(character);
 
             DisplayAbilities(character);
+
+            DisplaySpells(character);
 
             //Generic abilities
             BasicAbilitiesArea.Rows.Clear();
@@ -1297,6 +1297,45 @@ namespace Simple_Dice_Roller
         //-------- -------- -------- -------- -------- -------- -------- -------- 
 
         #region Magic Tab
+
+        //Display a character's spells in the spells tab.
+        private void DisplaySpells(Character.Character character)
+        {
+            SpellsArea.Rows.Clear();
+
+            for (int a = 0; a < character.Spells.Count(); a++)
+            {
+                Spell thisSpell = character.Spells[a];
+                string id = thisSpell.ID;
+                string name = thisSpell.Name;
+                int level = thisSpell.Level;
+                bool vocal = thisSpell.Vocal;
+                string vocalString = (vocal == true) ? "X" : "";
+                bool somatic = thisSpell.Somatic;
+                string somaticString = (somatic == true) ? "X" : "";
+                bool material = thisSpell.Material;
+                string materialString = (material == true) ? "X" : "";
+                //material as single entry?
+                //write a function for this
+                string action = thisSpell.Action;
+                string description = thisSpell.Description;
+                string upcastingBenefit = thisSpell.UpcastingBenefit;
+                string range = thisSpell.Range;
+                int duration = thisSpell.Duration;
+                bool concentration = thisSpell.Concentration;
+                string concentrationString = (concentration == true) ? "X" : "";
+                string book = thisSpell.Book;
+                int page = thisSpell.Page;
+
+
+                //to do:
+                //add hidden columns for description and upcasting benefit
+                    //and more?
+                //how to display book and page? Details view only?
+
+                SpellsArea.Rows.Insert (a, a+1, name, "school", range, duration, concentrationString, vocalString, somaticString, materialString, action);
+            }
+        }
 
         #endregion
 

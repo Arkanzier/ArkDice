@@ -152,9 +152,8 @@ namespace Character //change to ArkDice?
             CalculateProf();
         }
 
-        //temp
-        //the int argument exists solely to allow c# to differentiate between this and the json, folderpath constructor.
-        public Character (string charID, string folderpath = "")
+        //Loads the character from a file containing JSON.
+        public Character (string charID, Dictionary<string, Spell> library, string folderpath = "")
             : this()
         {
             if (folderpath != "" && folderpath.Last() != '\\')
@@ -579,8 +578,26 @@ namespace Character //change to ArkDice?
 
                     for (int a = 0; a < temp.GetArrayLength(); a++)
                     {
-                        Spell thisSpell = new Spell(temp[a].ToString());
-                        Spells.Add(thisSpell);
+                        //Spell thisSpell = new Spell(temp[a].ToString());
+                        Spell thisSpell = new Spell(temp[a]);
+
+                        //We might need to load the spell from the library.
+                        if (!thisSpell.IsLoaded() && thisSpell.ID != "")
+                        {
+                            //We got an ID but that's it. Let's try to load it by ID.
+                            if (library.ContainsKey(thisSpell.ID))
+                            {
+                                thisSpell.Copy(library[thisSpell.ID]);
+                                Spells.Add(thisSpell);
+                            } else if (thisSpell.LoadFromFile(folderpath))
+                            {
+                                //We were able to load it from a file.
+                                Spells.Add(thisSpell);
+                            }
+                        } else
+                        {
+                            Spells.Add(thisSpell);
+                        }
                     }
                 }
 
@@ -594,6 +611,7 @@ namespace Character //change to ArkDice?
 
             CalculateProf();
             SortAbilities();
+            SortSpells();
         }
 
         
@@ -645,22 +663,15 @@ namespace Character //change to ArkDice?
         //Checks if there's a spell under the specified ID and, if so, adds it to Spells.
         public bool AddSpellByID (string id, Dictionary<string, Spell> library, string folderpath)
         {
-            //Create the spell object and check if it's in the library.
-            Spell temp = new Spell(id, library);
-
+            //This constructor does all the work for us, we'll just see if it works.
+            Spell temp = new Spell(id, library, folderpath);
             if (temp.IsLoaded())
             {
                 Spells.Add(temp);
                 return true;
             }
 
-            //Check if there's a file with the spell's info.
-            if (temp.LoadFromFile (folderpath))
-            {
-                Spells.Add(temp);
-                return true;
-            }
-
+            //Apparently it didn't work.
             return false;
         }
 
@@ -1222,13 +1233,23 @@ namespace Character //change to ArkDice?
         //Sorts the List of Abilities into the default order, so we can just fetch it as is later.
         private void SortAbilities ()
         {
-            //Comparison<Ability> comparer = new Comparison<Ability>(Ability.Compare);
-            //Abilities.Sort(());
             Abilities.Sort(CompareAbilities);
-            //look up how to write Comparison(Ability) comparison
         }
 
+        //Sorts the List of Spells into the default order, so we can just fetch it as is later.
+        private void SortSpells()
+        {
+            Spells.Sort(CompareSpells);
+        }
+
+        //Used for sorting Abilities.
         private static int CompareAbilities (Ability one, Ability two)
+        {
+            return one.Compare(two);
+        }
+
+        //Used for sorting Spells.
+        private static int CompareSpells(Spell one, Spell two)
         {
             return one.Compare(two);
         }

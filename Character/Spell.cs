@@ -52,7 +52,10 @@ namespace Character
 
         //to add:
         //something to store dice collections + descriptors for them.
-        //ie: for Fireball, store 8d6 with the descriptor "Fire damage"
+            //ie: for Fireball, store 8d6 with the descriptor "Fire damage"
+        //Something for whether or not it can be ritual cast
+        //Something for whether it can ONLY be ritual cast, for this character?
+            //Or add something to the character class for that?
 
 
         //Constructors
@@ -76,11 +79,15 @@ namespace Character
             Book = "";
             Page = 0;
         }
+
+        //This one just loads the ID, for use with things like LoadFromFile().
         public Spell(string id)
             : this()
         {
             ID = id;
         }
+
+        //These three load from either the spell library, a file, or both.
         public Spell(string id, string folderpath)
             : this()
         {
@@ -125,6 +132,7 @@ namespace Character
             this.LoadFromFile(folderpath);
         }
 
+        //remove this?
         public Spell(string id, string name, int level, bool vocal, bool somatic, bool material, string action, string description, string upcastingBenefit, string range, int duration, bool concentration = false, string book = "", int page = 0)
             : this()
         {
@@ -146,10 +154,204 @@ namespace Character
             this.Page = page;
         }
 
-        //Add one that takes a json string?
+        public Spell (JsonElement json)
+            : this()
+        {
+            //Convert the JSON to a Spell object.
+            var deserializerOptions = new JsonSerializerOptions
+            {
+                NumberHandling = JsonNumberHandling.AllowReadingFromString
+            };
+
+            Spell? deserialized = JsonSerializer.Deserialize<Spell>(json, deserializerOptions);
+
+            if (deserialized != null)
+            {
+                this.Copy(deserialized);
+            }
+        }
 
         //Public functions
         //-------- -------- -------- -------- -------- -------- -------- -------- 
+
+        //Used for sorting.
+        //Arguments:
+            //other: another Spell object to compare against.
+            //column: which attribute of the Spell class should be used to compare the two.
+        //Return values:
+            //If this is to appear before the other one, returns -1.
+            //If this is to appear after the other one, returns 1.
+            //If this is equal to the other one, including with tiebreakers, returns 0.
+            //Ties are broken by Level, then Name.
+        //Note: for the boolean columns, false will be considered to be less than true.
+        //to do: consider deciding on a set order for common types of actions, and just to string comparison for everything else?
+        public int Compare(Spell other, string column = "level")
+        {
+            column = column.ToLower();
+            int comparison;
+
+            //If we made it this far, these two abilities are the same display tier.
+            //We're going to have to actually compare them now.
+            //Note that the reverse argument is no longer relevant here.
+            switch (column)
+            {
+                case "":
+                    break;
+                case "id":
+                    comparison = String.Compare(this.ID, other.ID, StringComparison.OrdinalIgnoreCase);
+                    if (comparison < 0)
+                    {
+                        return -1;
+                    }
+                    else if (comparison > 0)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        //We need to do more comparisons.
+                        break;
+                    }
+                case "name":
+                    comparison = String.Compare(this.Name, other.Name, StringComparison.OrdinalIgnoreCase);
+                    if (comparison < 0)
+                    {
+                        return -1;
+                    }
+                    else if (comparison > 0)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        //We need to do more comparisons.
+                        break;
+                    }
+                case "level":
+                    if (Level < other.Level)
+                    {
+                        return -1;
+                    }
+                    else if (Level > other.Level)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        //We need to do more comparisons.
+                        break;
+                    }
+                case "vocal":
+                    if (!Vocal && other.Vocal)
+                    {
+                        return -1;
+                    }
+                    else if (Vocal && !other.Vocal)
+                    {
+                        return 1;
+                    } else
+                    {
+                        //We need to do more comparisons.
+                        break;
+                    }
+                case "somatic":
+                    if (!Somatic && other.Somatic)
+                    {
+                        return -1;
+                    }
+                    else if (Somatic && !other.Somatic)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        //We need to do more comparisons.
+                        break;
+                    }
+                case "material":
+                    if (!Material && other.Material)
+                    {
+                        return -1;
+                    }
+                    else if (Material && !other.Material)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        //We need to do more comparisons.
+                        break;
+                    }
+                case "expensivematerial":
+                    comparison = String.Compare(this.ExpensiveMaterial, other.ExpensiveMaterial, StringComparison.OrdinalIgnoreCase);
+                    if (comparison < 0)
+                    {
+                        return -1;
+                    }
+                    else if (comparison > 0)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        //We need to do more comparisons.
+                        break;
+                    }
+                case "materialcolumn":
+                    //composite option, same as the material column in the grid
+                    //how to handle this? Just a string comparison?
+                        //false < non-expensive < expensive?
+                    break;
+                case "action":
+                    comparison = String.Compare(this.Action, other.Action, StringComparison.OrdinalIgnoreCase);
+                    if (comparison < 0)
+                    {
+                        return -1;
+                    }
+                    else if (comparison > 0)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        //We need to do more comparisons.
+                        break;
+                    }
+                //description
+                //upcastingbenefit
+                //range
+                //duration
+                //concentration
+                //book
+                //page
+                default:
+                    break;
+            }
+
+            //Break ties by level.
+            if (Level < other.Level)
+            {
+                return -1;
+            }
+            else if (Level > other.Level)
+            {
+                return 1;
+            }
+
+            //Break ties by name.
+            comparison = String.Compare(this.Name, other.Name, StringComparison.OrdinalIgnoreCase);
+            if (comparison < 0)
+            {
+                return -1;
+            }
+            else if (comparison > 0)
+            {
+                return 1;
+            }
+
+            //If we get here, we weren't able to see a difference between these two.
+            return 0;
+        }
 
         //Copies the contents of another spell into this one.
         public bool Copy (Spell other)

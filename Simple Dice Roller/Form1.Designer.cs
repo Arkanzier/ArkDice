@@ -202,10 +202,19 @@
             Abilities_Plus1Col = new DataGridViewButtonColumn();
             Abilities_Minus1Col = new DataGridViewButtonColumn();
             MagicTab = new TabPage();
-            ListViewTest = new ListView();
-            label8 = new Label();
+            SpellsArea = new DataGridView();
             label7 = new Label();
             TestButton = new Button();
+            Spells_NumberCol = new DataGridViewTextBoxColumn();
+            Spells_NameCol = new DataGridViewTextBoxColumn();
+            Spells_SchoolCol = new DataGridViewTextBoxColumn();
+            Spells_RangeCol = new DataGridViewTextBoxColumn();
+            Spells_DurationCol = new DataGridViewTextBoxColumn();
+            Spells_ConcentrationCol = new DataGridViewTextBoxColumn();
+            Spells_VocalCol = new DataGridViewTextBoxColumn();
+            Spells_SomaticCol = new DataGridViewTextBoxColumn();
+            Spells_MaterialCol = new DataGridViewTextBoxColumn();
+            Spells_ActionCol = new DataGridViewTextBoxColumn();
             MainTabArea.SuspendLayout();
             DiceTab.SuspendLayout();
             CharacterTab.SuspendLayout();
@@ -215,6 +224,7 @@
             AbilitiesTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)AbilitiesArea).BeginInit();
             MagicTab.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)SpellsArea).BeginInit();
             SuspendLayout();
             // 
             // rollDice
@@ -2093,8 +2103,7 @@
             // 
             // MagicTab
             // 
-            MagicTab.Controls.Add(ListViewTest);
-            MagicTab.Controls.Add(label8);
+            MagicTab.Controls.Add(SpellsArea);
             MagicTab.Controls.Add(label7);
             MagicTab.Location = new Point(4, 24);
             MagicTab.Name = "MagicTab";
@@ -2104,24 +2113,19 @@
             MagicTab.Text = "Magic";
             MagicTab.UseVisualStyleBackColor = true;
             // 
-            // ListViewTest
+            // SpellsArea
             // 
-            ListViewTest.FullRowSelect = true;
-            ListViewTest.Location = new Point(61, 77);
-            ListViewTest.Name = "ListViewTest";
-            ListViewTest.Size = new Size(493, 316);
-            ListViewTest.TabIndex = 2;
-            ListViewTest.UseCompatibleStateImageBehavior = false;
-            ListViewTest.View = View.Details;
-            // 
-            // label8
-            // 
-            label8.AutoSize = true;
-            label8.Location = new Point(272, 14);
-            label8.Name = "label8";
-            label8.Size = new Size(125, 15);
-            label8.TabIndex = 1;
-            label8.Text = "List of spells goes here";
+            SpellsArea.AllowUserToAddRows = false;
+            SpellsArea.AllowUserToDeleteRows = false;
+            SpellsArea.AllowUserToOrderColumns = true;
+            SpellsArea.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            SpellsArea.Columns.AddRange(new DataGridViewColumn[] { Spells_NumberCol, Spells_NameCol, Spells_SchoolCol, Spells_RangeCol, Spells_DurationCol, Spells_ConcentrationCol, Spells_VocalCol, Spells_SomaticCol, Spells_MaterialCol, Spells_ActionCol });
+            SpellsArea.Location = new Point(6, 113);
+            SpellsArea.Name = "SpellsArea";
+            SpellsArea.ReadOnly = true;
+            SpellsArea.RowTemplate.Height = 25;
+            SpellsArea.Size = new Size(760, 413);
+            SpellsArea.TabIndex = 1;
             // 
             // label7
             // 
@@ -2141,6 +2145,70 @@
             TestButton.Text = "Test";
             TestButton.UseVisualStyleBackColor = true;
             TestButton.Click += TestButton_Click;
+            // 
+            // Spells_NumberCol
+            // 
+            Spells_NumberCol.HeaderText = "#";
+            Spells_NumberCol.Name = "Spells_NumberCol";
+            Spells_NumberCol.ReadOnly = true;
+            // 
+            // Spells_NameCol
+            // 
+            Spells_NameCol.HeaderText = "Name";
+            Spells_NameCol.Name = "Spells_NameCol";
+            Spells_NameCol.ReadOnly = true;
+            // 
+            // Spells_SchoolCol
+            // 
+            Spells_SchoolCol.HeaderText = "School";
+            Spells_SchoolCol.Name = "Spells_SchoolCol";
+            Spells_SchoolCol.ReadOnly = true;
+            // 
+            // Spells_RangeCol
+            // 
+            Spells_RangeCol.HeaderText = "Range";
+            Spells_RangeCol.Name = "Spells_RangeCol";
+            Spells_RangeCol.ReadOnly = true;
+            // 
+            // Spells_DurationCol
+            // 
+            Spells_DurationCol.HeaderText = "Duration";
+            Spells_DurationCol.Name = "Spells_DurationCol";
+            Spells_DurationCol.ReadOnly = true;
+            // 
+            // Spells_ConcentrationCol
+            // 
+            Spells_ConcentrationCol.HeaderText = "C";
+            Spells_ConcentrationCol.Name = "Spells_ConcentrationCol";
+            Spells_ConcentrationCol.ReadOnly = true;
+            Spells_ConcentrationCol.Width = 25;
+            // 
+            // Spells_VocalCol
+            // 
+            Spells_VocalCol.HeaderText = "V";
+            Spells_VocalCol.Name = "Spells_VocalCol";
+            Spells_VocalCol.ReadOnly = true;
+            Spells_VocalCol.Width = 25;
+            // 
+            // Spells_SomaticCol
+            // 
+            Spells_SomaticCol.HeaderText = "S";
+            Spells_SomaticCol.Name = "Spells_SomaticCol";
+            Spells_SomaticCol.ReadOnly = true;
+            Spells_SomaticCol.Width = 25;
+            // 
+            // Spells_MaterialCol
+            // 
+            Spells_MaterialCol.HeaderText = "M";
+            Spells_MaterialCol.Name = "Spells_MaterialCol";
+            Spells_MaterialCol.ReadOnly = true;
+            Spells_MaterialCol.Width = 25;
+            // 
+            // Spells_ActionCol
+            // 
+            Spells_ActionCol.HeaderText = "Action";
+            Spells_ActionCol.Name = "Spells_ActionCol";
+            Spells_ActionCol.ReadOnly = true;
             // 
             // Form1
             // 
@@ -2163,6 +2231,7 @@
             ((System.ComponentModel.ISupportInitialize)AbilitiesArea).EndInit();
             MagicTab.ResumeLayout(false);
             MagicTab.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)SpellsArea).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -2302,7 +2371,6 @@
         private Button TestButton;
         private TabPage MagicTab;
         private Label label7;
-        private Label label8;
         private Label CharLabel_Health;
         private Label Char_Health;
         private Button ButtonDamage_20;
@@ -2330,7 +2398,6 @@
         private DataGridViewButtonColumn SpendHDButton;
         private DataGridViewButtonColumn AddHDButton;
         private DataGridViewButtonColumn SubtractHDButton;
-        private ListView ListViewTest;
         private DataGridViewTextBoxColumn Abilities_NumberCol;
         private DataGridViewTextBoxColumn Abilities_IDCol;
         private DataGridViewTextBoxColumn Abilities_NameCol;
@@ -2346,5 +2413,16 @@
         private DataGridViewTextBoxColumn Recharge_Text;
         private DataGridViewButtonColumn Recharge_Button;
         private Button DiceRoller_Clear;
+        private DataGridView SpellsArea;
+        private DataGridViewTextBoxColumn Spells_NumberCol;
+        private DataGridViewTextBoxColumn Spells_NameCol;
+        private DataGridViewTextBoxColumn Spells_SchoolCol;
+        private DataGridViewTextBoxColumn Spells_RangeCol;
+        private DataGridViewTextBoxColumn Spells_DurationCol;
+        private DataGridViewTextBoxColumn Spells_ConcentrationCol;
+        private DataGridViewTextBoxColumn Spells_VocalCol;
+        private DataGridViewTextBoxColumn Spells_SomaticCol;
+        private DataGridViewTextBoxColumn Spells_MaterialCol;
+        private DataGridViewTextBoxColumn Spells_ActionCol;
     }
 }
