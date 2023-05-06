@@ -36,11 +36,11 @@ namespace Simple_Dice_Roller
         //Hold the most recently rolled collection of dice from the dice roller tab.
         internal DiceCollection lastDice;
 
-        //Holds information about which rows in AbilitiesArea to display extra information for.
+        //These hold information about which rows in AbilitiesArea and SpellsArea to display extra information for.
         //The key is the row's ID value.
-        //The other one is the chunk of text to display.
-
+        //The other one is the panel that's used to display the stuff.
         Dictionary<string, Panel> AbilitiesAreaDetails;
+        Dictionary<string, Panel> SpellsAreaDetails;
 
         //Stores a list of spells to make them easy to load later on.
         Dictionary<string, Character.Spell> SpellsLibrary;
@@ -72,6 +72,7 @@ namespace Simple_Dice_Roller
             //is that going to be worth the performance hit for loading a bunch of files at once?
 
             AbilitiesAreaDetails = new Dictionary<string, Panel>();
+            SpellsAreaDetails = new Dictionary<string, Panel>();
 
             //Currently selected dice for the dice roller.
             currentDice = new DiceCollection();
@@ -112,10 +113,28 @@ namespace Simple_Dice_Roller
         //Looks up the index for the AbilitiesArea row with a particular ID.
         //Returns the row's index if found, or -1 if not.
         //to do: make it take in some indicator of which grid it should reference.
-        private int GetIndexForRow(string id)
+        private int GetIndexForRow(string gridName, string id)
         {
+            DataGridView grid;
+            string idColIndex;
+            if (gridName == "Abilities")
+            {
+                grid = AbilitiesArea;
+                idColIndex = "Abilities_IDCol";
+            }
+            else if (gridName == "Spells")
+            {
+                grid = SpellsArea;
+                idColIndex = "Spells_IDCol";
+            }
+            else
+            {
+                //Complain to a log file.
+                return -1;
+            }
+
             //Look up the index of the id column
-            int colIndex = AbilitiesArea.Columns["Abilities_IDCol"].Index;
+            int colIndex = grid.Columns[idColIndex].Index;
             //MessageBox.Show("Column index is " + colIndex);
             if (colIndex < 0)
             {
@@ -123,9 +142,9 @@ namespace Simple_Dice_Roller
                 return -1;
             }
 
-            for (int a = 0; a < AbilitiesArea.Rows.Count; a++)
+            for (int a = 0; a < grid.Rows.Count; a++)
             {
-                if (AbilitiesArea.Rows[a].Cells[colIndex].Value.ToString() == id)
+                if (grid.Rows[a].Cells[colIndex].Value.ToString() == id)
                 {
                     return a;
                 }
@@ -317,57 +336,82 @@ namespace Simple_Dice_Roller
 
         //Displays or hides the detail view for any given row in AbilitiesArea.
         //to do: pass in a grid for this to reference.
-        private void ToggleGridExpand(int rowNum)
+        //to do: switch this over to using a function to populate the panel
+        private void ToggleGridExpand(string gridName, int rowNum)
         {
+            DataGridView grid;
+            Dictionary<string, Panel> details;
+            string idCol;
+            if (gridName == "Abilities")
+            {
+                grid = AbilitiesArea;
+                details = AbilitiesAreaDetails;
+                idCol = "Abilities_IDCol";
+            }
+            else if (gridName == "Spells")
+            {
+                grid = SpellsArea;
+                details = SpellsAreaDetails;
+                idCol = "Spells_IDCol";
+            }
+            else
+            {
+                //Complain to a log file?
+                return;
+            }
+
             //Expand the row.
-            if (AbilitiesArea.Rows[rowNum].Height > 100)
+            if (grid.Rows[rowNum].Height > 100)
             {
                 //Shrink the row back to normal.
                 //to do: there's probably a function or something for getting this thing's preferred height.
                 //look that up and use it.
-                AbilitiesArea.Rows[rowNum].Height = AbilitiesArea.Rows[rowNum].GetPreferredHeight(rowNum, DataGridViewAutoSizeRowMode.AllCellsExceptHeader, true);
+                grid.Rows[rowNum].Height = grid.Rows[rowNum].GetPreferredHeight(rowNum, DataGridViewAutoSizeRowMode.AllCellsExceptHeader, true);
 
                 //Remove this panel from the list.
-                string? id = AbilitiesArea.Rows[rowNum].Cells["Abilities_IDCol"].Value.ToString();
+                string? id = grid.Rows[rowNum].Cells[idCol].Value.ToString();
                 if (id == null)
                 {
                     //complain
                     return;
                 }
-                AbilitiesAreaDetails[id].Dispose();
+                details[id].Dispose();
             }
             else
             {
 
-                string? id = AbilitiesArea.Rows[rowNum].Cells["Abilities_IDCol"].Value.ToString();
-                string? text = AbilitiesArea.Rows[rowNum].Cells["Abilities_TextCol"].Value.ToString();
+                string? id = grid.Rows[rowNum].Cells[idCol].Value.ToString();
+                //string? text = grid.Rows[rowNum].Cells["Abilities_TextCol"].Value.ToString();
+                //consider also checking the text / description column
 
-                if (id == null || text == null)
+                if (id == null /*|| text == null*/)
                 {
                     //Log something?
                     return;
                 }
 
                 //Expand the row.
-                AbilitiesArea.Rows[rowNum].Height = AbilitiesArea.Rows[rowNum].Height + 100;
+                grid.Rows[rowNum].Height = grid.Rows[rowNum].Height + 100;
 
                 //Create an appropriate panel and add it to the list.
                 //to do: write a function for this
                 //to do: set up a function for when the panel is clicked: treat that like clicking the row again.
                 Panel newPanel = new Panel();
-                Label newLabel = new Label();
-                newLabel.Text = text;
-                newLabel.Left = 6;
-                newLabel.Top = 6;
-                //set height and width to the panel's height and width -12 each
-                newLabel.Width = AbilitiesArea.Rows[0].AccessibilityObject.Bounds.Width - 12;
-                newLabel.Height = 88; //hardcoded 100px height - 12px for margins = 88px
-                newPanel.Controls.Add(newLabel);
-                AbilitiesArea.Controls.Add(newPanel);
-                AbilitiesAreaDetails[id] = newPanel;
+                if (gridName == "Abilities")
+                {
+                    CreateAbilityDetailPanel(newPanel, grid.Rows[rowNum]);
+                }
+                else if (gridName == "Spells")
+                {
+                    CreateSpellDetailPanel(newPanel, grid.Rows[rowNum]);
+                }
+                grid.Controls.Add(newPanel);
+                details[id] = newPanel;
             }
 
             UpdateAbilitiesAreaDetails();
+            UpdateSpellsAreaDetails();
+            //to do: switch this down to just one, based on the grid specified?
         }
 
 
@@ -1107,13 +1151,17 @@ namespace Simple_Dice_Roller
             {
                 //A different row just got selected.
                 //Can this happen?
-                ToggleGridExpand(rowNum);
+                ToggleGridExpand("Abilities", rowNum);
             }
             else
             {
                 //This row just got selected.
-                ToggleGridExpand(rowNum);
+                ToggleGridExpand("Abilities", rowNum);
             }
+        }
+        private void AbilitiesArea_Click(object sender, EventArgs e)
+        {
+            //Not currently used, EventArgs doesn't include the info we need from DataGridViewCellEventArgs.
         }
 
         //Triggered when the abilities list scrolls. Updates the positions of any ability detail panels.
@@ -1122,11 +1170,13 @@ namespace Simple_Dice_Roller
             UpdateAbilitiesAreaDetails();
         }
 
+        //Called when the abilities list is sorted. Makes sure the details panels get moved appropriately.
         private void AbilitiesArea_Sorted(object sender, EventArgs e)
         {
             UpdateAbilitiesAreaDetails();
         }
 
+        //Triggers the appropriate sorting function when the user tells the program to sort the abilities list.
         private void AbilitiesArea_SortCompare(object sender, DataGridViewSortCompareEventArgs e)
         {
             int colIndex = e.Column.Index;
@@ -1189,6 +1239,21 @@ namespace Simple_Dice_Roller
             }
         }
 
+        //Populate the details panel for the abilities list when it appears.
+        private void CreateAbilityDetailPanel(Panel p, DataGridViewRow row)//and row info?
+        {
+            Label newLabel = new Label();
+            newLabel.Text = row.Cells["Abilities_TextCol"].Value.ToString();
+            //grid.Rows[rowNum].Cells["Abilities_TextCol"].Value.ToString();
+            newLabel.Left = 6;
+            newLabel.Top = 6;
+
+            //set height and width to the panel's height and width -12 each
+            newLabel.Width = AbilitiesArea.Rows[0].AccessibilityObject.Bounds.Width - 12;
+            newLabel.Height = 88; //hardcoded 100px height - 12px for margins = 88px
+            p.Controls.Add(newLabel);
+        }
+
         //Display a character's abilities in the abilities tab.
         private void DisplayAbilities(Character.Character character)
         {
@@ -1210,11 +1275,6 @@ namespace Simple_Dice_Roller
 
                 AbilitiesArea.Rows.Insert(a, a + 1, id, name, text, recharge, dice, usesString, usesChange, "Use", "+1", "-1");
 
-                //DataGridViewRow row = new DataGridViewRow();
-                //row.Cells.Add(new DataGridViewTextBoxCell());
-                //row.Cells[0].Value = a + 1;
-                //row.Cells.Add(new DataGridViewCell (id));
-
                 //Clicks handled by AbilitiesArea_CellContentClick()
 
                 //To do:
@@ -1226,11 +1286,6 @@ namespace Simple_Dice_Roller
                 //And disappear when they click another row.
                 //Make sure the user can scroll horizontally when relevant.
             }
-
-            //Prevent the program from auto-selecting the first row.
-            //Doesn't seem to work. Multiselect only?
-            //AbilitiesArea.ClearSelection();
-            //AbilitiesArea.CurrentCell = null;
         }
 
         //Handles the positioning of abilities area detail thingies, including for scrolling.
@@ -1248,7 +1303,7 @@ namespace Simple_Dice_Roller
                 string id = thingy.Key;
                 Panel detailArea = thingy.Value;
 
-                int rowIndex = GetIndexForRow(id);
+                int rowIndex = GetIndexForRow("Abilities", id);
 
                 //Get the location and dimensions to set this.
                 int top = AbilitiesArea.Rows[rowIndex].AccessibilityObject.Bounds.Top;
@@ -1256,7 +1311,7 @@ namespace Simple_Dice_Roller
                 int bottom = AbilitiesArea.Rows[rowIndex].AccessibilityObject.Bounds.Bottom;
                 int right = AbilitiesArea.Rows[rowIndex].AccessibilityObject.Bounds.Right;
 
-                //test: get the grid's location and subtract that
+                //We need to position things in relation to the grid, not the program.
                 int gridTop = AbilitiesArea.AccessibilityObject.Bounds.Top;
                 int gridLeft = AbilitiesArea.AccessibilityObject.Bounds.Left;
 
@@ -1298,6 +1353,20 @@ namespace Simple_Dice_Roller
 
         #region Magic Tab
 
+        //Populate the details panel for the spells list when it appears.
+        private void CreateSpellDetailPanel(Panel p, DataGridViewRow row)
+        {
+            Label newLabel = new Label();
+            newLabel.Text = row.Cells["Spells_DescriptionCol"].Value.ToString();
+            newLabel.Left = 6;
+            newLabel.Top = 6;
+
+            //set height and width to the panel's height and width -12 each
+            newLabel.Width = SpellsArea.Rows[0].AccessibilityObject.Bounds.Width - 12;
+            newLabel.Height = 88; //hardcoded 100px height - 12px for margins = 88px
+            p.Controls.Add(newLabel);
+        }
+
         //Display a character's spells in the spells tab.
         private void DisplaySpells(Character.Character character)
         {
@@ -1316,7 +1385,7 @@ namespace Simple_Dice_Roller
                 string somaticString = (somatic == true) ? "X" : "";
                 bool material = thisSpell.Material;
                 string materialString = (material == true) ? "X" : "";
-                //material as single entry?
+                //material + expensivematerial as single entry?
                 //write a function for this
                 string action = thisSpell.Action;
                 string description = thisSpell.Description;
@@ -1325,7 +1394,7 @@ namespace Simple_Dice_Roller
                 int duration = thisSpell.Duration;
                 string durationString = (duration > 0) ? duration.ToString() : "";
                 //extra logic
-                    //convert to 1 minute / 1 hour / etc as appropriate?
+                //convert to 1 minute / 1 hour / etc as appropriate?
                 bool concentration = thisSpell.Concentration;
                 string concentrationString = (concentration == true) ? "X" : "";
                 string book = thisSpell.Book;
@@ -1338,6 +1407,248 @@ namespace Simple_Dice_Roller
                 //how to display book and page? Details view only?
 
                 SpellsArea.Rows.Insert(a, a + 1, id, name, level, school, range, durationString, concentrationString, vocalString, somaticString, materialString, action, description, upcastingBenefit, "Cast", "Upcast", book, page);
+            }
+        }
+
+        private void SpellsArea_CellMouseUp(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            //Check if this row is currently selected.
+            int rowNum = e.RowIndex;
+            if (rowNum < 0)
+            {
+                return;
+            }
+            //MessageBox.Show("Clicked on row " + rowNum);
+
+            //Exclude the 3 button columns.
+            int colIndex = e.ColumnIndex;
+            string colName = SpellsArea.Columns[colIndex].Name;
+            if (colName == "Spells_CastCol" || colName == "Spells_UpcastCol")
+            {
+                return;
+            }
+
+            if (SpellsArea.SelectedRows.Count == 0)
+            {
+                //The row just got unselected somehow.
+                //I don't think this is possible without multiselect.
+            }
+            else if (SpellsArea.SelectedRows[0].Index != rowNum)
+            {
+                //A different row just got selected.
+                //Can this happen?
+                ToggleGridExpand("Abilities", rowNum);
+            }
+            else
+            {
+                //This row just got selected.
+                ToggleGridExpand("Abilities", rowNum);
+            }
+        }
+
+        private void SpellsArea_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        //private void SpellsArea_CellMouseUp(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            //Check if this row is currently selected.
+            int rowNum = e.RowIndex;
+            if (rowNum < 0)
+            {
+                return;
+            }
+            //MessageBox.Show("Clicked on row " + rowNum);
+
+            //Exclude the 2 button columns.
+            int colIndex = e.ColumnIndex;
+            string colName = SpellsArea.Columns[colIndex].Name;
+            if (colName == "Spells_CastCol" || colName == "Spells_UpcastCol")
+            {
+                return;
+            }
+
+            if (SpellsArea.SelectedRows.Count == 0)
+            {
+                //The row just got unselected somehow.
+                //I don't think this is possible without multiselect.
+            }
+            else if (SpellsArea.SelectedRows[0].Index != rowNum)
+            {
+                //A different row just got selected.
+                //Can this happen?
+                ToggleGridExpand("Spells", rowNum);
+            }
+            else
+            {
+                //This row just got selected.
+                ToggleGridExpand("Spells", rowNum);
+            }
+        }
+
+        private void SpellsArea_Click(object sender, EventArgs e)
+        {
+            //Not currently used, EventArgs doesn't include the info we need from DataGridViewCellEventArgs.
+        }
+
+        private void SpellsArea_Scroll(object sender, ScrollEventArgs e)
+        {
+
+        }
+
+        private void SpellsArea_SortCompare(object sender, DataGridViewSortCompareEventArgs e)
+        {
+            int colIndex = e.Column.Index;
+            string colName = SpellsArea.Columns[colIndex].Name;
+
+            //Sorting abilities generally revolves around more than just the column in question, so we need the abilities in question.
+            int index1 = e.RowIndex1;
+            int index2 = e.RowIndex2;
+
+            //Get the two ids here
+            string? id1 = SpellsArea.Rows[index1].Cells["Spells_IDCol"].Value.ToString();
+            string? id2 = SpellsArea.Rows[index2].Cells["Spells_IDCol"].Value.ToString();
+            if (id1 == null || id2 == null)
+            {
+                //Something has gone wrong, let the auto sort handle it because maybe it'll be right.
+                return;
+            }
+
+            Spell? spell1 = loadedCharacter.GetSpellByID(id1);
+            Spell? spell2 = loadedCharacter.GetSpellByID(id2);
+            if (spell1 == null || spell2 == null)
+            {
+                //Complain to a log file
+                return;
+            }
+
+            //to do: is reversing the direction supposed to be handled here, or is it done automatically?
+            //that answer will change how we need to sort stuff re: display tiers.
+
+            if (colName == "Spells_NameCol")
+            {
+                e.Handled = true;
+                e.SortResult = spell1.Compare(spell2, "name");
+                return;
+            }
+            else if (colName == "Spells_LevelCol")
+            {
+                e.Handled = true;
+                e.SortResult = spell1.Compare(spell2, "level");
+                return;
+            }
+            else if (colName == "Spells_SchoolCol")
+            {
+                e.Handled = true;
+                e.SortResult = spell1.Compare(spell2, "school");
+                return;
+            }
+            else if (colName == "Spells_RangeCol")
+            {
+                e.Handled = true;
+                e.SortResult = spell1.Compare(spell2, "range");
+                return;
+            }
+            else if (colName == "Spells_DurationCol")
+            {
+                e.Handled = true;
+                e.SortResult = spell1.Compare(spell2, "duration");
+                return;
+            }
+            else if (colName == "Spells_ConcentrationCol")
+            {
+                e.Handled = true;
+                e.SortResult = spell1.Compare(spell2, "concentration");
+                return;
+            }
+            else if (colName == "Spells_VocalCol")
+            {
+                e.Handled = true;
+                e.SortResult = spell1.Compare(spell2, "vocal");
+                return;
+            }
+            else if (colName == "Spells_SomaticCol")
+            {
+                e.Handled = true;
+                e.SortResult = spell1.Compare(spell2, "somatic");
+                return;
+            }
+            else if (colName == "Spells_MaterialCol")
+            {
+                e.Handled = true;
+                e.SortResult = spell1.Compare(spell2, "material");
+                return;
+            }
+            else if (colName == "Spells_ActionCol")
+            {
+                e.Handled = true;
+                e.SortResult = spell1.Compare(spell2, "action");
+                return;
+            }
+            else
+            {
+                //Unsupported column, let it be sorted automatically.
+            }
+        }
+
+        private void SpellsArea_Sorted(object sender, EventArgs e)
+        {
+            UpdateSpellsAreaDetails();
+        }
+
+        //Handles the positioning of spells area detail thingies, including for scrolling.
+        private void UpdateSpellsAreaDetails()
+        {
+            if (SpellsAreaDetails == null || SpellsAreaDetails.Count == 0)
+            {
+                //We're already done.
+                return;
+            }
+
+            //MessageBox.Show("UpdateAbilitiesAreaDetails()");
+            foreach (var thingy in SpellsAreaDetails)
+            {
+                string id = thingy.Key;
+                Panel detailArea = thingy.Value;
+
+                int rowIndex = GetIndexForRow("Spells", id);
+
+                //Get the location and dimensions to set this.
+                int top = SpellsArea.Rows[rowIndex].AccessibilityObject.Bounds.Top;
+                int left = SpellsArea.Rows[rowIndex].AccessibilityObject.Bounds.Left;
+                int bottom = SpellsArea.Rows[rowIndex].AccessibilityObject.Bounds.Bottom;
+                int right = SpellsArea.Rows[rowIndex].AccessibilityObject.Bounds.Right;
+
+                //test: get the grid's location and subtract that
+                int gridTop = SpellsArea.AccessibilityObject.Bounds.Top;
+                int gridLeft = SpellsArea.AccessibilityObject.Bounds.Left;
+
+                if (top > bottom)
+                {
+                    //This row is too short for this.
+                    //complain?
+                    return;
+                    //to do: change to just hiding this one and moving on?
+                }
+
+                int height = bottom - top;
+                int width = right - left;
+                //to do: add up all column widths?
+                //this is going to the edge of the grid, not to the visible edge of the row.
+
+                //We need to account for the fact that we set position relative to the grid.
+                top -= gridTop;
+                left -= gridLeft;
+
+                //Leave ourselves 25px of row to click on.
+                height -= 25;
+                top += 25;
+
+                //MessageBox.Show("Setting panel to " + left + "," + top + " and " + width + "x" + height);
+
+                Rectangle rect = new Rectangle(left, top, width, height);
+
+                //Now set the panel's size and location.
+                detailArea.Bounds = rect;
+                detailArea.Visible = true;
+                detailArea.BringToFront();
             }
         }
 

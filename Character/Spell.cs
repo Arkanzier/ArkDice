@@ -27,6 +27,8 @@ namespace Character
         public bool Material { get; set; }
         //Whether the spell has an expensive material component.
         public string ExpensiveMaterial { get; set; }
+        //to do: consider changing to MaterialDetail
+            //stores the details of the material component line, whether they're expensive material components or just an explanation of the cheap ones.
 
         //Basic Information
         //-------- -------- -------- -------- -------- -------- -------- -------- 
@@ -188,6 +190,15 @@ namespace Character
             //Ties are broken by Level, then Name.
         //Note: for the boolean columns, false will be considered to be less than true.
         //to do: consider deciding on a set order for common types of actions, and just to string comparison for everything else?
+            //bonus action -> action -> 1 minute -> etc -> reaction?
+                //this but with reaction up front?
+        //to do: mess with the range sorting
+            //pull out the range, if it's in the format '\dft'
+            //treat range of "Touch" as 5ft
+            //treat range of "Self" as 0ft
+            //Ignore stuff after that? ie "Self (5ft radius)" ?
+            //Then sort numerically.
+        //to do: add the reversal stuff back in from the ability sorting, so that lower level spells always appear higher up?
         public int Compare(Spell other, string column = "level")
         {
             column = column.ToLower();

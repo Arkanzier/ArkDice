@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
             rollDice = new Button();
             outputTotal = new Label();
             diceStringBox = new TextBox();
@@ -203,8 +204,6 @@
             Abilities_Minus1Col = new DataGridViewButtonColumn();
             MagicTab = new TabPage();
             SpellsArea = new DataGridView();
-            label7 = new Label();
-            TestButton = new Button();
             Spells_NumberCol = new DataGridViewTextBoxColumn();
             Spells_IDCol = new DataGridViewTextBoxColumn();
             Spells_NameCol = new DataGridViewTextBoxColumn();
@@ -223,6 +222,8 @@
             Spells_UpcastCol = new DataGridViewButtonColumn();
             Spells_BookCol = new DataGridViewTextBoxColumn();
             Spells_PageCol = new DataGridViewTextBoxColumn();
+            label7 = new Label();
+            TestButton = new Button();
             MainTabArea.SuspendLayout();
             DiceTab.SuspendLayout();
             CharacterTab.SuspendLayout();
@@ -2029,6 +2030,7 @@
             AbilitiesArea.Scroll += AbilitiesArea_Scroll;
             AbilitiesArea.SortCompare += AbilitiesArea_SortCompare;
             AbilitiesArea.Sorted += AbilitiesArea_Sorted;
+            AbilitiesArea.Click += AbilitiesArea_Click;
             // 
             // Abilities_NumberCol
             // 
@@ -2128,31 +2130,29 @@
             SpellsArea.AllowUserToOrderColumns = true;
             SpellsArea.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             SpellsArea.Columns.AddRange(new DataGridViewColumn[] { Spells_NumberCol, Spells_IDCol, Spells_NameCol, Spells_LevelCol, Spells_SchoolCol, Spells_RangeCol, Spells_DurationCol, Spells_ConcentrationCol, Spells_VocalCol, Spells_SomaticCol, Spells_MaterialCol, Spells_ActionCol, Spells_DescriptionCol, Spells_UpcastingBenefitCol, Spells_CastCol, Spells_UpcastCol, Spells_BookCol, Spells_PageCol });
+            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.TopLeft;
+            dataGridViewCellStyle2.BackColor = SystemColors.Window;
+            dataGridViewCellStyle2.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            dataGridViewCellStyle2.ForeColor = SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = DataGridViewTriState.False;
+            SpellsArea.DefaultCellStyle = dataGridViewCellStyle2;
+            SpellsArea.EditMode = DataGridViewEditMode.EditProgrammatically;
             SpellsArea.Location = new Point(6, 113);
+            SpellsArea.MultiSelect = false;
             SpellsArea.Name = "SpellsArea";
             SpellsArea.ReadOnly = true;
             SpellsArea.RowTemplate.Height = 25;
+            SpellsArea.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             SpellsArea.Size = new Size(760, 413);
             SpellsArea.TabIndex = 1;
-            // 
-            // label7
-            // 
-            label7.AutoSize = true;
-            label7.Location = new Point(121, 14);
-            label7.Name = "label7";
-            label7.Size = new Size(102, 15);
-            label7.TabIndex = 0;
-            label7.Text = "Spell slots go here";
-            // 
-            // TestButton
-            // 
-            TestButton.Location = new Point(697, 578);
-            TestButton.Name = "TestButton";
-            TestButton.Size = new Size(75, 23);
-            TestButton.TabIndex = 58;
-            TestButton.Text = "Test";
-            TestButton.UseVisualStyleBackColor = true;
-            TestButton.Click += TestButton_Click;
+            SpellsArea.CellContentClick += SpellsArea_CellContentClick;
+            SpellsArea.CellMouseUp += SpellsArea_CellMouseUp;
+            SpellsArea.Scroll += SpellsArea_Scroll;
+            SpellsArea.SortCompare += SpellsArea_SortCompare;
+            SpellsArea.Sorted += SpellsArea_Sorted;
+            SpellsArea.Click += SpellsArea_Click;
             // 
             // Spells_NumberCol
             // 
@@ -2291,6 +2291,25 @@
             Spells_PageCol.ReadOnly = true;
             Spells_PageCol.ToolTipText = "Page Number";
             Spells_PageCol.Visible = false;
+            // 
+            // label7
+            // 
+            label7.AutoSize = true;
+            label7.Location = new Point(121, 14);
+            label7.Name = "label7";
+            label7.Size = new Size(102, 15);
+            label7.TabIndex = 0;
+            label7.Text = "Spell slots go here";
+            // 
+            // TestButton
+            // 
+            TestButton.Location = new Point(697, 578);
+            TestButton.Name = "TestButton";
+            TestButton.Size = new Size(75, 23);
+            TestButton.TabIndex = 58;
+            TestButton.Text = "Test";
+            TestButton.UseVisualStyleBackColor = true;
+            TestButton.Click += TestButton_Click;
             // 
             // Form1
             // 

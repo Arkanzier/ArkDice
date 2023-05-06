@@ -1632,5 +1632,21 @@ namespace Character //change to ArkDice?
             //If we get this far, assume no proficiency.
             return 0;
         }
+
+        //Returns the specified spell, or null if the spell is not found.
+        public Spell GetSpellByID(string spellID)
+        {
+            for (int a = 0; a < this.Spells.Count; a++)
+            {
+                if (Spells[a].ID == spellID)
+                {
+                    return Spells[a];
+                }
+            }
+
+            //what to return when it's not found?
+            //return new Spell();
+            return null;
+        }
     }
 }
