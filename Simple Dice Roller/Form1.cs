@@ -379,6 +379,7 @@ namespace Simple_Dice_Roller
             }
             else
             {
+                //Expand the row and display the details view.
 
                 string? id = grid.Rows[rowNum].Cells[idCol].Value.ToString();
                 //string? text = grid.Rows[rowNum].Cells["Abilities_TextCol"].Value.ToString();
@@ -400,10 +401,16 @@ namespace Simple_Dice_Roller
                 if (gridName == "Abilities")
                 {
                     CreateAbilityDetailPanel(newPanel, grid.Rows[rowNum]);
+                    //Add 100px of padding-bottom to the button cells
+                    grid.Rows[rowNum].Cells["Abilities_UseButtonCol"].Style.Padding = new Padding(0, 0, 0, 100);
+                    grid.Rows[rowNum].Cells["Abilities_Plus1Col"].Style.Padding = new Padding(0, 0, 0, 100);
+                    grid.Rows[rowNum].Cells["Abilities_Minus1Col"].Style.Padding = new Padding(0, 0, 0, 100);
                 }
                 else if (gridName == "Spells")
                 {
                     CreateSpellDetailPanel(newPanel, grid.Rows[rowNum]);
+                    grid.Rows[rowNum].Cells["Spells_CastCol"].Style.Padding = new Padding(0, 0, 0, 100);
+                    grid.Rows[rowNum].Cells["Spells_UpcastCol"].Style.Padding = new Padding(0, 0, 0, 100);
                 }
                 grid.Controls.Add(newPanel);
                 details[id] = newPanel;
@@ -1356,15 +1363,17 @@ namespace Simple_Dice_Roller
         //Populate the details panel for the spells list when it appears.
         private void CreateSpellDetailPanel(Panel p, DataGridViewRow row)
         {
-            Label newLabel = new Label();
-            newLabel.Text = row.Cells["Spells_DescriptionCol"].Value.ToString();
-            newLabel.Left = 6;
-            newLabel.Top = 6;
+            //Note: labels seem to default to being 15px tall.
+
+            Label descriptionLabel = new Label();
+            descriptionLabel.Text = row.Cells["Spells_DescriptionCol"].Value.ToString();
+            descriptionLabel.Left = 6;
+            descriptionLabel.Top = 21;  //place it 1 row down
 
             //set height and width to the panel's height and width -12 each
-            newLabel.Width = SpellsArea.Rows[0].AccessibilityObject.Bounds.Width - 12;
-            newLabel.Height = 88; //hardcoded 100px height - 12px for margins = 88px
-            p.Controls.Add(newLabel);
+            descriptionLabel.Width = SpellsArea.Rows[0].AccessibilityObject.Bounds.Width - 12;
+            descriptionLabel.Height = 88; //hardcoded 100px height - 12px for margins = 88px
+            p.Controls.Add(descriptionLabel);
         }
 
         //Display a character's spells in the spells tab.
@@ -1410,6 +1419,7 @@ namespace Simple_Dice_Roller
             }
         }
 
+        //Controls the addition and removal of details areas.
         private void SpellsArea_CellMouseUp(object sender, DataGridViewCellMouseEventArgs e)
         {
             //Check if this row is currently selected.
@@ -1437,15 +1447,16 @@ namespace Simple_Dice_Roller
             {
                 //A different row just got selected.
                 //Can this happen?
-                ToggleGridExpand("Abilities", rowNum);
+                ToggleGridExpand("Spells", rowNum);
             }
             else
             {
                 //This row just got selected.
-                ToggleGridExpand("Abilities", rowNum);
+                ToggleGridExpand("Spells", rowNum);
             }
         }
 
+        //Handles things when someone clicks on one of the buttons.
         private void SpellsArea_CellContentClick(object sender, DataGridViewCellEventArgs e)
         //private void SpellsArea_CellMouseUp(object sender, DataGridViewCellMouseEventArgs e)
         {
@@ -1490,7 +1501,7 @@ namespace Simple_Dice_Roller
 
         private void SpellsArea_Scroll(object sender, ScrollEventArgs e)
         {
-
+            UpdateSpellsAreaDetails();
         }
 
         private void SpellsArea_SortCompare(object sender, DataGridViewSortCompareEventArgs e)
