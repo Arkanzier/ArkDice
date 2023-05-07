@@ -675,6 +675,81 @@ namespace Character //change to ArkDice?
             return false;
         }
 
+        //Attempts to cast a spell.
+        //Returns true/false to indicate success.
+        //Arguments:
+            //spellID is expected to be the ID of the spell being cast.
+            //level is the spell level at which to cast it.
+                //If level is <0, the default spell level will be used.
+        public bool CastSpell (string spellID, int level = -1)
+        {
+            //First we check if this character even has the specified spell.
+            Spell? spell = GetSpellByID(spellID);
+            if (spell == null)
+            {
+                //This character does not know that spell / does not have it prepared.
+                return false;
+            }
+
+            //Let's calculate the spell level to use.
+            if (level < 0)
+            {
+                level = spell.Level;
+            }
+
+            //If this is a cantrip there are no slots required, so we're done.
+            if (level == 0)
+            {
+                return true;
+            }
+
+            //Calculate the ability ID for the appropriate types of spell slots.
+
+            //We'll attempt to use the Warlock spell slots first, since they come back quicker.
+            int warlockSlotsIndex = GetAbilityIndexByID("WarlockSlotslvl"+level);
+            if (warlockSlotsIndex >= 0)
+            {
+                if (Abilities[warlockSlotsIndex].Uses > 0)
+                {
+                    //There is a slot here that can be used, do so and indicate success.
+                    DiceResponse resp = Abilities[warlockSlotsIndex].Use(GetGeneralStatistics());
+                    if (resp.Success)
+                    {
+                        return true;
+                    } else
+                    {
+                        //Something went wrong.
+                        //Complain to a log file.
+                        return false;
+                    }
+                }
+            }
+
+            //Now we fall back on standard spell slots.
+            int standardSlotsIndex = GetAbilityIndexByID("Spellslvl"+level);
+            if (standardSlotsIndex >= 0)
+            {
+                if (Abilities[standardSlotsIndex].Uses > 0)
+                {
+                    //There is a slot here that can be used, do so and indicate success.
+                    DiceResponse resp = Abilities[standardSlotsIndex].Use(GetGeneralStatistics());
+                    if (resp.Success)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        //Something went wrong.
+                        //Complain to a log file.
+                        return false;
+                    }
+                }
+            }
+
+            //If we get here, this character doesn't have any spell slots of the specified level.
+            return false;
+        }
+
         //Changes the number of uses remaining of the specified ability, by index.
         public bool ChangeAbilityUses (int abilityIndex, int change)
         {
@@ -1144,6 +1219,7 @@ namespace Character //change to ArkDice?
         }
 
         //Calculates the numeric index of the ability with the specified ID.
+        //Returns -1 if not found.
         private int GetAbilityIndexByID (string abilityID)
         {
             string compare = abilityID.ToLower();
@@ -1157,6 +1233,24 @@ namespace Character //change to ArkDice?
             }
 
             //There is no such ability on this character.
+            return -1;
+        }
+
+        //Calculates the numeric index of the spell with the specified ID.
+        //Returns -1 if not found.
+        private int GetSpellIndexByID(string spellID)
+        {
+            string compare = spellID.ToLower();
+            for (int a = 0; a < Spells.Count; a++)
+            {
+                string compare2 = Spells[a].ID.ToLower();
+                if (compare == compare2)
+                {
+                    return a;
+                }
+            }
+
+            //There is no such spell on this character.
             return -1;
         }
 
@@ -1456,7 +1550,8 @@ namespace Character //change to ArkDice?
             return this.Abilities;
         }
 
-        //
+        //Returns an Ability with the specified ID, if this character has one.
+        //Returns null if the character doesn't have a matching Ability.
         public Ability GetAbilityByID (string abilityID)
         {
             for (int a = 0; a <  this.Abilities.Count; a++)

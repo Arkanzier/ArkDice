@@ -1491,28 +1491,40 @@ namespace Simple_Dice_Roller
                 //Complain to a log file?
                 return;
             }
-            string colName = AbilitiesArea.Columns[colIndex].Name;
+            string colName = SpellsArea.Columns[colIndex].Name;
 
             //MessageBox.Show("Button clicked: col is " + colName);
 
             int rowNum = e.RowIndex;
-            string? abilityID = AbilitiesArea.Rows[rowNum].Cells[1].Value.ToString();
-            if (abilityID == null)
+            string? spellID = SpellsArea.Rows[rowNum].Cells["Spells_IDCol"].Value.ToString();
+            if (spellID == null)
             {
                 //Complain to a log file?
                 return;
             }
+
+            //We'll want the name for when we put a message in the log.
+            string? spellName = SpellsArea.Rows[rowNum].Cells["Spells_NameCol"].Value.ToString();
 
             //MessageBox.Show("Button clicked: col is " + abilityID);
 
             //to do: consider doing this by the column index instead.
             if (colName == "Spells_CastCol")
             {
-                //
+                //Attempt to cast the spell.
+                bool resp = loadedCharacter.CastSpell(spellID);
+                if (resp)
+                {
+                    LogMessage("Cast spell "+spellName);
+                } else
+                {
+                    LogMessage("Failed to cast spell "+spellName);
+                }
             }
             else if (colName == "Spells_UpcastCol")
             {
-                //
+                //trigger a popup with buttons for each possible upcast level.
+                    //also the description of what's gained by upcasting.
             }
             else
             {
@@ -1520,6 +1532,7 @@ namespace Simple_Dice_Roller
                 return;
             }
 
+            DisplayAbilities(loadedCharacter);
             //DisplayCharacter(loadedCharacter);
             //DisplayClassList(loadedCharacter);
             //UpdateHealthDisplay();
