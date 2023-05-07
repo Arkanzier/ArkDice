@@ -283,6 +283,7 @@
             MainTabArea.SelectedIndex = 0;
             MainTabArea.Size = new Size(780, 560);
             MainTabArea.TabIndex = 4;
+            MainTabArea.SelectedIndexChanged += MainTabArea_SelectedIndexChanged;
             // 
             // DiceTab
             // 

@@ -363,19 +363,32 @@ namespace Simple_Dice_Roller
             //Expand the row.
             if (grid.Rows[rowNum].Height > 100)
             {
-                //Shrink the row back to normal.
-                //to do: there's probably a function or something for getting this thing's preferred height.
-                //look that up and use it.
-                grid.Rows[rowNum].Height = grid.Rows[rowNum].GetPreferredHeight(rowNum, DataGridViewAutoSizeRowMode.AllCellsExceptHeader, true);
-
                 //Remove this panel from the list.
                 string? id = grid.Rows[rowNum].Cells[idCol].Value.ToString();
                 if (id == null)
                 {
                     //complain
+                    MessageBox.Show("Error: could not find id for row");
                     return;
                 }
+                //MessageBox.Show("Shrinking row " + id);
                 details[id].Dispose();
+
+                //Remove the padding from the button column.
+                if (gridName == "Abilities")
+                {
+                    grid.Rows[rowNum].Cells["Abilities_UseButtonCol"].Style.Padding = new Padding(0);
+                    grid.Rows[rowNum].Cells["Abilities_Plus1Col"].Style.Padding = new Padding(0);
+                    grid.Rows[rowNum].Cells["Abilities_Minus1Col"].Style.Padding = new Padding(0);
+                }
+                else if (gridName == "Spells")
+                {
+                    grid.Rows[rowNum].Cells["Spells_CastCol"].Style.Padding = new Padding(0);
+                    grid.Rows[rowNum].Cells["Spells_UpcastCol"].Style.Padding = new Padding(0);
+                }
+
+                //Shrink the row back to normal.
+                grid.Rows[rowNum].Height = grid.Rows[rowNum].GetPreferredHeight(rowNum, DataGridViewAutoSizeRowMode.AllCellsExceptHeader, true);
             }
             else
             {
@@ -388,8 +401,11 @@ namespace Simple_Dice_Roller
                 if (id == null /*|| text == null*/)
                 {
                     //Log something?
+                    MessageBox.Show("Error: could not find id for row");
                     return;
                 }
+
+                //MessageBox.Show("Expanding row " + id);
 
                 //Expand the row.
                 grid.Rows[rowNum].Height = grid.Rows[rowNum].Height + 100;
@@ -416,9 +432,13 @@ namespace Simple_Dice_Roller
                 details[id] = newPanel;
             }
 
-            UpdateAbilitiesAreaDetails();
-            UpdateSpellsAreaDetails();
-            //to do: switch this down to just one, based on the grid specified?
+            if (gridName == "Abilities")
+            {
+                UpdateAbilitiesAreaDetails();
+            } else if (gridName == "Spells")
+            {
+                UpdateSpellsAreaDetails();
+            }
         }
 
 
@@ -1432,6 +1452,11 @@ namespace Simple_Dice_Roller
 
             //Exclude the 3 button columns.
             int colIndex = e.ColumnIndex;
+            if (colIndex < 0)
+            {
+                //how to handle this?
+                return;
+            }
             string colName = SpellsArea.Columns[colIndex].Name;
             if (colName == "Spells_CastCol" || colName == "Spells_UpcastCol")
             {
@@ -1460,38 +1485,44 @@ namespace Simple_Dice_Roller
         private void SpellsArea_CellContentClick(object sender, DataGridViewCellEventArgs e)
         //private void SpellsArea_CellMouseUp(object sender, DataGridViewCellMouseEventArgs e)
         {
-            //Check if this row is currently selected.
-            int rowNum = e.RowIndex;
-            if (rowNum < 0)
-            {
-                return;
-            }
-            //MessageBox.Show("Clicked on row " + rowNum);
-
-            //Exclude the 2 button columns.
             int colIndex = e.ColumnIndex;
-            string colName = SpellsArea.Columns[colIndex].Name;
-            if (colName == "Spells_CastCol" || colName == "Spells_UpcastCol")
+            if (colIndex < 0)
             {
+                //Complain to a log file?
+                return;
+            }
+            string colName = AbilitiesArea.Columns[colIndex].Name;
+
+            //MessageBox.Show("Button clicked: col is " + colName);
+
+            int rowNum = e.RowIndex;
+            string? abilityID = AbilitiesArea.Rows[rowNum].Cells[1].Value.ToString();
+            if (abilityID == null)
+            {
+                //Complain to a log file?
                 return;
             }
 
-            if (SpellsArea.SelectedRows.Count == 0)
+            //MessageBox.Show("Button clicked: col is " + abilityID);
+
+            //to do: consider doing this by the column index instead.
+            if (colName == "Spells_CastCol")
             {
-                //The row just got unselected somehow.
-                //I don't think this is possible without multiselect.
+                //
             }
-            else if (SpellsArea.SelectedRows[0].Index != rowNum)
+            else if (colName == "Spells_UpcastCol")
             {
-                //A different row just got selected.
-                //Can this happen?
-                ToggleGridExpand("Spells", rowNum);
+                //
             }
             else
             {
-                //This row just got selected.
-                ToggleGridExpand("Spells", rowNum);
+                //We don't want to redraw everything.
+                return;
             }
+
+            //DisplayCharacter(loadedCharacter);
+            //DisplayClassList(loadedCharacter);
+            //UpdateHealthDisplay();
         }
 
         private void SpellsArea_Click(object sender, EventArgs e)
@@ -1686,6 +1717,11 @@ namespace Simple_Dice_Roller
         }
 
         private void CharacterTab_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void MainTabArea_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }
