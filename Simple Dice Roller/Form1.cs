@@ -42,6 +42,10 @@ namespace Simple_Dice_Roller
         Dictionary<string, Panel> AbilitiesAreaDetails;
         Dictionary<string, Panel> SpellsAreaDetails;
 
+        //These hold some stuff about how much space should be given to detail views.
+        const int MinAbilityDetailHeight = 100;
+        const int MinSpellDetailHeight = 100;
+
         //Stores a list of spells to make them easy to load later on.
         Dictionary<string, Character.Spell> SpellsLibrary;
 
@@ -153,7 +157,7 @@ namespace Simple_Dice_Roller
             return -1;
         }
 
-        //
+        //Loads a collection of spells into a library that can be referenced later to quickly load spells without having to type them or whatever.
         private bool LoadSpellsLibrary(string folderpath)
         {
             if (folderpath.Last() != '\\')
@@ -208,6 +212,142 @@ namespace Simple_Dice_Roller
             }
 
             DisplayMessages();
+        }
+
+        //
+        //rename?
+        //to do: set up auto sizing for abilities.
+            //make sure the auto sizing for spells works properly.
+            //go over the minimum sizes and make sure I like them.
+                //change to 50? 75?
+        //to do: properly calculate width.
+            //check the boundaries of the leftmost and rightmost visible cells?
+        private void SetAndPositionDetailPanel (string gridName, string id)
+        {
+            Panel? panel;
+            int expandAmount;
+            DataGridView grid;
+            int minHeight;
+            if (gridName == "Abilities")
+            {
+                if (AbilitiesAreaDetails.ContainsKey(id))
+                {
+                    panel = AbilitiesAreaDetails[id];
+                }
+                else
+                {
+                    panel = null;
+                }
+                expandAmount = MinAbilityDetailHeight;
+                grid = AbilitiesArea;
+                minHeight = MinAbilityDetailHeight;
+            }
+            else if (gridName == "Spells")
+            {
+                if (SpellsAreaDetails.ContainsKey(id))
+                {
+                    panel = SpellsAreaDetails[id];
+                }
+                else
+                {
+                    panel = null;
+                }
+                expandAmount = MinSpellDetailHeight;
+                grid = SpellsArea;
+                minHeight = MinSpellDetailHeight;
+            } else
+            {
+                //Whatever this is it's not supported.
+                return;
+            }
+
+            int rowIndex = GetIndexForRow(gridName, id);
+
+            int baseRowHeight = grid.Rows[rowIndex].GetPreferredHeight(rowIndex, DataGridViewAutoSizeRowMode.AllCellsExceptHeader, true);
+            //MessageBox.Show("This row reports that it would like to have a height of " + rowHeight);
+            //to do: get this working
+            baseRowHeight = 25;
+
+            if (panel == null)
+            {
+                //Set the row's height to standard.
+                grid.Rows[rowIndex].Height = baseRowHeight;
+                //MessageBox.Show("Just set row height to " + baseRowHeight);
+
+                //Remove the padding from the button columns.
+                if (gridName == "Abilities")
+                {
+                    grid.Rows[rowIndex].Cells["Abilities_UseButtonCol"].Style.Padding = new Padding(0);
+                    grid.Rows[rowIndex].Cells["Abilities_Plus1Col"].Style.Padding = new Padding(0);
+                    grid.Rows[rowIndex].Cells["Abilities_Minus1Col"].Style.Padding = new Padding(0);
+                }
+                else if (gridName == "Spells")
+                {
+                    grid.Rows[rowIndex].Cells["Spells_CastCol"].Style.Padding = new Padding(0);
+                    grid.Rows[rowIndex].Cells["Spells_UpcastCol"].Style.Padding = new Padding(0);
+                }
+
+                return;
+            }
+
+            //We want to figure out how tall stuff wants to be.
+            //Note: labels seem to default to being 15px tall.
+            int panelHeight = panel.GetPreferredSize(new Size(100, expandAmount)).Height;
+            if (panelHeight < minHeight)
+            {
+                panelHeight = minHeight;
+            }
+
+            int rowHeight = baseRowHeight + panelHeight;
+
+            //Now we set the row height so we can get proper location information for the panel.
+            grid.Rows[rowIndex].Height = rowHeight;
+
+            //Set some padding to keep the buttons looking normal.
+            if (gridName == "Abilities")
+            {
+                grid.Rows[rowIndex].Cells["Abilities_UseButtonCol"].Style.Padding = new Padding(0, 0, 0, panelHeight);
+                grid.Rows[rowIndex].Cells["Abilities_Plus1Col"].Style.Padding = new Padding(0, 0, 0, panelHeight);
+                grid.Rows[rowIndex].Cells["Abilities_Minus1Col"].Style.Padding = new Padding(0, 0, 0, panelHeight);
+            } else if (gridName == "Spells")
+            {
+                grid.Rows[rowIndex].Cells["Spells_CastCol"].Style.Padding = new Padding(0, 0, 0, panelHeight);
+                grid.Rows[rowIndex].Cells["Spells_UpcastCol"].Style.Padding = new Padding(0, 0, 0, panelHeight);
+            }
+
+            //Get the location and dimensions to set this.
+            int top = grid.Rows[rowIndex].AccessibilityObject.Bounds.Top;
+            int left = grid.Rows[rowIndex].AccessibilityObject.Bounds.Left;
+            int bottom = grid.Rows[rowIndex].AccessibilityObject.Bounds.Bottom;
+            int right = grid.Rows[rowIndex].AccessibilityObject.Bounds.Right;
+
+            //We need to position things in relation to the grid, not the program.
+            int gridTop = grid.AccessibilityObject.Bounds.Top;
+            int gridLeft = grid.AccessibilityObject.Bounds.Left;
+
+            top -= gridTop;
+            left -= gridLeft;
+
+            //We want to leave 1 row worth of space above the panel.
+            top += baseRowHeight;
+
+            if (top > bottom)
+            {
+                //This row is too short for this.
+                //complain?
+                return;
+                //to do: change to just hiding this one and moving on?
+            }
+
+            int width = right - left;
+
+            //MessageBox.Show("Going to set this panel to " + left + ", " + top + " and " + width + " x " + panelHeight);
+            Rectangle rect = new Rectangle(left, top, width, panelHeight);
+
+            //Now set the panel's size and location.
+            panel.Bounds = rect;
+            panel.Visible = true;
+            panel.BringToFront();
         }
 
         private void TestButton_Click(object sender, EventArgs e)
@@ -335,8 +475,6 @@ namespace Simple_Dice_Roller
         }
 
         //Displays or hides the detail view for any given row in AbilitiesArea.
-        //to do: pass in a grid for this to reference.
-        //to do: switch this over to using a function to populate the panel
         private void ToggleGridExpand(string gridName, int rowNum)
         {
             DataGridView grid;
@@ -360,43 +498,28 @@ namespace Simple_Dice_Roller
                 return;
             }
 
+            string? id = grid.Rows[rowNum].Cells[idCol].Value.ToString();
+            if (id == null)
+            {
+                //complain
+                MessageBox.Show("Error: could not find id for row.");
+                return;
+            }
+
             //Expand the row.
-            if (grid.Rows[rowNum].Height > 100)
+            if (details.ContainsKey(id))
+            //if (grid.Rows[rowNum].Height > expandAmount)
             {
                 //Remove this panel from the list.
-                string? id = grid.Rows[rowNum].Cells[idCol].Value.ToString();
-                if (id == null)
-                {
-                    //complain
-                    MessageBox.Show("Error: could not find id for row");
-                    return;
-                }
-                //MessageBox.Show("Shrinking row " + id);
                 details[id].Dispose();
-
-                //Remove the padding from the button column.
-                if (gridName == "Abilities")
-                {
-                    grid.Rows[rowNum].Cells["Abilities_UseButtonCol"].Style.Padding = new Padding(0);
-                    grid.Rows[rowNum].Cells["Abilities_Plus1Col"].Style.Padding = new Padding(0);
-                    grid.Rows[rowNum].Cells["Abilities_Minus1Col"].Style.Padding = new Padding(0);
-                }
-                else if (gridName == "Spells")
-                {
-                    grid.Rows[rowNum].Cells["Spells_CastCol"].Style.Padding = new Padding(0);
-                    grid.Rows[rowNum].Cells["Spells_UpcastCol"].Style.Padding = new Padding(0);
-                }
+                details.Remove(id);
 
                 //Shrink the row back to normal.
-                grid.Rows[rowNum].Height = grid.Rows[rowNum].GetPreferredHeight(rowNum, DataGridViewAutoSizeRowMode.AllCellsExceptHeader, true);
+                //grid.Rows[rowNum].Height = grid.Rows[rowNum].GetPreferredHeight(rowNum, DataGridViewAutoSizeRowMode.AllCellsExceptHeader, true);
             }
             else
             {
                 //Expand the row and display the details view.
-
-                string? id = grid.Rows[rowNum].Cells[idCol].Value.ToString();
-                //string? text = grid.Rows[rowNum].Cells["Abilities_TextCol"].Value.ToString();
-                //consider also checking the text / description column
 
                 if (id == null /*|| text == null*/)
                 {
@@ -408,29 +531,25 @@ namespace Simple_Dice_Roller
                 //MessageBox.Show("Expanding row " + id);
 
                 //Expand the row.
-                grid.Rows[rowNum].Height = grid.Rows[rowNum].Height + 100;
+                //grid.Rows[rowNum].Height = grid.Rows[rowNum].Height + expandAmount;
 
                 //Create an appropriate panel and add it to the list.
-                //to do: write a function for this
                 //to do: set up a function for when the panel is clicked: treat that like clicking the row again.
                 Panel newPanel = new Panel();
                 if (gridName == "Abilities")
                 {
                     CreateAbilityDetailPanel(newPanel, grid.Rows[rowNum]);
-                    //Add 100px of padding-bottom to the button cells
-                    grid.Rows[rowNum].Cells["Abilities_UseButtonCol"].Style.Padding = new Padding(0, 0, 0, 100);
-                    grid.Rows[rowNum].Cells["Abilities_Plus1Col"].Style.Padding = new Padding(0, 0, 0, 100);
-                    grid.Rows[rowNum].Cells["Abilities_Minus1Col"].Style.Padding = new Padding(0, 0, 0, 100);
                 }
                 else if (gridName == "Spells")
                 {
                     CreateSpellDetailPanel(newPanel, grid.Rows[rowNum]);
-                    grid.Rows[rowNum].Cells["Spells_CastCol"].Style.Padding = new Padding(0, 0, 0, 100);
-                    grid.Rows[rowNum].Cells["Spells_UpcastCol"].Style.Padding = new Padding(0, 0, 0, 100);
                 }
                 grid.Controls.Add(newPanel);
                 details[id] = newPanel;
             }
+
+            //Make sure everything is sized and positioned properly.
+            SetAndPositionDetailPanel(gridName, id);
 
             if (gridName == "Abilities")
             {
@@ -1313,6 +1432,7 @@ namespace Simple_Dice_Roller
                 //And disappear when they click another row.
                 //Make sure the user can scroll horizontally when relevant.
             }
+            UpdateAbilitiesAreaDetails();
         }
 
         //Handles the positioning of abilities area detail thingies, including for scrolling.
@@ -1328,49 +1448,7 @@ namespace Simple_Dice_Roller
             foreach (var thingy in AbilitiesAreaDetails)
             {
                 string id = thingy.Key;
-                Panel detailArea = thingy.Value;
-
-                int rowIndex = GetIndexForRow("Abilities", id);
-
-                //Get the location and dimensions to set this.
-                int top = AbilitiesArea.Rows[rowIndex].AccessibilityObject.Bounds.Top;
-                int left = AbilitiesArea.Rows[rowIndex].AccessibilityObject.Bounds.Left;
-                int bottom = AbilitiesArea.Rows[rowIndex].AccessibilityObject.Bounds.Bottom;
-                int right = AbilitiesArea.Rows[rowIndex].AccessibilityObject.Bounds.Right;
-
-                //We need to position things in relation to the grid, not the program.
-                int gridTop = AbilitiesArea.AccessibilityObject.Bounds.Top;
-                int gridLeft = AbilitiesArea.AccessibilityObject.Bounds.Left;
-
-                if (top > bottom)
-                {
-                    //This row is too short for this.
-                    //complain?
-                    return;
-                    //to do: change to just hiding this one and moving on?
-                }
-
-                int height = bottom - top;
-                int width = right - left;
-                //to do: add up all column widths?
-                //this is going to the edge of the grid, not to the visible edge of the row.
-
-                //We need to account for the fact that we set position relative to the grid.
-                top -= gridTop;
-                left -= gridLeft;
-
-                //Leave ourselves 25px of row to click on.
-                height -= 25;
-                top += 25;
-
-                //MessageBox.Show("Setting panel to " + left + "," + top + " and " + width + "x" + height);
-
-                Rectangle rect = new Rectangle(left, top, width, height);
-
-                //Now set the panel's size and location.
-                detailArea.Bounds = rect;
-                detailArea.Visible = true;
-                detailArea.BringToFront();
+                SetAndPositionDetailPanel("Abilities", id);
             }
         }
 
@@ -1378,21 +1456,16 @@ namespace Simple_Dice_Roller
 
         //-------- -------- -------- -------- -------- -------- -------- -------- 
 
-        #region Magic Tab
+        #region Magic Tab: Spells List
 
         //Populate the details panel for the spells list when it appears.
         private void CreateSpellDetailPanel(Panel p, DataGridViewRow row)
         {
-            //Note: labels seem to default to being 15px tall.
-
             Label descriptionLabel = new Label();
             descriptionLabel.Text = row.Cells["Spells_DescriptionCol"].Value.ToString();
             descriptionLabel.Left = 6;
             descriptionLabel.Top = 21;  //place it 1 row down
 
-            //set height and width to the panel's height and width -12 each
-            descriptionLabel.Width = SpellsArea.Rows[0].AccessibilityObject.Bounds.Width - 12;
-            descriptionLabel.Height = 88; //hardcoded 100px height - 12px for margins = 88px
             p.Controls.Add(descriptionLabel);
         }
 
@@ -1401,9 +1474,9 @@ namespace Simple_Dice_Roller
         {
             SpellsArea.Rows.Clear();
 
-            for (int a = 0; a < character.Spells.Count(); a++)
+            for (int spellNum = 0; spellNum < character.Spells.Count(); spellNum++)
             {
-                Spell thisSpell = character.Spells[a];
+                Spell thisSpell = character.Spells[spellNum];
                 string id = thisSpell.ID;
                 string name = thisSpell.Name;
                 int level = thisSpell.Level;
@@ -1435,8 +1508,47 @@ namespace Simple_Dice_Roller
                 //and more?
                 //how to display book and page? Details view only?
 
-                SpellsArea.Rows.Insert(a, a + 1, id, name, level, school, range, durationString, concentrationString, vocalString, somaticString, materialString, action, description, upcastingBenefit, "Cast", "Upcast", book, page);
+                SpellsArea.Rows.Insert(spellNum, spellNum + 1, id, name, level, school, range, durationString, concentrationString, vocalString, somaticString, materialString, action, description, upcastingBenefit, "Cast", "Upcast", book, page);
+
+                //Now we potentially blank out the upcast button.
+                    //This is done for cantrips.
+                    //Eventually this will be done when there aren't any spell slots available of a high enough level.
+
+                if (level == 0)
+                {
+                    //Cantrips can never be upcast.
+                    //SpellsArea.Rows[a].Cells["Spells_UpcastCol"].Style.
+                }
+                else
+                {
+                    int numSlots = loadedCharacter.GetSpellSlotsForLevel(level);
+                    if (numSlots == 0)
+                    {
+                        //There aren't enough slots of this level.
+                        //Disable the cast button
+                    }
+
+                    numSlots = 0;
+                    for (int slvl = level+1; slvl <= 9; slvl++)
+                    {
+                        numSlots += loadedCharacter.GetSpellSlotsForLevel(slvl);
+                    }
+                    if (numSlots == 0)
+                    {
+                        //There are no higher-level spell slots available.
+                        //Disable the upcast button.
+                    }
+                    //idea: set the padding-top on the cells to a large enough number to drop the button out of sight.
+                        //complication: when restoring rows to normal height, we'll need to:
+                            //set the padding to 0 on these cells
+                            //set the height to the auto calculated value
+                            //re-set the padding to hide the button(s).
+                                //store padding values before zeroing, or just re-do this calculation?
+                                    //Actually, if this is being redrawn as a result of the change (which it should be), this calculation will be redone anyway.
+                }
             }
+
+            UpdateSpellsAreaDetails();
         }
 
         //Controls the addition and removal of details areas.
@@ -1483,7 +1595,6 @@ namespace Simple_Dice_Roller
 
         //Handles things when someone clicks on one of the buttons.
         private void SpellsArea_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        //private void SpellsArea_CellMouseUp(object sender, DataGridViewCellMouseEventArgs e)
         {
             int colIndex = e.ColumnIndex;
             if (colIndex < 0)
@@ -1661,49 +1772,9 @@ namespace Simple_Dice_Roller
             foreach (var thingy in SpellsAreaDetails)
             {
                 string id = thingy.Key;
-                Panel detailArea = thingy.Value;
 
-                int rowIndex = GetIndexForRow("Spells", id);
+                SetAndPositionDetailPanel("Spells", id);
 
-                //Get the location and dimensions to set this.
-                int top = SpellsArea.Rows[rowIndex].AccessibilityObject.Bounds.Top;
-                int left = SpellsArea.Rows[rowIndex].AccessibilityObject.Bounds.Left;
-                int bottom = SpellsArea.Rows[rowIndex].AccessibilityObject.Bounds.Bottom;
-                int right = SpellsArea.Rows[rowIndex].AccessibilityObject.Bounds.Right;
-
-                //test: get the grid's location and subtract that
-                int gridTop = SpellsArea.AccessibilityObject.Bounds.Top;
-                int gridLeft = SpellsArea.AccessibilityObject.Bounds.Left;
-
-                if (top > bottom)
-                {
-                    //This row is too short for this.
-                    //complain?
-                    return;
-                    //to do: change to just hiding this one and moving on?
-                }
-
-                int height = bottom - top;
-                int width = right - left;
-                //to do: add up all column widths?
-                //this is going to the edge of the grid, not to the visible edge of the row.
-
-                //We need to account for the fact that we set position relative to the grid.
-                top -= gridTop;
-                left -= gridLeft;
-
-                //Leave ourselves 25px of row to click on.
-                height -= 25;
-                top += 25;
-
-                //MessageBox.Show("Setting panel to " + left + "," + top + " and " + width + "x" + height);
-
-                Rectangle rect = new Rectangle(left, top, width, height);
-
-                //Now set the panel's size and location.
-                detailArea.Bounds = rect;
-                detailArea.Visible = true;
-                detailArea.BringToFront();
             }
         }
 

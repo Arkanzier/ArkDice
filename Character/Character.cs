@@ -1743,5 +1743,30 @@ namespace Character //change to ArkDice?
             //return new Spell();
             return null;
         }
+
+        //Returns the number of available spell slots of the specified level.
+        public int GetSpellSlotsForLevel (int level, bool includeStandard = true, bool includeWarlock = true)
+        {
+            int total = 0;
+            if (includeStandard)
+            {
+                Ability? standardSlots = GetAbilityByID("Spellslvl" + level);
+                if (standardSlots != null)
+                {
+                    total += standardSlots.Uses;
+                }
+            }
+
+            if (includeWarlock)
+            {
+                Ability? warlockSlots = GetAbilityByID("WarlockSpellslvl" + level);
+                if (warlockSlots != null)
+                {
+                    total += warlockSlots.Uses;
+                }
+            }
+
+            return total;
+        }
     }
 }
