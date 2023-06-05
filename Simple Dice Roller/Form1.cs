@@ -43,11 +43,13 @@ namespace Simple_Dice_Roller
         Dictionary<string, Panel> SpellsAreaDetails;
 
         //These hold some stuff about how much space should be given to detail views.
-        const int MinAbilityDetailHeight = 100;
-        const int MinSpellDetailHeight = 100;
+        const int MinAbilityDetailHeight = 75;
+        const int MinSpellDetailHeight = 75;
 
         //Stores a list of spells to make them easy to load later on.
         Dictionary<string, Character.Spell> SpellsLibrary;
+
+        EditCharacter? EditCharacterForm;
 
         //Constructor(s):
         //-------- -------- -------- -------- -------- -------- -------- -------- 
@@ -57,6 +59,8 @@ namespace Simple_Dice_Roller
             logMessages = new List<string>();
 
             InitializeComponent();
+
+            EditCharacterForm = null;
 
             //Directory that this stuff runs out of:
             //C:\Users\david\source\repos\ArkDice\Simple Dice Roller\bin\Debug\net6.0-windows
@@ -92,6 +96,44 @@ namespace Simple_Dice_Roller
             DisplayCharacter(currentCharacter);
 
             DrawRecharges();
+        }
+
+        //Functions for communicating with the EditCharacter form.
+        //-------- -------- -------- -------- -------- -------- -------- -------- 
+        //Opens a new window for editing the current character.
+        private void BeginEditingCharacter ()
+        {
+            string id = loadedCharacter.ID;
+            if (id == "")
+            {
+                //what to do here?
+                //just pop up a blank one?
+                MessageBox.Show("Error: could not identify loaded character.");
+            } else
+            {
+                //EditCharacter editing = new EditCharacter(id);
+                EditCharacter editing = new EditCharacter(loadedCharacter);
+                editing.parent = this;
+                editing.Show();
+
+                //Store a reference to the child so we can access it later.
+                EditCharacterForm = editing;
+            }
+        }
+
+        //Closes the new form used for editing characters.
+        private void CloseEditingCharacter ()
+        {
+            if (EditCharacterForm != null)
+            {
+                EditCharacterForm.Close();
+            }
+        }
+
+        //Called when something is closing the form for editing characters.
+        public void ClosingEditingCharacter()
+        {
+            EditCharacterForm = null;
         }
 
 
@@ -384,94 +426,13 @@ namespace Simple_Dice_Roller
             //ListViewTest.Groups.Add(new ListViewGroup("this is a second group"));
             */
 
-            //----------------
-            //Testing creating a second form as a popup
-            /*
-            var formPopup = new Form();
-            formPopup.Show(this);
-            */
-            //Creates a new window, I don't want that.
-
-            //Testing creating a panel as a popup
-            /*
-            Panel myPanel = new Panel();
-            myPanel.Width = 100;
-            myPanel.Height = 100;
-            myPanel.Location = new Point (1, 1);
-            myPanel.BringToFront();
-            
-            myPanel.Show();
-            myPanel.Visible = true;
-            */
-            //Does nothing, apparently
-
-            /*
-            //Getting ahold of the row location and dimensions:
-            //double top = AbilitiesArea.CurrentRow.AccessibilityObject.Bounds.Top;
-            //double right = AbilitiesArea.CurrentRow.AccessibilityObject.Bounds.Right;
-            //double bottom = AbilitiesArea.CurrentRow.AccessibilityObject.Bounds.Bottom;
-            //double left = AbilitiesArea.CurrentRow.AccessibilityObject.Bounds.Left;
-            double top = AbilitiesArea.Rows[1].AccessibilityObject.Bounds.Top;
-            double right = AbilitiesArea.Rows[1].AccessibilityObject.Bounds.Right;
-            double bottom = AbilitiesArea.Rows[1].AccessibilityObject.Bounds.Bottom;
-            double left = AbilitiesArea.Rows[1].AccessibilityObject.Bounds.Left;
-
-            //MessageBox.Show("This row's edges are " + top + "-" + bottom + " vertically and " + left + "-" + right + " horizontally.");
-
-            double width = right - left;
-            double height = bottom - top;
-
-            left = 0;
-            top = 0;
-            height = 100;
-            width = 100;
-
-            //MessageBox.Show("Going to draw box starting at " + left + ", " + top + " and it will be " + width + " px wide and " + height + " px tall.");
-
-            //Draw a box on top of that row, except the 25px at the top.
-            System.Drawing.SolidBrush brush = new System.Drawing.SolidBrush(System.Drawing.Color.Blue);
-            System.Drawing.Graphics formGraphics;
-            formGraphics = this.CreateGraphics();
-            Rectangle rect = new Rectangle((int)left, (int)top, (int)width, (int)height);
-            formGraphics.FillRectangle(brush, rect);
-            //rect.BringToFront();
-            //This works, but it draws the box behind the datagridview.
-
-            brush.Dispose();
-            formGraphics.Dispose();
-
-            //DataGridView dgv = new DataGridView();
-            //dgv.Columns.Add("theone", "the one");
-            //AbilitiesArea.Rows[1].CreateCells(dgv);
-                //row provided already belongs to a datagridview
-                //fuckin duh
-            */
-
-
-            //This works, but:
-            //it fills one cell's position.
-            //it doesn't scroll with the table.
-            /*
-            DateTimePicker dtp = new DateTimePicker();
-            dtp.Value = DateTime.Now.AddDays(-10);
-            //add DateTimePicker into the control collection of the DataGridView
-            this.AbilitiesArea.Controls.Add(dtp);
-            //set its location and size to fit the cell
-            dtp.Location = this.AbilitiesArea.GetCellDisplayRectangle(0, 3, true).Location;
-            dtp.Size = this.AbilitiesArea.GetCellDisplayRectangle(0, 3, true).Size;
-            */
-
-            //Testing big single detail panel
-            /*
-            if (AbilityDetailPanel.Visible)
+            if (EditCharacterForm == null)
             {
-                AbilityDetailPanel.Visible = false;
-            }
-            else
+                BeginEditingCharacter();
+            } else
             {
-                DisplayAbilityDetails("FontofMagic");
+                CloseEditingCharacter();
             }
-            */
         }
 
         //Displays or hides the detail view for any given row in AbilitiesArea.
@@ -817,7 +778,7 @@ namespace Simple_Dice_Roller
             Char_ChaMod.Text = character.GetChaMod().ToString();
             UpdateStatButtonLabels();
 
-            Char_Prof.Text = character.GetProf().ToString();
+            Char_Prof.Text = character.Prof.ToString();
 
             DisplayClassList(character);
 

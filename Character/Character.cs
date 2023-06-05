@@ -943,6 +943,65 @@ namespace Character //change to ArkDice?
             return ret;
         }
 
+        //Takes in some changes and applies them to the character.
+        public bool IncorporateChanges(Dictionary<string, string> changes)
+        {
+            //to do: consider having this return false when it can't parse something.
+
+            //If there is an index in the dictionary, assume that's meant to be a change and set the corresponding attribute here to that value.
+            //We will need to do some sanity checking, though (ie: current HP cannot be more than max HP).
+
+            int tempint = 0;
+
+            //Consider removing support for changing the character's name or ID.
+            if (changes.ContainsKey("ID")) { ID = changes["ID"]; }
+            if (changes.ContainsKey("Name")) { Name = changes["Name"]; }
+            if (changes.ContainsKey("Race")) { Race = changes["Race"]; }
+
+            if (changes.ContainsKey("MaxHP") && Int32.TryParse(changes["MaxHP"], out tempint))
+            {
+                MaxHP = tempint;
+            }
+            if (changes.ContainsKey("CurrentHP") && Int32.TryParse(changes["CurrentHP"], out tempint))
+            {
+                CurrentHP = tempint;
+            }
+            if (changes.ContainsKey("TempHP") && Int32.TryParse(changes["TempHP"], out tempint))
+            {
+                TempHP = tempint;
+            }
+
+            //Stats
+            if (changes.ContainsKey("Str") && Int32.TryParse(changes["Str"], out tempint))
+            {
+                Stats[0] = tempint;
+            }
+            if (changes.ContainsKey("Dex") && Int32.TryParse(changes["Dex"], out tempint))
+            {
+                Stats[1] = tempint;
+            }
+            if (changes.ContainsKey("Con") && Int32.TryParse(changes["Con"], out tempint))
+            {
+                Stats[2] = tempint;
+            }
+            if (changes.ContainsKey("Int") && Int32.TryParse(changes["Int"], out tempint))
+            {
+                Stats[3] = tempint;
+            }
+            if (changes.ContainsKey("Wis") && Int32.TryParse(changes["Wis"], out tempint))
+            {
+                Stats[4] = tempint;
+            }
+            if (changes.ContainsKey("Cha") && Int32.TryParse(changes["Cha"], out tempint))
+            {
+                Stats[5] = tempint;
+            }
+
+            //...
+
+            return true;
+        }
+
         //Heal the character
         public bool Heal(int amount)
         {
@@ -1291,39 +1350,6 @@ namespace Character //change to ArkDice?
             }
         }
 
-        //Takes in some changes and applies them to the character.
-        private bool IncorporateChanges (Dictionary<string, string> changes)
-        {
-            //to do: consider having this return false when it can't parse something.
-
-            //If there is an index in the dictionary, assume that's meant to be a change and set the corresponding attribute here to that value.
-            //We will need to do some sanity checking, though (ie: current HP cannot be more than max HP).
-
-            int tempint = 0;
-
-            //Consider removing support for changing the character's name or ID.
-            if (changes.ContainsKey ("ID")) { ID = changes["ID"]; }
-            if (changes.ContainsKey ("Name")) { Name = changes["Name"]; }
-            if (changes.ContainsKey ("Race")) { Race = changes["Race"]; }
-
-            if (changes.ContainsKey("MaxHP") && Int32.TryParse(changes["MaxHP"], out tempint))
-            {
-                MaxHP = tempint;
-            }
-            if (changes.ContainsKey("CurrentHP") && Int32.TryParse(changes["CurrentHP"], out tempint))
-            {
-                CurrentHP = tempint;
-            }
-            if (changes.ContainsKey("TempHP") && Int32.TryParse(changes["TempHP"], out tempint))
-            {
-                TempHP = tempint;
-            }
-
-            //...
-
-            return true;
-        }
-
         //Sorts the List of Abilities into the default order, so we can just fetch it as is later.
         private void SortAbilities ()
         {
@@ -1423,8 +1449,10 @@ namespace Character //change to ArkDice?
         //Getters and Setters:
         //-------- -------- -------- -------- -------- -------- -------- -------- 
 
+        #region Getters and Setters for Stats
+
         //to do: how many of these are actually needed?
-        //Get stats.
+        //Getters for stats, to obfuscate the array that's actually used.
         public int GetStrength()
         {
             return this.Stats[0];
@@ -1501,10 +1529,34 @@ namespace Character //change to ArkDice?
         {
             return this.Stats;
         }
-        public int GetProf()
+
+        //Setters for stats, to obfuscate the array that's actually used.
+        public void SetStr (int newVal)
         {
-            return (this.Prof);
+            Stats[0] = newVal;
         }
+        public void SetDex(int newVal)
+        {
+            Stats[1] = newVal;
+        }
+        public void SetCon(int newVal)
+        {
+            Stats[2] = newVal;
+        }
+        public void SetInt(int newVal)
+        {
+            Stats[3] = newVal;
+        }
+        public void SetWis(int newVal)
+        {
+            Stats[4] = newVal;
+        }
+        public void SetCha(int newVal)
+        {
+            Stats[5] = newVal;
+        }
+
+        #endregion
 
         //Get whether or not the character is proficient in any given save.
         public int GetSaveProf(string save)
