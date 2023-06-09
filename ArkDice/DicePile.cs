@@ -130,13 +130,13 @@ namespace ArkDice
         //Wrapper for the other roll() function for when we have no stats to pass in.
         public DiceResponse Roll ()
         {
-            Dictionary<string, int> empty = new Dictionary<string, int>();
+            Dictionary<string, double> empty = new Dictionary<string, double>();
             return Roll(empty);
         }
 
         //Rolls this collection of dice and returns the total.
         //stats is expected to receive data in the format outputted by Character.GetGeneralStatistics()
-        public DiceResponse Roll (Dictionary<string, int> stats)
+        public DiceResponse Roll (Dictionary<string, double> stats)
         {
             int numToRoll = this.NumDice + this.NumAdv + this.NumDis;
 
@@ -199,7 +199,7 @@ namespace ArkDice
                 //Check the character's stats that were passed in.
                 if (stats.ContainsKey(DynamicBonus))
                 {
-                    ret += stats[DynamicBonus];
+                    ret += (int)stats[DynamicBonus];
                 }
                 else if (DynamicBonus.Substring(0, 10) == "profifprof")
                 {
@@ -212,7 +212,7 @@ namespace ArkDice
                     //Now we look up the thing and see if we have it.
                     if (stats.ContainsKey(thing))
                     {
-                        ret += (stats["prof"] * stats[thing]);
+                        ret += (int)((stats["prof"] * stats[thing]));
                         //to do: translate thing into a more human readable version
                             //just write a function for it with a switch statement with hardcoded values?
                             //write a function that checks a hardcoded dictionary?

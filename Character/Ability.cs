@@ -230,7 +230,7 @@ namespace Character
         //Functions relating to triggering the ability:
         //-------- -------- -------- -------- -------- -------- -------- -------- 
         //Triggers this ability.
-        public DiceResponse Use (Dictionary<string, int> stats)
+        public DiceResponse Use (Dictionary<string, double> stats)
         {
             //actions:
             //roll - put the total in the log
@@ -315,7 +315,7 @@ namespace Character
                     }
                     break;
                 case "heal":
-                    int newHP = stats["CurrentHP"] + resp.Total;
+                    int newHP = (int)stats["CurrentHP"] + resp.Total;
                     if (newHP > stats["MaxHP"])
                     {
                         resp.Changes["CurrentHP"] = stats["MaxHP"].ToString();
@@ -396,7 +396,7 @@ namespace Character
         //    //idea: change the returned boolean in these from success/failure to indicating whether or not there is a description to display.
         //}
 
-        private DiceResponse RollDice(Dictionary<string, int> stats)
+        private DiceResponse RollDice(Dictionary<string, double> stats)
         {
             Total = 0;
             Description = Name+": ";

@@ -250,9 +250,9 @@ namespace ArkDice
         //Also puts a text description of the roll into the description variable.
         public DiceResponse Roll ()
         {
-            return Roll (new Dictionary<string, int>());
+            return Roll (new Dictionary<string, double>());
         }
-        public DiceResponse Roll (Dictionary<string, int> stats)
+        public DiceResponse Roll (Dictionary<string, double> stats)
         {
             int total = 0;
             string desc = "";

@@ -127,6 +127,7 @@ namespace Simple_Dice_Roller
             if (EditCharacterForm != null)
             {
                 EditCharacterForm.Close();
+                //bring this form to the top?
             }
         }
 

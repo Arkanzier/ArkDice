@@ -40,7 +40,7 @@ namespace Character //change to ArkDice?
         //convert these over to loose ints/bools?
         //there are only 6 of each, and it would cut down a little on the work involved.
 
-        public int[] Saves { get; private set; }
+        public double[] Saves { get; private set; }
         //to do: rename to saves?
 
         //how to handle weapon and armor profs?
@@ -56,7 +56,7 @@ namespace Character //change to ArkDice?
         //lump tools and languages together, since they're just going to be lists anyway?
 
         //Skill proficiencies
-        public Dictionary<string, int> Skills { get; private set; }
+        public Dictionary<string, double> Skills { get; private set; }
 
         //Skills by stat:
         /*
@@ -117,13 +117,13 @@ namespace Character //change to ArkDice?
 
             //Stats and related info.
             Stats = new int[6];
-            Saves = new int[6];
+            Saves = new double[6];
             for (int a = 0; a < 6; a++)
             {
                 Stats[a] = 0;
                 Saves[a] = 0;
             }
-            Skills = new Dictionary<string, int>();
+            Skills = new Dictionary<string, double>();
             Skills["Athletics"] = 0;
             Skills["Acrobatics"] = 0;
             Skills["Sleight of Hand"] = 0;
@@ -374,7 +374,7 @@ namespace Character //change to ArkDice?
                 if (root.TryGetProperty("Saves", out temp))
                 {
                     //We don't technically need to do this here, but it won't hurt.
-                    Saves = new int[6];
+                    Saves = new double[6];
                     //JsonElement temp2 = new JsonElement();
 
                     //to do: check if array length is 6 and complain otherwise?
@@ -399,7 +399,7 @@ namespace Character //change to ArkDice?
                 //just do a foreach through the existing dictionary, since they should all be in there now?
                 if (root.TryGetProperty("Skills", out temp))
                 {
-                    Skills = new Dictionary<string, int>();
+                    Skills = new Dictionary<string, double>();
                     JsonElement temp2 = new JsonElement();
 
                     Skills["Athletics"] = 0;
@@ -869,9 +869,9 @@ namespace Character //change to ArkDice?
         }
 
         //Returns a list of the character's basic numeric stats for use with abilities.
-        public Dictionary<string, int> GetGeneralStatistics()
+        public Dictionary<string, double> GetGeneralStatistics()
         {
-            Dictionary<string, int> ret = new Dictionary<string, int>();
+            Dictionary<string, double> ret = new Dictionary<string, double>();
 
             //Stats and modifiers
             ret["strmod"] = DiceFunctions.getModifierForStat(Stats[0]);
@@ -997,6 +997,30 @@ namespace Character //change to ArkDice?
                 Stats[5] = tempint;
             }
 
+            //saves go here
+
+            //Skills
+            //to do: change to loop?
+            //to do: change to include only one access of changes per iteration?
+                //TryGetValue() will probably work
+
+            double tempdouble;
+            foreach (KeyValuePair<string, double> kvp in Skills) {
+                string key = kvp.Key;
+                //double value = kvp.Value;
+
+                if (changes.TryGetValue(key, out string? valstring))
+                {
+                    if (valstring != null)
+                    {
+                        if (double.TryParse(valstring, out tempdouble))
+                        {
+                            Skills[key] = tempdouble;
+                        }
+                    }
+                }
+            }
+
             //...
 
             return true;
@@ -1094,7 +1118,7 @@ namespace Character //change to ArkDice?
         //Makes a roll using the character's stats and proficiencies.
         public DiceResponse RollForCharacter(DiceCollection dc)
         {
-            Dictionary<string, int> stats = this.GetGeneralStatistics();
+            Dictionary<string, double> stats = this.GetGeneralStatistics();
 
             DiceResponse resp = dc.Roll(stats);
 
@@ -1414,13 +1438,13 @@ namespace Character //change to ArkDice?
 
             //Stats and related info.
             Stats = new int[6];
-            Saves = new int[6];
+            Saves = new double[6];
             for (int a = 0; a < 6; a++)
             {
                 Stats[a] = 0;
                 Saves[a] = 0;
             }
-            Skills = new Dictionary<string, int>();
+            Skills = new Dictionary<string, double>();
             Skills["Athletics"] = 0;
             Skills["Acrobatics"] = 0;
             Skills["Sleight of Hand"] = 0;
@@ -1559,9 +1583,10 @@ namespace Character //change to ArkDice?
         #endregion
 
         //Get whether or not the character is proficient in any given save.
-        public int GetSaveProf(string save)
+        //Returns the multiple of the character's prof bonus that gets used (0 for no prof, 1 for proficient, etc).
+        public double GetSaveProf(string save)
         {
-            //convert save to all lower case here
+            save = save.ToLower();
             switch (save)
             {
                 case "strength":
@@ -1581,7 +1606,7 @@ namespace Character //change to ArkDice?
                     return 0;
             }
         }
-        public int GetSaveProf(int save)
+        public double GetSaveProf(int save)
         {
             if (save < 0 || save > 5)
             {
@@ -1591,6 +1616,20 @@ namespace Character //change to ArkDice?
             else
             {
                 return this.Saves[save];
+            }
+        }
+
+        //Get whether or not the character is proficient in any given skill.
+        //Returns the multiple of the character's prof bonus that gets used (0 for no prof, 1 for proficient, etc).
+        public double GetSkillProf (string skill)
+        {
+            if (Skills.ContainsKey(skill))
+            {
+                return Skills[skill];
+            } else
+            {
+                //complain somewhere
+                return 0;
             }
         }
 
@@ -1705,7 +1744,7 @@ namespace Character //change to ArkDice?
             }
 
             //Add prof as appropriate.
-            decimal profMult = GetProfForRoll(roll);
+            double profMult = GetProfForRoll(roll);
             ret += (int)Math.Floor((Prof + BonusToProf) * profMult);
 
             //Misc bonuses not currently supported.
@@ -1729,7 +1768,7 @@ namespace Character //change to ArkDice?
         //Calculates and returns the multiplier that should be used for the character's proficiency bonus on a roll.
         //Non-proficiency returns 0, proficiency returns 1, and expertise returns 2.
         //This is decimal instead of int because 0.5x proficiency might pop up in houserules.
-        public decimal GetProfForRoll (string roll)
+        public double GetProfForRoll (string roll)
         {
             string lower = roll.ToLower();
 
@@ -1764,7 +1803,7 @@ namespace Character //change to ArkDice?
             //Skills:
             if (Skills.TryGetValue(roll, out var skill))
             {
-                return skill;
+                return ( int) skill;
             }
             //to do: consider replacing this with a for loop comparing ToLower() versions against each other.
                 //Is there a case insensitive version of TryGetValue()?
