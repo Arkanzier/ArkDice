@@ -265,6 +265,9 @@ namespace Simple_Dice_Roller
 
             //Trigger a save here
             //need filepath
+            //how to best standardize / store filepath?
+                //store it in the character when opening the file?
+            EditingCharacter.Save();
 
             return true;
         }

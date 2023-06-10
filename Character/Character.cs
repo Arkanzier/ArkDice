@@ -96,6 +96,9 @@ namespace Character //change to ArkDice?
 
         public List<Spell> Spells { get; private set; }
 
+        //Automatically managed. Stores the location of the file this was loaded from + should be saved to.
+        private string FolderLocation;
+
         //Constructor(s):
         //-------- -------- -------- -------- -------- -------- -------- -------- 
 
@@ -149,6 +152,8 @@ namespace Character //change to ArkDice?
             Passives = new List<string>();
             Spells = new List<Spell>();
 
+            FolderLocation = "";
+
             CalculateProf();
         }
 
@@ -175,6 +180,8 @@ namespace Character //change to ArkDice?
                 //Complain to a log file.
                 return;
             }
+
+            FolderLocation = folderpath;
 
             //to do: look into making this work with deserialize.
             //will i have to make a struct with the same attributes and then write a function to copy stuff from there to here?
@@ -1126,42 +1133,45 @@ namespace Character //change to ArkDice?
         }
 
         //Saves the character and all it's abilities to a file.
-        public bool Save(string filepath)
+        public bool Save()
         {
-            string folderpath = "C:\\Users\\david\\Programs\\Simple Dice Roller\\";
+            string backupFolder = FolderLocation + "Characters\\Backups\\";
+            string filepath = FolderLocation + "Characters\\" + ID + ".char";
+            //string backupFilepath = FolderLocation + "Characters\\Backups" + ID + ".char";
+            string backupFilepath = backupFolder + ID + "_" + DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss") + ".char";
 
-            //First we'll move the old file, if there is one, to a folder just in case something goes wrong and we want it back.
+            //to do eventually: change this over to saving the last X copies, and not all?
+
             if (System.IO.File.Exists(filepath))
             {
-                //Start by making sure the backups folder exists.
-                string backupFolder = folderpath + "save backups\\";
+                //The file exists, so we need to make a backup.
                 if (!System.IO.Directory.Exists(backupFolder))
                 {
+                    //Make sure the backup folder exists.
                     System.IO.Directory.CreateDirectory(backupFolder);
                 }
 
                 //Now move the old file.
-                string backupFilepath = backupFolder + Name + "_" + DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss") + ".char";
-                //to do: consider leaving the original filename intact and just adding the stuff to that.
-                //there's probably a function or two that can split the base name and the extension for us.
-                //or a regex would work.
                 try
                 {
                     System.IO.File.Move(filepath, backupFilepath);
                     //touch the file?
+                    if (System.IO.File.Exists(filepath))
+                    {
+                        //We were unable to move the file for some reason.
+                        return false;
+                    }
                 }
                 catch
                 {
                     //Complain to a log file?
                     return false;
                 }
-            }   //If old version exists.
+            }
 
             //Now we write the new file into the specified spot.
             string characterString = this.ToString();
-
             File.WriteAllText(filepath, characterString);
-            //returns void so we don't know if it says it succeeded.
 
             if (System.IO.File.Exists(filepath))
             {

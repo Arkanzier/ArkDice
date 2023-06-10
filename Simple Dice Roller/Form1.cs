@@ -51,6 +51,8 @@ namespace Simple_Dice_Roller
 
         EditCharacter? EditCharacterForm;
 
+        public string Folderpath { get; private set; }
+
         //Constructor(s):
         //-------- -------- -------- -------- -------- -------- -------- -------- 
         public Form1()
@@ -65,15 +67,15 @@ namespace Simple_Dice_Roller
             //Directory that this stuff runs out of:
             //C:\Users\david\source\repos\ArkDice\Simple Dice Roller\bin\Debug\net6.0-windows
 
-            string folderpath = "C:\\Users\\david\\Programs\\Simple Dice Roller\\";
             //to do:
             //load this from a file or something.
             //make this a global variable?
+            Folderpath = "C:\\Users\\david\\Programs\\Simple Dice Roller\\";
 
             //A collection of spell information so we can load them by ID.
             SpellsLibrary = new Dictionary<string, Spell>();
 
-            LoadSpellsLibrary(folderpath);
+            LoadSpellsLibrary(Folderpath);
 
             //function to parse the json and load the spells.
             //idea: change this setup to there being one file per spell, and then load that file on demand.
@@ -90,7 +92,7 @@ namespace Simple_Dice_Roller
 
             //Stores the currently loaded character.
             //Character.Character currentCharacter = new Character.Character(contents);
-            Character.Character currentCharacter = new Character.Character("Tiriel", SpellsLibrary, folderpath);
+            Character.Character currentCharacter = new Character.Character("Tiriel", SpellsLibrary, Folderpath);
             loadedCharacter = currentCharacter;
             //MessageBox.Show(currentCharacter.ToString());
             DisplayCharacter(currentCharacter);
@@ -724,8 +726,16 @@ namespace Simple_Dice_Roller
         //The onclick even for the save button. Saves the character.
         private void Button_SaveCharacter_Click(object sender, EventArgs e)
         {
-            string filepath = "C:\\Users\\david\\Programs\\Simple Dice Roller\\Tiriel.char";
-            loadedCharacter.Save(filepath);
+            bool resp = loadedCharacter.Save();
+
+            //Display a message indicating success / failure.
+            if (resp)
+            {
+                LogMessage("Character saved successfully.");
+            } else
+            {
+                LogMessage("Could not save character.");
+            }
         }
 
         //Deal damage to the active character.
