@@ -22,34 +22,37 @@ namespace Simple_Dice_Roller
     {
         //Attributes:
         //-------- -------- -------- -------- -------- -------- -------- -------- 
-        internal List<string> logMessages;
+        internal List<string> LogMessages;
         //sooner or later, swap this to displaying on a DataGridView
         //Columns: name -> total -> description
         //maybe timestamp too?
 
         //Hold the character that's loaded.
-        internal Character.Character loadedCharacter;
+        internal Character.Character LoadedCharacter;
 
         //Holds the collection of dice that are currently selected via the dice roller tab.
-        internal DiceCollection currentDice;
+        internal DiceCollection CurrentDice;
 
         //Hold the most recently rolled collection of dice from the dice roller tab.
-        internal DiceCollection lastDice;
+        internal DiceCollection LastDice;
 
         //These hold information about which rows in AbilitiesArea and SpellsArea to display extra information for.
         //The key is the row's ID value.
         //The other one is the panel that's used to display the stuff.
-        Dictionary<string, Panel> AbilitiesAreaDetails;
-        Dictionary<string, Panel> SpellsAreaDetails;
+        internal Dictionary<string, Panel> AbilitiesAreaDetails;
+        internal Dictionary<string, Panel> SpellsAreaDetails;
 
         //These hold some stuff about how much space should be given to detail views.
-        const int MinAbilityDetailHeight = 75;
-        const int MinSpellDetailHeight = 75;
+        internal const int MinAbilityDetailHeight = 75;
+        internal const int MinSpellDetailHeight = 75;
 
-        //Stores a list of spells to make them easy to load later on.
-        Dictionary<string, Character.Spell> SpellsLibrary;
+        //Stores lists of spells and abilities to make them easy to load later on.
+        public Dictionary<string, Character.Spell> SpellsLibrary;
+        public Dictionary<string, Character.Ability> AbilitiesLibrary;
 
-        EditCharacter? EditCharacterForm;
+        internal EditCharacter? EditCharacterForm;
+        internal EditAbilities? EditAbilitiesForm;
+        internal EditSpells? EditSpellsForm;
 
         public string Folderpath { get; private set; }
 
@@ -58,7 +61,7 @@ namespace Simple_Dice_Roller
         public Form1()
         {
             //Used to display messages to the user near the bottom of the page.
-            logMessages = new List<string>();
+            LogMessages = new List<string>();
 
             InitializeComponent();
 
@@ -74,8 +77,10 @@ namespace Simple_Dice_Roller
 
             //A collection of spell information so we can load them by ID.
             SpellsLibrary = new Dictionary<string, Spell>();
+            AbilitiesLibrary = new Dictionary<string, Ability>();
 
             LoadSpellsLibrary(Folderpath);
+            LoadAbilitiesLibrary(Folderpath);
 
             //function to parse the json and load the spells.
             //idea: change this setup to there being one file per spell, and then load that file on demand.
@@ -85,60 +90,20 @@ namespace Simple_Dice_Roller
             SpellsAreaDetails = new Dictionary<string, Panel>();
 
             //Currently selected dice for the dice roller.
-            currentDice = new DiceCollection();
+            CurrentDice = new DiceCollection();
 
             //Stores the last-rolled collection of dice from the dice roller.
-            lastDice = new DiceCollection();
+            LastDice = new DiceCollection();
 
             //Stores the currently loaded character.
             //Character.Character currentCharacter = new Character.Character(contents);
             Character.Character currentCharacter = new Character.Character("Tiriel", SpellsLibrary, Folderpath);
-            loadedCharacter = currentCharacter;
+            LoadedCharacter = currentCharacter;
             //MessageBox.Show(currentCharacter.ToString());
             DisplayCharacter(currentCharacter);
 
             DrawRecharges();
         }
-
-        //Functions for communicating with the EditCharacter form.
-        //-------- -------- -------- -------- -------- -------- -------- -------- 
-        //Opens a new window for editing the current character.
-        private void BeginEditingCharacter ()
-        {
-            string id = loadedCharacter.ID;
-            if (id == "")
-            {
-                //what to do here?
-                //just pop up a blank one?
-                MessageBox.Show("Error: could not identify loaded character.");
-            } else
-            {
-                //EditCharacter editing = new EditCharacter(id);
-                EditCharacter editing = new EditCharacter(loadedCharacter);
-                editing.parent = this;
-                editing.Show();
-
-                //Store a reference to the child so we can access it later.
-                EditCharacterForm = editing;
-            }
-        }
-
-        //Closes the new form used for editing characters.
-        private void CloseEditingCharacter ()
-        {
-            if (EditCharacterForm != null)
-            {
-                EditCharacterForm.Close();
-                //bring this form to the top?
-            }
-        }
-
-        //Called when something is closing the form for editing characters.
-        public void ClosingEditingCharacter()
-        {
-            EditCharacterForm = null;
-        }
-
 
         //Misc functions
         //-------- -------- -------- -------- -------- -------- -------- -------- 
@@ -147,7 +112,7 @@ namespace Simple_Dice_Roller
         {
             string text = "";
 
-            foreach (string message in logMessages)
+            foreach (string message in LogMessages)
             {
                 if (text != "")
                 {
@@ -202,6 +167,48 @@ namespace Simple_Dice_Roller
             return -1;
         }
 
+        //Loads a collection of abilities into a library that can be referenced later to quickly load abilities without having to type them or whatever.
+        private bool LoadAbilitiesLibrary(string folderpath)
+        {
+            if (folderpath.Last() != '\\')
+            {
+                folderpath += "\\";
+            }
+            string filepath = folderpath + "dat\\Abilities.dat";
+
+            if (File.Exists(filepath))
+            {
+                string fileContents = File.ReadAllText(filepath);
+                try
+                {
+                    List<Ability>? temp = JsonSerializer.Deserialize<List<Ability>>(fileContents);
+
+                    if (temp == null)
+                    {
+                        //Complain to a log file?
+                        return false;
+                    }
+                    else
+                    {
+                        //Copy temp's contents into SpellsLibrary.
+                        for (int a = 0; a < temp.Count; a++)
+                        {
+                            string id = temp[a].ID.ToString();
+                            AbilitiesLibrary[id] = temp[a];
+                        }
+                        return true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AbilitiesLibrary = new Dictionary<string, Ability>();
+                    return false;
+                }
+            }
+
+            return false;
+        }
+
         //Loads a collection of spells into a library that can be referenced later to quickly load spells without having to type them or whatever.
         private bool LoadSpellsLibrary(string folderpath)
         {
@@ -247,13 +254,13 @@ namespace Simple_Dice_Roller
         //Add a message to the log area, plus some related logic.
         private void LogMessage(string message)
         {
-            logMessages.Insert(0, message);
+            LogMessages.Insert(0, message);
 
             //We'll limit the log to the most recent 20 rows for readability.
             //This will also prevent ballooning memory usage if the program is used very heavily.
-            while (logMessages.Count > 20)
+            while (LogMessages.Count > 20)
             {
-                logMessages.RemoveAt(logMessages.Count - 1);
+                LogMessages.RemoveAt(LogMessages.Count - 1);
             }
 
             DisplayMessages();
@@ -262,12 +269,12 @@ namespace Simple_Dice_Roller
         //
         //rename?
         //to do: set up auto sizing for abilities.
-            //make sure the auto sizing for spells works properly.
-            //go over the minimum sizes and make sure I like them.
-                //change to 50? 75?
+        //make sure the auto sizing for spells works properly.
+        //go over the minimum sizes and make sure I like them.
+        //change to 50? 75?
         //to do: properly calculate width.
-            //check the boundaries of the leftmost and rightmost visible cells?
-        private void SetAndPositionDetailPanel (string gridName, string id)
+        //check the boundaries of the leftmost and rightmost visible cells?
+        private void SetAndPositionDetailPanel(string gridName, string id)
         {
             Panel? panel;
             int expandAmount;
@@ -300,7 +307,8 @@ namespace Simple_Dice_Roller
                 expandAmount = MinSpellDetailHeight;
                 grid = SpellsArea;
                 minHeight = MinSpellDetailHeight;
-            } else
+            }
+            else
             {
                 //Whatever this is it's not supported.
                 return;
@@ -354,7 +362,8 @@ namespace Simple_Dice_Roller
                 grid.Rows[rowIndex].Cells["Abilities_UseButtonCol"].Style.Padding = new Padding(0, 0, 0, panelHeight);
                 grid.Rows[rowIndex].Cells["Abilities_Plus1Col"].Style.Padding = new Padding(0, 0, 0, panelHeight);
                 grid.Rows[rowIndex].Cells["Abilities_Minus1Col"].Style.Padding = new Padding(0, 0, 0, panelHeight);
-            } else if (gridName == "Spells")
+            }
+            else if (gridName == "Spells")
             {
                 grid.Rows[rowIndex].Cells["Spells_CastCol"].Style.Padding = new Padding(0, 0, 0, panelHeight);
                 grid.Rows[rowIndex].Cells["Spells_UpcastCol"].Style.Padding = new Padding(0, 0, 0, panelHeight);
@@ -428,14 +437,6 @@ namespace Simple_Dice_Roller
             //ListViewTest.Groups.Add(new ListViewGroup("group goes here"));
             //ListViewTest.Groups.Add(new ListViewGroup("this is a second group"));
             */
-
-            if (EditCharacterForm == null)
-            {
-                BeginEditingCharacter();
-            } else
-            {
-                CloseEditingCharacter();
-            }
         }
 
         //Displays or hides the detail view for any given row in AbilitiesArea.
@@ -518,12 +519,169 @@ namespace Simple_Dice_Roller
             if (gridName == "Abilities")
             {
                 UpdateAbilitiesAreaDetails();
-            } else if (gridName == "Spells")
+            }
+            else if (gridName == "Spells")
             {
                 UpdateSpellsAreaDetails();
             }
         }
 
+
+        //-------- -------- -------- -------- -------- -------- -------- -------- 
+
+        #region Editing Forms
+
+        //Opens a new window for editing abilities.
+        private void BeginEditingAbilities()
+        {
+            string id = LoadedCharacter.ID;
+            if (id == "")
+            {
+                MessageBox.Show("Error: could not identify loaded character.");
+            }
+            else
+            {
+                EditAbilities editing = new EditAbilities(this);
+                editing.ParentForm = this;
+                editing.Show();
+
+                EditAbilitiesForm = editing;
+            }
+        }
+        //Opens a new window for editing the current character.
+        private void BeginEditingCharacter()
+        {
+            string id = LoadedCharacter.ID;
+            if (id == "")
+            {
+                //what to do here?
+                //just pop up a blank one?
+                MessageBox.Show("Error: could not identify loaded character.");
+            }
+            else
+            {
+                //EditCharacter editing = new EditCharacter(id);
+                EditCharacter editing = new EditCharacter(LoadedCharacter);
+                editing.ParentForm = this;
+                editing.Show();
+
+                //Store a reference to the child so we can access it later.
+                EditCharacterForm = editing;
+            }
+        }
+
+        //Opens a new window for editing spells.
+        private void BeginEditingSpells()
+        {
+            string id = LoadedCharacter.ID;
+            if (id == "")
+            {
+                MessageBox.Show("Error: could not identify loaded character.");
+            }
+            else
+            {
+                EditSpells editing = new EditSpells();
+                //editing.Parent = this;
+                editing.Show();
+
+                EditSpellsForm = editing;
+            }
+        }
+
+        //The onclick event for the edit abilities button. Pops up a new window where spells can be edited and assigned.
+        private void Button_EditAbilities_Click(object sender, EventArgs e)
+        {
+            if (EditAbilitiesForm == null)
+            {
+                BeginEditingAbilities();
+                //Close the other popups?
+            }
+            else
+            {
+                BeginEditingAbilities();
+            }
+        }
+
+        //The onclick event for the edit character button. Pops up a new window where various character attributes can be changed.
+        private void Button_EditChar_Click(object sender, EventArgs e)
+        {
+            if (EditSpellsForm == null)
+            {
+                BeginEditingCharacter();
+                //Close the other popups?
+            }
+            else
+            {
+                BeginEditingCharacter();
+            }
+        }
+
+        //The onclick event for the edit spells button. Pops up a new window where spells can be edited and assigned.
+        private void Button_EditSpells_Click(object sender, EventArgs e)
+        {
+            if (EditSpellsForm == null)
+            {
+                BeginEditingSpells();
+                //Close the other popups?
+            }
+            else
+            {
+                BeginEditingSpells();
+            }
+        }
+
+        //Closes the new form used for editing abilities.
+        private void CloseEditingAbilities()
+        {
+            if (EditAbilitiesForm != null)
+            {
+                EditAbilitiesForm.Close();
+                EditAbilitiesForm = null;
+                //bring this form to the top?
+            }
+        }
+
+        //Closes the new form used for editing characters.
+        private void CloseEditingCharacter()
+        {
+            if (EditCharacterForm != null)
+            {
+                EditCharacterForm.Close();
+                EditCharacterForm = null;
+                //bring this form to the top?
+            }
+        }
+
+        //Closes the new form used for editing spells.
+        private void CloseEditingSpells()
+        {
+            if (EditSpellsForm != null)
+            {
+                EditSpellsForm.Close();
+                //bring this form to the top?
+                EditSpellsForm = null;
+            }
+        }
+
+        //Called when something is closing the form for editing abilities.
+        public void ClosingEditingAbilities()
+        {
+            EditAbilitiesForm = null;
+        }
+
+        //Called when something is closing the form for editing characters.
+        public void ClosingEditingCharacter()
+        {
+            EditCharacterForm = null;
+        }
+
+        //Called when something is closing the form for editing spells.
+        public void ClosingEditingSpells()
+        {
+            EditSpellsForm = null;
+        }
+
+        #endregion
 
         //-------- -------- -------- -------- -------- -------- -------- -------- 
 
@@ -621,7 +779,7 @@ namespace Simple_Dice_Roller
 
                 bool flatBonus = (d == "d") ? false : true;
 
-                bool temp = currentDice.AddOneDie(dieSize, subtract, advdisint, flatBonus);
+                bool temp = CurrentDice.AddOneDie(dieSize, subtract, advdisint, flatBonus);
 
                 //error checking?
                 if (!temp)
@@ -636,7 +794,7 @@ namespace Simple_Dice_Roller
         //Removes all dice from the dice roller's current selection.
         private void DiceRoller_Clear_Click(object sender, EventArgs e)
         {
-            currentDice = new DiceCollection();
+            CurrentDice = new DiceCollection();
 
             UpdateDiceArrayDisplay();
         }
@@ -673,7 +831,7 @@ namespace Simple_Dice_Roller
         //Redo the most recent roll.
         private void RerollButton_Click(object sender, EventArgs e)
         {
-            DiceResponse resp = lastDice.Roll();
+            DiceResponse resp = LastDice.Roll();
             outputTotal.Text = "Rolled " + resp.Total;
             LogMessage(resp.Description);
         }
@@ -693,13 +851,13 @@ namespace Simple_Dice_Roller
             else
             {
                 //Roll dice added via the buttons.
-                DiceResponse resp = currentDice.Roll();
+                DiceResponse resp = CurrentDice.Roll();
                 outputTotal.Text = "Rolled " + resp.Total;
                 LogMessage(resp.Description);
 
-                UpdateLastDice(currentDice.GetDiceString());
+                UpdateLastDice(CurrentDice.GetDiceString());
 
-                currentDice = new DiceCollection();
+                CurrentDice = new DiceCollection();
                 UpdateDiceArrayDisplay();
             }
         }
@@ -707,14 +865,14 @@ namespace Simple_Dice_Roller
         //Displays the collection of dice currently selected in the dice roller.
         private void UpdateDiceArrayDisplay()
         {
-            DiceArrayDisplay.Text = currentDice.GetDiceString();
+            DiceArrayDisplay.Text = CurrentDice.GetDiceString();
         }
 
         //Updates the display for the most recent collection of dice.
         private void UpdateLastDice(string diceString)
         {
-            lastDice = new DiceCollection(diceString);
-            LastRollDiceString.Text = lastDice.GetDiceString();
+            LastDice = new DiceCollection(diceString);
+            LastRollDiceString.Text = LastDice.GetDiceString();
         }
 
         #endregion
@@ -726,13 +884,14 @@ namespace Simple_Dice_Roller
         //The onclick even for the save button. Saves the character.
         private void Button_SaveCharacter_Click(object sender, EventArgs e)
         {
-            bool resp = loadedCharacter.Save();
+            bool resp = LoadedCharacter.Save();
 
             //Display a message indicating success / failure.
             if (resp)
             {
                 LogMessage("Character saved successfully.");
-            } else
+            }
+            else
             {
                 LogMessage("Could not save character.");
             }
@@ -759,7 +918,7 @@ namespace Simple_Dice_Roller
             int amount;
             Int32.TryParse(tag, out amount);
 
-            loadedCharacter.Damage(amount);
+            LoadedCharacter.Damage(amount);
             UpdateHealthDisplay();
         }
 
@@ -840,7 +999,7 @@ namespace Simple_Dice_Roller
             int amount;
             Int32.TryParse(tag, out amount);
 
-            loadedCharacter.Heal(amount);
+            LoadedCharacter.Heal(amount);
             UpdateHealthDisplay();
         }
 
@@ -889,7 +1048,7 @@ namespace Simple_Dice_Roller
                 if (command == "roll")
                 {
                     DiceCollection d = new DiceCollection(diceString);
-                    DiceResponse resp = loadedCharacter.RollForCharacter(d);
+                    DiceResponse resp = LoadedCharacter.RollForCharacter(d);
 
                     outputTotal.Text = "Rolled " + resp.Total;
                     LogMessage(resp.Description);
@@ -949,7 +1108,7 @@ namespace Simple_Dice_Roller
             Int32.TryParse(temp, out number);
 
             //Then call the function.
-            loadedCharacter.SetTempHP(number, onlyIncrease);
+            LoadedCharacter.SetTempHP(number, onlyIncrease);
             UpdateHealthDisplay();
         }
 
@@ -957,13 +1116,13 @@ namespace Simple_Dice_Roller
         private void UpdateHealthDisplay()
         {
             string healthString;
-            if (loadedCharacter.TempHP > 0)
+            if (LoadedCharacter.TempHP > 0)
             {
-                healthString = loadedCharacter.CurrentHP + " + " + loadedCharacter.TempHP + " (" + (loadedCharacter.CurrentHP + loadedCharacter.TempHP) + ") / " + loadedCharacter.MaxHP;
+                healthString = LoadedCharacter.CurrentHP + " + " + LoadedCharacter.TempHP + " (" + (LoadedCharacter.CurrentHP + LoadedCharacter.TempHP) + ") / " + LoadedCharacter.MaxHP;
             }
             else
             {
-                healthString = loadedCharacter.CurrentHP + " / " + loadedCharacter.MaxHP;
+                healthString = LoadedCharacter.CurrentHP + " / " + LoadedCharacter.MaxHP;
             }
 
             Char_Health.Text = healthString;
@@ -973,40 +1132,40 @@ namespace Simple_Dice_Roller
         private void UpdateStatButtonLabels()
         {
             //Stats:
-            Button_Str.Text = "Strength " + loadedCharacter.GetBonusForRollAsString("str");
-            Button_Dex.Text = "Dexterity " + loadedCharacter.GetBonusForRollAsString("dex");
-            Button_Con.Text = "Constitution " + loadedCharacter.GetBonusForRollAsString("con");
-            Button_Int.Text = "Intelligence " + loadedCharacter.GetBonusForRollAsString("int");
-            Button_Wis.Text = "Wisdom " + loadedCharacter.GetBonusForRollAsString("wis");
-            Button_Cha.Text = "Charisma " + loadedCharacter.GetBonusForRollAsString("cha");
+            Button_Str.Text = "Strength " + LoadedCharacter.GetBonusForRollAsString("str");
+            Button_Dex.Text = "Dexterity " + LoadedCharacter.GetBonusForRollAsString("dex");
+            Button_Con.Text = "Constitution " + LoadedCharacter.GetBonusForRollAsString("con");
+            Button_Int.Text = "Intelligence " + LoadedCharacter.GetBonusForRollAsString("int");
+            Button_Wis.Text = "Wisdom " + LoadedCharacter.GetBonusForRollAsString("wis");
+            Button_Cha.Text = "Charisma " + LoadedCharacter.GetBonusForRollAsString("cha");
 
             //Saves:
-            Button_StrSave.Text = "Save " + loadedCharacter.GetBonusForRollAsString("strsave");
-            Button_DexSave.Text = "Save " + loadedCharacter.GetBonusForRollAsString("dexsave");
-            Button_ConSave.Text = "Save " + loadedCharacter.GetBonusForRollAsString("consave");
-            Button_IntSave.Text = "Save " + loadedCharacter.GetBonusForRollAsString("intsave");
-            Button_WisSave.Text = "Save " + loadedCharacter.GetBonusForRollAsString("wissave");
-            Button_ChaSave.Text = "Save " + loadedCharacter.GetBonusForRollAsString("chasave");
+            Button_StrSave.Text = "Save " + LoadedCharacter.GetBonusForRollAsString("strsave");
+            Button_DexSave.Text = "Save " + LoadedCharacter.GetBonusForRollAsString("dexsave");
+            Button_ConSave.Text = "Save " + LoadedCharacter.GetBonusForRollAsString("consave");
+            Button_IntSave.Text = "Save " + LoadedCharacter.GetBonusForRollAsString("intsave");
+            Button_WisSave.Text = "Save " + LoadedCharacter.GetBonusForRollAsString("wissave");
+            Button_ChaSave.Text = "Save " + LoadedCharacter.GetBonusForRollAsString("chasave");
 
             //Skills:
-            Button_Athletics.Text = "Athletics " + loadedCharacter.GetBonusForRollAsString("Athletics");
-            Button_Acrobatics.Text = "Acrobatics " + loadedCharacter.GetBonusForRollAsString("Acrobatics");
-            Button_SleightOfHand.Text = "Sleight of Hand " + loadedCharacter.GetBonusForRollAsString("Sleight of hand");
-            Button_Stealth.Text = "Stealth " + loadedCharacter.GetBonusForRollAsString("Stealth");
-            Button_Arcana.Text = "Arcana " + loadedCharacter.GetBonusForRollAsString("Arcana");
-            Button_History.Text = "History " + loadedCharacter.GetBonusForRollAsString("History");
-            Button_Investigation.Text = "Investigation " + loadedCharacter.GetBonusForRollAsString("Investigation");
-            Button_Nature.Text = "Nature " + loadedCharacter.GetBonusForRollAsString("Nature");
-            Button_Religion.Text = "Religion " + loadedCharacter.GetBonusForRollAsString("Religion");
-            Button_AnimalHandling.Text = "Animal Handling " + loadedCharacter.GetBonusForRollAsString("Animal Handling");
-            Button_Insight.Text = "Insight " + loadedCharacter.GetBonusForRollAsString("Insight");
-            Button_Medicine.Text = "Medicine " + loadedCharacter.GetBonusForRollAsString("Medicine");
-            Button_Perception.Text = "Perception " + loadedCharacter.GetBonusForRollAsString("Perception");
-            Button_Survival.Text = "Survival " + loadedCharacter.GetBonusForRollAsString("Survival");
-            Button_Deception.Text = "Deception " + loadedCharacter.GetBonusForRollAsString("Deception");
-            Button_Intimidation.Text = "Intimidation " + loadedCharacter.GetBonusForRollAsString("Intimidation");
-            Button_Performance.Text = "Performance " + loadedCharacter.GetBonusForRollAsString("Performance");
-            Button_Persuasion.Text = "Persuasion " + loadedCharacter.GetBonusForRollAsString("Persuasion");
+            Button_Athletics.Text = "Athletics " + LoadedCharacter.GetBonusForRollAsString("Athletics");
+            Button_Acrobatics.Text = "Acrobatics " + LoadedCharacter.GetBonusForRollAsString("Acrobatics");
+            Button_SleightOfHand.Text = "Sleight of Hand " + LoadedCharacter.GetBonusForRollAsString("Sleight of hand");
+            Button_Stealth.Text = "Stealth " + LoadedCharacter.GetBonusForRollAsString("Stealth");
+            Button_Arcana.Text = "Arcana " + LoadedCharacter.GetBonusForRollAsString("Arcana");
+            Button_History.Text = "History " + LoadedCharacter.GetBonusForRollAsString("History");
+            Button_Investigation.Text = "Investigation " + LoadedCharacter.GetBonusForRollAsString("Investigation");
+            Button_Nature.Text = "Nature " + LoadedCharacter.GetBonusForRollAsString("Nature");
+            Button_Religion.Text = "Religion " + LoadedCharacter.GetBonusForRollAsString("Religion");
+            Button_AnimalHandling.Text = "Animal Handling " + LoadedCharacter.GetBonusForRollAsString("Animal Handling");
+            Button_Insight.Text = "Insight " + LoadedCharacter.GetBonusForRollAsString("Insight");
+            Button_Medicine.Text = "Medicine " + LoadedCharacter.GetBonusForRollAsString("Medicine");
+            Button_Perception.Text = "Perception " + LoadedCharacter.GetBonusForRollAsString("Perception");
+            Button_Survival.Text = "Survival " + LoadedCharacter.GetBonusForRollAsString("Survival");
+            Button_Deception.Text = "Deception " + LoadedCharacter.GetBonusForRollAsString("Deception");
+            Button_Intimidation.Text = "Intimidation " + LoadedCharacter.GetBonusForRollAsString("Intimidation");
+            Button_Performance.Text = "Performance " + LoadedCharacter.GetBonusForRollAsString("Performance");
+            Button_Persuasion.Text = "Persuasion " + LoadedCharacter.GetBonusForRollAsString("Persuasion");
 
 
         }
@@ -1044,7 +1203,7 @@ namespace Simple_Dice_Roller
 
             if (colName == "SpendHDButton")
             {
-                DiceResponse resp = loadedCharacter.SpendHDByClass(className, 1, false);
+                DiceResponse resp = LoadedCharacter.SpendHDByClass(className, 1, false);
                 if (resp.Success)
                 {
                     //MessageBox.Show("HD response:" + resp.Total);
@@ -1061,15 +1220,15 @@ namespace Simple_Dice_Roller
             }
             else if (colName == "AddHDButton")
             {
-                loadedCharacter.AddOrSubtractHDForClass(className, 1);
+                LoadedCharacter.AddOrSubtractHDForClass(className, 1);
             }
             else if (colName == "SubtractHDButton")
             {
-                loadedCharacter.AddOrSubtractHDForClass(className, -1);
+                LoadedCharacter.AddOrSubtractHDForClass(className, -1);
             }
 
             //update the display.
-            DisplayClassList(loadedCharacter);
+            DisplayClassList(LoadedCharacter);
 
             //it's doing 3 healing every time
             //it's not decrementing the hd
@@ -1107,7 +1266,7 @@ namespace Simple_Dice_Roller
         {
             RechargesArea.Rows.Clear();
 
-            List<string> recharges = loadedCharacter.GetAbilityRechargeConditions();
+            List<string> recharges = LoadedCharacter.GetAbilityRechargeConditions();
 
             for (int a = 0; a < recharges.Count; a++)
             {
@@ -1137,11 +1296,11 @@ namespace Simple_Dice_Roller
 
             if (colName == "Recharge_Button")
             {
-                loadedCharacter.RechargeAbilities(rechargeCondition);
+                LoadedCharacter.RechargeAbilities(rechargeCondition);
             }
 
-            DisplayClassList(loadedCharacter);
-            DisplayAbilities(loadedCharacter);
+            DisplayClassList(LoadedCharacter);
+            DisplayAbilities(LoadedCharacter);
         }
 
         #endregion
@@ -1178,7 +1337,7 @@ namespace Simple_Dice_Roller
             //to do: consider doing this by the column index instead.
             if (colName == "Abilities_UseButtonCol")
             {
-                DiceResponse resp = loadedCharacter.UseAbility(abilityID);
+                DiceResponse resp = LoadedCharacter.UseAbility(abilityID);
                 LogMessage(resp.Description);
                 //MessageBox.Show(resp.description);
                 //to do: check if description is actually present.
@@ -1196,7 +1355,7 @@ namespace Simple_Dice_Roller
             }
             else if (colName == "Abilities_Plus1Col")
             {
-                bool resp = loadedCharacter.ChangeAbilityUses(abilityID, 1);
+                bool resp = LoadedCharacter.ChangeAbilityUses(abilityID, 1);
                 if (resp)
                 {
                     //MessageBox.Show("Successfully added 1 use to " + abilityID);
@@ -1208,7 +1367,7 @@ namespace Simple_Dice_Roller
             }
             else if (colName == "Abilities_Minus1Col")
             {
-                bool resp = loadedCharacter.ChangeAbilityUses(abilityID, -1);
+                bool resp = LoadedCharacter.ChangeAbilityUses(abilityID, -1);
                 if (resp)
                 {
                     //MessageBox.Show("Successfully subtracted 1 use from " + abilityID);
@@ -1231,8 +1390,8 @@ namespace Simple_Dice_Roller
             //row selection
             //row height changing
             //Move DisplayAbility or whatever outside of DisplayCharacter, and just call them all separately?
-            DisplayCharacter(loadedCharacter);
-            DisplayClassList(loadedCharacter);
+            DisplayCharacter(LoadedCharacter);
+            DisplayClassList(LoadedCharacter);
             UpdateHealthDisplay();
         }
 
@@ -1313,8 +1472,8 @@ namespace Simple_Dice_Roller
                 return;
             }
 
-            Ability ability1 = loadedCharacter.GetAbilityByID(id1);
-            Ability ability2 = loadedCharacter.GetAbilityByID(id2);
+            Ability ability1 = LoadedCharacter.GetAbilityByID(id1);
+            Ability ability2 = LoadedCharacter.GetAbilityByID(id2);
 
             string sortcol = AbilitiesArea.SortedColumn.Name;
             string sortdir = AbilitiesArea.SortOrder.ToString();
@@ -1483,8 +1642,8 @@ namespace Simple_Dice_Roller
                 SpellsArea.Rows.Insert(spellNum, spellNum + 1, id, name, level, school, range, durationString, concentrationString, vocalString, somaticString, materialString, action, description, upcastingBenefit, "Cast", "Upcast", book, page);
 
                 //Now we potentially blank out the upcast button.
-                    //This is done for cantrips.
-                    //Eventually this will be done when there aren't any spell slots available of a high enough level.
+                //This is done for cantrips.
+                //Eventually this will be done when there aren't any spell slots available of a high enough level.
 
                 if (level == 0)
                 {
@@ -1493,7 +1652,7 @@ namespace Simple_Dice_Roller
                 }
                 else
                 {
-                    int numSlots = loadedCharacter.GetSpellSlotsForLevel(level);
+                    int numSlots = LoadedCharacter.GetSpellSlotsForLevel(level);
                     if (numSlots == 0)
                     {
                         //There aren't enough slots of this level.
@@ -1501,9 +1660,9 @@ namespace Simple_Dice_Roller
                     }
 
                     numSlots = 0;
-                    for (int slvl = level+1; slvl <= 9; slvl++)
+                    for (int slvl = level + 1; slvl <= 9; slvl++)
                     {
-                        numSlots += loadedCharacter.GetSpellSlotsForLevel(slvl);
+                        numSlots += LoadedCharacter.GetSpellSlotsForLevel(slvl);
                     }
                     if (numSlots == 0)
                     {
@@ -1511,12 +1670,12 @@ namespace Simple_Dice_Roller
                         //Disable the upcast button.
                     }
                     //idea: set the padding-top on the cells to a large enough number to drop the button out of sight.
-                        //complication: when restoring rows to normal height, we'll need to:
-                            //set the padding to 0 on these cells
-                            //set the height to the auto calculated value
-                            //re-set the padding to hide the button(s).
-                                //store padding values before zeroing, or just re-do this calculation?
-                                    //Actually, if this is being redrawn as a result of the change (which it should be), this calculation will be redone anyway.
+                    //complication: when restoring rows to normal height, we'll need to:
+                    //set the padding to 0 on these cells
+                    //set the height to the auto calculated value
+                    //re-set the padding to hide the button(s).
+                    //store padding values before zeroing, or just re-do this calculation?
+                    //Actually, if this is being redrawn as a result of the change (which it should be), this calculation will be redone anyway.
                 }
             }
 
@@ -1595,19 +1754,20 @@ namespace Simple_Dice_Roller
             if (colName == "Spells_CastCol")
             {
                 //Attempt to cast the spell.
-                bool resp = loadedCharacter.CastSpell(spellID);
+                bool resp = LoadedCharacter.CastSpell(spellID);
                 if (resp)
                 {
-                    LogMessage("Cast spell "+spellName);
-                } else
+                    LogMessage("Cast spell " + spellName);
+                }
+                else
                 {
-                    LogMessage("Failed to cast spell "+spellName);
+                    LogMessage("Failed to cast spell " + spellName);
                 }
             }
             else if (colName == "Spells_UpcastCol")
             {
                 //trigger a popup with buttons for each possible upcast level.
-                    //also the description of what's gained by upcasting.
+                //also the description of what's gained by upcasting.
             }
             else
             {
@@ -1615,9 +1775,9 @@ namespace Simple_Dice_Roller
                 return;
             }
 
-            DisplayAbilities(loadedCharacter);
-            //DisplayCharacter(loadedCharacter);
-            //DisplayClassList(loadedCharacter);
+            DisplayAbilities(LoadedCharacter);
+            //DisplayCharacter(LoadedCharacter);
+            //DisplayClassList(LoadedCharacter);
             //UpdateHealthDisplay();
         }
 
@@ -1649,8 +1809,8 @@ namespace Simple_Dice_Roller
                 return;
             }
 
-            Spell? spell1 = loadedCharacter.GetSpellByID(id1);
-            Spell? spell2 = loadedCharacter.GetSpellByID(id2);
+            Spell? spell1 = LoadedCharacter.GetSpellByID(id1);
+            Spell? spell2 = LoadedCharacter.GetSpellByID(id2);
             if (spell1 == null || spell2 == null)
             {
                 //Complain to a log file
@@ -1760,7 +1920,7 @@ namespace Simple_Dice_Roller
 
 
 
-        //Things to move elsewhere
+        //Things to move elsewhere or delete
         //-------- -------- -------- -------- -------- -------- -------- -------- 
         private void Char_Name_Click(object sender, EventArgs e)
         {

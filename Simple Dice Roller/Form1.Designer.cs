@@ -135,7 +135,6 @@
             CharLabel_Damage = new Label();
             Char_Health = new Label();
             CharLabel_Health = new Label();
-            Button_SaveCharacter = new Button();
             Char_Prof = new Label();
             CharLabel_Prof = new Label();
             Button_Persuasion = new Button();
@@ -223,7 +222,11 @@
             Spells_BookCol = new DataGridViewTextBoxColumn();
             Spells_PageCol = new DataGridViewTextBoxColumn();
             label7 = new Label();
+            Button_SaveCharacter = new Button();
             TestButton = new Button();
+            Button_EditChar = new Button();
+            Button_EditAbilities = new Button();
+            Button_EditSpells = new Button();
             MainTabArea.SuspendLayout();
             DiceTab.SuspendLayout();
             CharacterTab.SuspendLayout();
@@ -1123,7 +1126,6 @@
             CharacterTab.Controls.Add(CharLabel_Damage);
             CharacterTab.Controls.Add(Char_Health);
             CharacterTab.Controls.Add(CharLabel_Health);
-            CharacterTab.Controls.Add(Button_SaveCharacter);
             CharacterTab.Controls.Add(Char_Prof);
             CharacterTab.Controls.Add(CharLabel_Prof);
             CharacterTab.Controls.Add(Button_Persuasion);
@@ -1447,16 +1449,6 @@
             CharLabel_Health.Size = new Size(45, 15);
             CharLabel_Health.TabIndex = 59;
             CharLabel_Health.Text = "Health:";
-            // 
-            // Button_SaveCharacter
-            // 
-            Button_SaveCharacter.Location = new Point(691, 21);
-            Button_SaveCharacter.Name = "Button_SaveCharacter";
-            Button_SaveCharacter.Size = new Size(75, 23);
-            Button_SaveCharacter.TabIndex = 57;
-            Button_SaveCharacter.Text = "Save";
-            Button_SaveCharacter.UseVisualStyleBackColor = true;
-            Button_SaveCharacter.Click += Button_SaveCharacter_Click;
             // 
             // Char_Prof
             // 
@@ -2302,9 +2294,19 @@
             label7.TabIndex = 0;
             label7.Text = "Spell slots go here";
             // 
+            // Button_SaveCharacter
+            // 
+            Button_SaveCharacter.Location = new Point(672, 578);
+            Button_SaveCharacter.Name = "Button_SaveCharacter";
+            Button_SaveCharacter.Size = new Size(100, 23);
+            Button_SaveCharacter.TabIndex = 57;
+            Button_SaveCharacter.Text = "Save Character";
+            Button_SaveCharacter.UseVisualStyleBackColor = true;
+            Button_SaveCharacter.Click += Button_SaveCharacter_Click;
+            // 
             // TestButton
             // 
-            TestButton.Location = new Point(697, 578);
+            TestButton.Location = new Point(697, 694);
             TestButton.Name = "TestButton";
             TestButton.Size = new Size(75, 23);
             TestButton.TabIndex = 58;
@@ -2312,14 +2314,48 @@
             TestButton.UseVisualStyleBackColor = true;
             TestButton.Click += TestButton_Click;
             // 
+            // Button_EditChar
+            // 
+            Button_EditChar.Location = new Point(672, 607);
+            Button_EditChar.Name = "Button_EditChar";
+            Button_EditChar.Size = new Size(100, 23);
+            Button_EditChar.TabIndex = 59;
+            Button_EditChar.Text = "Edit Character";
+            Button_EditChar.UseVisualStyleBackColor = true;
+            Button_EditChar.Click += Button_EditChar_Click;
+            // 
+            // Button_EditAbilities
+            // 
+            Button_EditAbilities.Location = new Point(672, 636);
+            Button_EditAbilities.Name = "Button_EditAbilities";
+            Button_EditAbilities.Size = new Size(100, 23);
+            Button_EditAbilities.TabIndex = 60;
+            Button_EditAbilities.Text = "Edit Abilities";
+            Button_EditAbilities.UseVisualStyleBackColor = true;
+            Button_EditAbilities.Click += Button_EditAbilities_Click;
+            // 
+            // Button_EditSpells
+            // 
+            Button_EditSpells.Location = new Point(672, 665);
+            Button_EditSpells.Name = "Button_EditSpells";
+            Button_EditSpells.Size = new Size(100, 23);
+            Button_EditSpells.TabIndex = 61;
+            Button_EditSpells.Text = "Edit Spells";
+            Button_EditSpells.UseVisualStyleBackColor = true;
+            Button_EditSpells.Click += Button_EditSpells_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(804, 833);
+            Controls.Add(Button_EditSpells);
+            Controls.Add(Button_EditAbilities);
+            Controls.Add(Button_EditChar);
             Controls.Add(MainTabArea);
             Controls.Add(outputDescription);
             Controls.Add(TestButton);
+            Controls.Add(Button_SaveCharacter);
             Name = "Form1";
             MainTabArea.ResumeLayout(false);
             DiceTab.ResumeLayout(false);
@@ -2534,5 +2570,8 @@
         private DataGridViewButtonColumn Spells_UpcastCol;
         private DataGridViewTextBoxColumn Spells_BookCol;
         private DataGridViewTextBoxColumn Spells_PageCol;
+        private Button Button_EditChar;
+        private Button Button_EditAbilities;
+        private Button Button_EditSpells;
     }
 }

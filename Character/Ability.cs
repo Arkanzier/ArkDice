@@ -15,41 +15,41 @@ namespace Character
 {
     public class Ability
     {
-        public string ID { get; private set; }
-        public string Name { get; private set; }
+        public string ID { get; set; }
+        public string Name { get; set; }
 
-        public string Action { get; private set; }
-        public DiceCollection Dice { get; private set; }
+        public string Action { get; set; }
+        public DiceCollection Dice { get; set; }
 
         //Number of currently available uses / charges / whatever.
-        public int Uses{ get; private set; }
+        public int Uses{ get; set; }
             //if max uses < 0, unlimited uses?
                 //require that current uses = 0?
         //Maximum number of uses / charges / whatever.
-        public int MaxUses { get; private set; }
+        public int MaxUses { get; set; }
         //How the uses change with each activation.
-        public int UsesChange { get; private set; }
+        public int UsesChange { get; set; }
 
         //These three are used by the program to temporarily store values that get generated.
         [JsonIgnore]
-        public int Total { get; private set; }
+        public int Total { get; set; }
         [JsonIgnore]
-        public string Description { get; private set; }
+        public string Description { get; set; }
         [JsonIgnore]
-        public Dictionary<string, string> Changes { get; private set; }
+        public Dictionary<string, string> Changes { get; set; }
 
         //The condition for when this ability recharges it's uses.
-        public string RechargeCondition{ get; private set; }
+        public string RechargeCondition{ get; set; }
         //How many uses this ability recharges each time it does so.
         //Generally expected to be a dice string.
             //Can also be "all" to recharge fully.
             //Can also be "false" or "none" to not recharge automatically.
-        public string RechargeAmount { get; private set; }
-        public string Text{ get; private set; }
+        public string RechargeAmount { get; set; }
+        public string Text{ get; set; }
 
         //Used to group abilities together when displayed.
         //Lower-numbered tiers will be displayed first.
-        public int DisplayTier { get; private set; }
+        public int DisplayTier { get; set; }
 
         //consider adding displayTier or something similar.
             //Decide how I want sorting to work.

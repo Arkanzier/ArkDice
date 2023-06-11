@@ -15,7 +15,7 @@ namespace Simple_Dice_Roller
         internal string CharacterID;
         internal Character.Character EditingCharacter;
 
-        public Form1? parent;
+        public Form1? ParentForm;
 
         //Definable settings
         private string[] ProficiencyLevelStrings = new[] { "None", "Half Proficiency", "Proficient", "1.5x Proficiency", "Expertise" };
@@ -27,7 +27,7 @@ namespace Simple_Dice_Roller
 
             CharacterID = "";
             EditingCharacter = new Character.Character();
-            parent = null;
+            ParentForm = null;
         }
 
         public EditCharacter(string CharacterID)
@@ -54,7 +54,7 @@ namespace Simple_Dice_Roller
 
         #region renameme
 
-        private double GetProfFromDropdown (ComboBox dropdown)
+        private double GetProfFromDropdown(ComboBox dropdown)
         {
             string strval = dropdown.Text;
 
@@ -98,13 +98,13 @@ namespace Simple_Dice_Roller
             Input_WisSave.Items.AddRange(ProficiencyLevelStrings);
             Input_ChaSave.Items.AddRange(ProficiencyLevelStrings);
             //to do:
-                //remove the ability to free type into these
-                //set up a const above that determines the names
-                    //just use an array in order?
-                    //different labels for saves and skills?
-                //convert all decimals to doubles, since apparently I got those backwards?
-                //do these need to be objects?
-                    //could i pass in my const array?
+            //remove the ability to free type into these
+            //set up a const above that determines the names
+            //just use an array in order?
+            //different labels for saves and skills?
+            //convert all decimals to doubles, since apparently I got those backwards?
+            //do these need to be objects?
+            //could i pass in my const array?
 
             SetProfDropdown(EditingCharacter.GetSaveProf("Str"), Input_StrSave);
             SetProfDropdown(EditingCharacter.GetSaveProf("Dex"), Input_DexSave);
@@ -153,11 +153,9 @@ namespace Simple_Dice_Roller
             SetProfDropdown(EditingCharacter.GetSkillProf("Performance"), Input_Performance);
             SetProfDropdown(EditingCharacter.GetSkillProf("Persuasion"), Input_Persuasion);
 
+            Input_ProfBonusBonus.Text = EditingCharacter.BonusToProf.ToString();
+
             //classes somehow
-
-            //abilities somehow
-
-            //spells somehow
 
             //Make sure nothing is in focus.
             ActiveControl = null;
@@ -258,6 +256,8 @@ namespace Simple_Dice_Roller
             changes["Performance"] = GetProfFromDropdown(Input_Performance).ToString();
             changes["Persuasion"] = GetProfFromDropdown(Input_Persuasion).ToString();
 
+            changes["ProfBonusBonus"] = Input_ProfBonusBonus.ToString();
+
             //Do some extra error checking?
 
             //Save the info
@@ -266,7 +266,7 @@ namespace Simple_Dice_Roller
             //Trigger a save here
             //need filepath
             //how to best standardize / store filepath?
-                //store it in the character when opening the file?
+            //store it in the character when opening the file?
             EditingCharacter.Save();
 
             return true;
@@ -315,9 +315,9 @@ namespace Simple_Dice_Roller
         private void EditCharacter_FormClosing(object sender, FormClosingEventArgs e)
         {
             //need to hook into the calling form and call ClosingEditingCharacter();
-            if (parent != null)
+            if (ParentForm != null)
             {
-                parent.ClosingEditingCharacter();
+                ParentForm.ClosingEditingCharacter();
             }
         }
 

@@ -51,7 +51,6 @@
             Label_ID = new Label();
             Label_Name = new Label();
             Wrapper_Stats = new GroupBox();
-            Wrapper_Classes = new GroupBox();
             Label_MaxHealth = new Label();
             Input_MaxHealth = new TextBox();
             Wrapper_SaveProfs = new GroupBox();
@@ -68,6 +67,10 @@
             Input_StrSave = new ComboBox();
             Label_StrSave = new Label();
             Wrapper_SkillProfs = new GroupBox();
+            Input_Survival = new ComboBox();
+            Input_Perception = new ComboBox();
+            Input_Medicine = new ComboBox();
+            Input_Insight = new ComboBox();
             Label_Persuasion = new Label();
             Label_Intimidation = new Label();
             Label_Performance = new Label();
@@ -105,10 +108,8 @@
             Label_DexSkills = new Label();
             Label_IntSaves = new Label();
             Label_WisSkills = new Label();
-            Input_Insight = new ComboBox();
-            Input_Medicine = new ComboBox();
-            Input_Perception = new ComboBox();
-            Input_Survival = new ComboBox();
+            Label_ProfBonusBonus = new Label();
+            Input_ProfBonusBonus = new TextBox();
             Wrapper_BasicAttributes.SuspendLayout();
             Wrapper_Stats.SuspendLayout();
             Wrapper_SaveProfs.SuspendLayout();
@@ -324,15 +325,6 @@
             Wrapper_Stats.Text = "Stats";
             Wrapper_Stats.Enter += Wrapper_Stats_Enter;
             // 
-            // Wrapper_Classes
-            // 
-            Wrapper_Classes.Location = new Point(133, 605);
-            Wrapper_Classes.Name = "Wrapper_Classes";
-            Wrapper_Classes.Size = new Size(429, 212);
-            Wrapper_Classes.TabIndex = 16;
-            Wrapper_Classes.TabStop = false;
-            Wrapper_Classes.Text = "Classes";
-            // 
             // Label_MaxHealth
             // 
             Label_MaxHealth.AutoSize = true;
@@ -521,6 +513,38 @@
             Wrapper_SkillProfs.TabIndex = 20;
             Wrapper_SkillProfs.TabStop = false;
             Wrapper_SkillProfs.Text = "Skill Proficiencies";
+            // 
+            // Input_Survival
+            // 
+            Input_Survival.FormattingEnabled = true;
+            Input_Survival.Location = new Point(369, 156);
+            Input_Survival.Name = "Input_Survival";
+            Input_Survival.Size = new Size(121, 23);
+            Input_Survival.TabIndex = 21;
+            // 
+            // Input_Perception
+            // 
+            Input_Perception.FormattingEnabled = true;
+            Input_Perception.Location = new Point(369, 127);
+            Input_Perception.Name = "Input_Perception";
+            Input_Perception.Size = new Size(121, 23);
+            Input_Perception.TabIndex = 21;
+            // 
+            // Input_Medicine
+            // 
+            Input_Medicine.FormattingEnabled = true;
+            Input_Medicine.Location = new Point(369, 98);
+            Input_Medicine.Name = "Input_Medicine";
+            Input_Medicine.Size = new Size(121, 23);
+            Input_Medicine.TabIndex = 47;
+            // 
+            // Input_Insight
+            // 
+            Input_Insight.FormattingEnabled = true;
+            Input_Insight.Location = new Point(369, 69);
+            Input_Insight.Name = "Input_Insight";
+            Input_Insight.Size = new Size(121, 23);
+            Input_Insight.TabIndex = 21;
             // 
             // Label_Persuasion
             // 
@@ -842,48 +866,33 @@
             Label_WisSkills.TabIndex = 12;
             Label_WisSkills.Text = "Wisdom";
             // 
-            // Input_Insight
+            // Label_ProfBonusBonus
             // 
-            Input_Insight.FormattingEnabled = true;
-            Input_Insight.Location = new Point(369, 69);
-            Input_Insight.Name = "Input_Insight";
-            Input_Insight.Size = new Size(121, 23);
-            Input_Insight.TabIndex = 21;
+            Label_ProfBonusBonus.AutoSize = true;
+            Label_ProfBonusBonus.Location = new Point(451, 31);
+            Label_ProfBonusBonus.Name = "Label_ProfBonusBonus";
+            Label_ProfBonusBonus.Size = new Size(138, 15);
+            Label_ProfBonusBonus.TabIndex = 21;
+            Label_ProfBonusBonus.Text = "Proficiency Bonus Bonus";
             // 
-            // Input_Medicine
+            // Input_ProfBonusBonus
             // 
-            Input_Medicine.FormattingEnabled = true;
-            Input_Medicine.Location = new Point(369, 98);
-            Input_Medicine.Name = "Input_Medicine";
-            Input_Medicine.Size = new Size(121, 23);
-            Input_Medicine.TabIndex = 47;
-            // 
-            // Input_Perception
-            // 
-            Input_Perception.FormattingEnabled = true;
-            Input_Perception.Location = new Point(369, 127);
-            Input_Perception.Name = "Input_Perception";
-            Input_Perception.Size = new Size(121, 23);
-            Input_Perception.TabIndex = 21;
-            // 
-            // Input_Survival
-            // 
-            Input_Survival.FormattingEnabled = true;
-            Input_Survival.Location = new Point(369, 156);
-            Input_Survival.Name = "Input_Survival";
-            Input_Survival.Size = new Size(121, 23);
-            Input_Survival.TabIndex = 21;
+            Input_ProfBonusBonus.Location = new Point(464, 52);
+            Input_ProfBonusBonus.Name = "Input_ProfBonusBonus";
+            Input_ProfBonusBonus.Size = new Size(100, 23);
+            Input_ProfBonusBonus.TabIndex = 22;
             // 
             // EditCharacter
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(799, 701);
+            Controls.Add(Input_ProfBonusBonus);
+            Controls.Add(Label_ProfBonusBonus);
             Controls.Add(Wrapper_SkillProfs);
             Controls.Add(Wrapper_SaveProfs);
             Controls.Add(Input_MaxHealth);
             Controls.Add(Label_MaxHealth);
-            Controls.Add(Wrapper_Classes);
             Controls.Add(Wrapper_Stats);
             Controls.Add(Wrapper_BasicAttributes);
             Controls.Add(Button_Save);
@@ -984,5 +993,7 @@
         private ComboBox Input_Perception;
         private ComboBox Input_Medicine;
         private ComboBox Input_Insight;
+        private Label Label_ProfBonusBonus;
+        private TextBox Input_ProfBonusBonus;
     }
 }

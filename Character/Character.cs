@@ -1007,10 +1007,6 @@ namespace Character //change to ArkDice?
             //saves go here
 
             //Skills
-            //to do: change to loop?
-            //to do: change to include only one access of changes per iteration?
-                //TryGetValue() will probably work
-
             double tempdouble;
             foreach (KeyValuePair<string, double> kvp in Skills) {
                 string key = kvp.Key;
@@ -1028,9 +1024,19 @@ namespace Character //change to ArkDice?
                 }
             }
 
-            //...
+            if (changes.ContainsKey("ProfBonusBonus") && Int32.TryParse(changes["ProfBonusBonus"], out tempint))
+            {
+                BonusToProf = tempint;
+            }
+            else if (changes.ContainsKey("BonusToProf") && Int32.TryParse(changes["BonusToProf"], out tempint))
+            {
+                BonusToProf = tempint;
+            }
 
-            return true;
+
+                //...
+
+                return true;
         }
 
         //Heal the character
