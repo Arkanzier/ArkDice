@@ -778,6 +778,27 @@ namespace Character //change to ArkDice?
             return ChangeAbilityUses(index, change);
         }
 
+        //Returns the number of abilities that don't match those in the library provided.
+        public int CheckForOutdatedAbilities(Dictionary<string, Ability> library)
+        {
+            int numDifferent = 0;
+
+            for (int a = 0; a < Abilities.Count; a++)
+            {
+                Ability localAbility = Abilities[a];
+                Ability libraryAbility = library[localAbility.ID];
+
+                int resp = localAbility.Compare(libraryAbility);
+                //Returns 0 if identical, 1 or -1 if different.
+                if (resp != 0)
+                {
+                    numDifferent++;
+                }
+            }
+
+            return numDifferent;
+        }
+
         //Deal damage to the character.
         public bool Damage(int amount, bool allowNegative = false)
         {
@@ -1144,7 +1165,7 @@ namespace Character //change to ArkDice?
             string backupFolder = FolderLocation + "Characters\\Backups\\";
             string filepath = FolderLocation + "Characters\\" + ID + ".char";
             //string backupFilepath = FolderLocation + "Characters\\Backups" + ID + ".char";
-            string backupFilepath = backupFolder + ID + "_" + DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss") + ".char";
+            string backupFilepath = backupFolder + ID + "_" + DateTime.Now.ToString("yyyy-MM-dd_hh-mm-ss") + ".char";
 
             //to do eventually: change this over to saving the last X copies, and not all?
 
@@ -1281,6 +1302,27 @@ namespace Character //change to ArkDice?
             };
             string ret = JsonSerializer.Serialize<Character>(this, serializerOptions);
             return ret;
+        }
+
+        //Compares all the character's abilities against those in a library.
+        //Also updates any abilities here to match those in the library, when there's a conflict.
+        public void UpdateAllAbilities(Dictionary<string, Ability> library)
+        {
+            for (int a = 0; a < Abilities.Count; a++)
+            {
+                Ability localAbility = Abilities[a];
+                Ability libraryAbility = library[localAbility.ID];
+
+                int resp = localAbility.Compare(libraryAbility);
+                //Returns 0 if identical, 1 or -1 if different.
+                if (resp != 0)
+                {
+                    Abilities[a] = libraryAbility;
+                    Abilities[a].Uses = localAbility.Uses;
+                    //Logic to make sure Uses is still valid?
+                    //Copy over anything else?
+                }
+            }
         }
 
         //Uses the specified ability.
@@ -1597,6 +1639,25 @@ namespace Character //change to ArkDice?
         }
 
         #endregion
+
+        //Adds the specified ability if the character doesn't have it, or updates the character's version of the ability if they do have it.
+        public void AddOrUpdateAbility(Ability ability)
+        {
+            int index = GetAbilityIndexByID(ability.ID);
+            if (index >= 0)
+            {
+                //This character has the ability, we want to update what's there.
+                Abilities[index] = ability;
+                //Run some logic to make sure the available uses are still within bounds?
+            }
+            else
+            {
+                //This character does not have the ability, add it.
+                Abilities.Add(ability);
+            }
+
+            SortAbilities();
+        }
 
         //Get whether or not the character is proficient in any given save.
         //Returns the multiple of the character's prof bonus that gets used (0 for no prof, 1 for proficient, etc).

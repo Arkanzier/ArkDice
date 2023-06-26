@@ -181,7 +181,7 @@ namespace Simple_Dice_Roller
                 string fileContents = File.ReadAllText(filepath);
                 try
                 {
-                    List<Ability>? temp = JsonSerializer.Deserialize<List<Ability>>(fileContents);
+                   Dictionary<string,Ability>? temp = JsonSerializer.Deserialize<Dictionary<string,Ability>>(fileContents);
 
                     if (temp == null)
                     {
@@ -190,12 +190,8 @@ namespace Simple_Dice_Roller
                     }
                     else
                     {
-                        //Copy temp's contents into SpellsLibrary.
-                        for (int a = 0; a < temp.Count; a++)
-                        {
-                            string id = temp[a].ID.ToString();
-                            AbilitiesLibrary[id] = temp[a];
-                        }
+                        //Copy temp's contents into AbilitiesLibrary.
+                        AbilitiesLibrary = temp;
                         return true;
                     }
                 }
@@ -264,6 +260,46 @@ namespace Simple_Dice_Roller
             }
 
             DisplayMessages();
+        }
+
+        //Writes the contents of the abilities library to disk.
+        private bool SaveAbilitiesLibrary()
+        {
+            if (Folderpath.Last() != '\\')
+            {
+                Folderpath += "\\";
+            }
+            string filepath = Folderpath + "dat\\Abilities.dat";
+
+            if (File.Exists(filepath))
+            {
+                //The library file already exists, let's make a backup before we overwrite it.
+                string backupFolderpath = Folderpath + "dat\\Backups\\";
+                string backupFilepath = backupFolderpath + "Abilities_" + DateTime.Now.ToString("yyyy-MM-dd_hh-mm-ss") + ".dat";
+                if (!File.Exists(backupFolderpath))
+                {
+                    Directory.CreateDirectory(backupFolderpath);
+                }
+
+                //Now we can move the old one into the backup folder.
+                File.Move (filepath, backupFilepath);
+            }
+
+            //Save the new info to the file.
+            var serializerOptions = new JsonSerializerOptions
+            {
+                WriteIndented = true
+            };
+            string data = JsonSerializer.Serialize (AbilitiesLibrary, serializerOptions);
+            File.WriteAllText(filepath, data);
+            if (File.Exists(filepath))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         //
@@ -542,8 +578,8 @@ namespace Simple_Dice_Roller
             else
             {
                 EditAbilities editing = new EditAbilities(this);
-                editing.ParentForm = this;
                 editing.Show();
+                //editing.ParentForm = this;
 
                 EditAbilitiesForm = editing;
             }
@@ -631,7 +667,7 @@ namespace Simple_Dice_Roller
         }
 
         //Closes the new form used for editing abilities.
-        private void CloseEditingAbilities()
+        public void CloseEditingAbilities()
         {
             if (EditAbilitiesForm != null)
             {
@@ -679,6 +715,32 @@ namespace Simple_Dice_Roller
         public void ClosingEditingSpells()
         {
             EditSpellsForm = null;
+        }
+
+        //Takes an updated version of an ability and puts it into the abilities library and the loaded character (as appropriate).
+        public void SaveUpdatedAbility (Ability ability)
+        {
+            string id = ability.ID;
+
+            //Make sure the ability is in the abilities library.
+            if (AbilitiesLibrary.ContainsKey(id))
+            {
+                AbilitiesLibrary[id] = ability;
+            } else
+            {
+                AbilitiesLibrary.Add(id, ability);
+            }
+
+            //Make sure the ability is in the character, as appropriate.
+            LoadedCharacter.AddOrUpdateAbility(ability);
+
+            //Save the changes to the abilities library to disk.
+            SaveAbilitiesLibrary();
+
+            //Also save the character? Maybe not.
+
+            //Update the list of abilities, in case something relevant changed.
+            DisplayAbilities(LoadedCharacter);
         }
 
         #endregion
