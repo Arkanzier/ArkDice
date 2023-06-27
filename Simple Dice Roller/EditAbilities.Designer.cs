@@ -381,6 +381,7 @@
             Button_NewAbility.TabIndex = 32;
             Button_NewAbility.Text = "New Ability";
             Button_NewAbility.UseVisualStyleBackColor = true;
+            Button_NewAbility.Click += Button_NewAbility_Click;
             // 
             // Button_SaveAbility
             // 

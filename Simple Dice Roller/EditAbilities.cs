@@ -115,6 +115,13 @@ namespace Simple_Dice_Roller
                         AssignedAbilitiesList.Rows[assignedIndex].Selected = true;
                         DrawingLists = false;
                         //to do: how do i move the little triangle?
+                    } else
+                    {
+                        //There is no matching ability, clear the selection.
+                        DrawingLists = true;
+                        //unselect the selected row
+                        AssignedAbilitiesList.ClearSelection();
+                        DrawingLists = false;
                     }
                 }
             }
@@ -165,7 +172,8 @@ namespace Simple_Dice_Roller
                     if (id != null && AbilitiesLibrary.ContainsKey(id))
                     {
                         selectedAbility = AbilitiesLibrary[id];
-                    } else
+                    }
+                    else
                     {
                         //Complain?
                         selectedAbility = new Ability();
@@ -270,6 +278,10 @@ namespace Simple_Dice_Roller
         {
             foreach (DataGridViewRow row in list.Rows)
             {
+                if (row.Cells[0].Value == null)
+                {
+                    return -1;
+                }
                 string? thisid = row.Cells[0].Value.ToString();
                 if (thisid == abilityID)
                 {
@@ -305,13 +317,18 @@ namespace Simple_Dice_Roller
         }
 
 
+        #region Triggered functions
 
-
-
-        private void Button_Test_Click(object sender, EventArgs e)
+        //Close the form.
+        private void Button_Close_Click(object sender, EventArgs e)
         {
-            AbilitiesLibraryList.ClearSelection();
-            AssignedAbilitiesList.ClearSelection();
+            this.Close();
+        }
+
+        //Clear the form
+        private void Button_NewAbility_Click(object sender, EventArgs e)
+        {
+            DisplayAbility(new Ability());
         }
 
         //Saves the current info into the library.
@@ -348,17 +365,21 @@ namespace Simple_Dice_Roller
             DrawAssignedAbilitiesList();
         }
 
-        private void Button_Close_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
-
+        //Clean things up as the form gets closed.
         private void EditAbilities_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (ParentForm != null)
             {
                 ParentForm.ClosingEditingAbilities();
             }
+        }
+
+        #endregion
+
+        private void Button_Test_Click(object sender, EventArgs e)
+        {
+            AbilitiesLibraryList.ClearSelection();
+            AssignedAbilitiesList.ClearSelection();
         }
     }
 }

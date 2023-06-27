@@ -732,7 +732,7 @@ namespace Simple_Dice_Roller
             }
 
             //Make sure the ability is in the character, as appropriate.
-            LoadedCharacter.AddOrUpdateAbility(ability);
+            LoadedCharacter.AddOrUpdateAbility(ability, false, true);
 
             //Save the changes to the abilities library to disk.
             SaveAbilitiesLibrary();

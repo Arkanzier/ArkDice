@@ -1641,19 +1641,25 @@ namespace Character //change to ArkDice?
         #endregion
 
         //Adds the specified ability if the character doesn't have it, or updates the character's version of the ability if they do have it.
-        public void AddOrUpdateAbility(Ability ability)
+        public void AddOrUpdateAbility(Ability ability, bool add = true, bool update = true)
         {
             int index = GetAbilityIndexByID(ability.ID);
             if (index >= 0)
             {
-                //This character has the ability, we want to update what's there.
-                Abilities[index] = ability;
-                //Run some logic to make sure the available uses are still within bounds?
+                if (update)
+                {
+                    //This character has the ability, we want to update what's there.
+                    Abilities[index] = ability;
+                    //Run some logic to make sure the available uses are still within bounds?
+                }
             }
             else
             {
-                //This character does not have the ability, add it.
-                Abilities.Add(ability);
+                if (add)
+                {
+                    //This character does not have the ability, add it.
+                    Abilities.Add(ability);
+                }
             }
 
             SortAbilities();
