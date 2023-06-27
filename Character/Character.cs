@@ -1942,5 +1942,17 @@ namespace Character //change to ArkDice?
 
             return total;
         }
+
+        //Removes the specified ability, if present.
+        public void RemoveAbility (string id)
+        {
+            int index = GetAbilityIndexByID(id);
+            if (index >= 0)
+            {
+                Abilities.RemoveAt(index);
+            }
+
+            SortAbilities();
+        }
     }
 }

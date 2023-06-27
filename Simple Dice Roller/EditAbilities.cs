@@ -115,7 +115,8 @@ namespace Simple_Dice_Roller
                         AssignedAbilitiesList.Rows[assignedIndex].Selected = true;
                         DrawingLists = false;
                         //to do: how do i move the little triangle?
-                    } else
+                    }
+                    else
                     {
                         //There is no matching ability, clear the selection.
                         DrawingLists = true;
@@ -319,16 +320,95 @@ namespace Simple_Dice_Roller
 
         #region Triggered functions
 
+        //Add the selected ability to the current character.
+        private void Button_Add_Click(object sender, EventArgs e)
+        {
+            string? id = null;
+            try
+            {
+                id = AbilitiesLibraryList.SelectedRows[0].Cells["Library_IDCol"].Value.ToString();
+            } catch
+            {
+                //complain?
+                //This shouldn't happen.
+            }
+            
+
+            if (id == null)
+            {
+                return;
+            }
+            Ability ability = AbilitiesLibrary[id];
+            ParentForm.LoadedCharacter.AddOrUpdateAbility (ability);
+
+            DrawAssignedAbilitiesList();
+        }
+
         //Close the form.
         private void Button_Close_Click(object sender, EventArgs e)
         {
             this.Close();
         }
 
+        //Delete the selected ability.
+        private void Button_Delete_Click(object sender, EventArgs e)
+        {
+            string? id = null;
+            try
+            {
+                id = AbilitiesLibraryList.SelectedRows[0].Cells["Library_IDCol"].Value.ToString();
+            }
+            catch
+            {
+                //complain?
+                //This shouldn't happen.
+                MessageBox.Show("Error: couldn't retrieve ability ID.");
+            }
+
+            if (id == null)
+            {
+                MessageBox.Show("Unable to find id");
+                return;
+            }
+            Ability ability = AbilitiesLibrary[id];
+
+            //Delete the ability from the library.
+            AbilitiesLibrary.Remove(id);
+            ParentForm.RemoveAbility(id);
+
+            DrawAbilitiesLibrary();
+            DrawAssignedAbilitiesList();
+        }
+
         //Clear the form
         private void Button_NewAbility_Click(object sender, EventArgs e)
         {
             DisplayAbility(new Ability());
+        }
+
+        //Remove the selected ability from the current character.
+        private void Button_Remove_Click(object sender, EventArgs e)
+        {
+            string? id = null;
+            try
+            {
+                id = AbilitiesLibraryList.SelectedRows[0].Cells["Library_IDCol"].Value.ToString();
+            }
+            catch
+            {
+                //complain?
+                //This shouldn't happen.
+                MessageBox.Show("Error: couldn't retrieve ability ID.");
+            }
+
+            if (id == null)
+            {
+                return;
+            }
+
+            ParentForm.RemoveAbility(id);
+
+            DrawAssignedAbilitiesList();
         }
 
         //Saves the current info into the library.

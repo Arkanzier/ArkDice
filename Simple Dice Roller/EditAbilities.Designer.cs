@@ -180,6 +180,7 @@
             Button_Remove.TabIndex = 8;
             Button_Remove.Text = "Remove from Character";
             Button_Remove.UseVisualStyleBackColor = true;
+            Button_Remove.Click += Button_Remove_Click;
             // 
             // Button_Add
             // 
@@ -189,6 +190,7 @@
             Button_Add.TabIndex = 9;
             Button_Add.Text = "Add to Character";
             Button_Add.UseVisualStyleBackColor = true;
+            Button_Add.Click += Button_Add_Click;
             // 
             // Input_Text
             // 
@@ -362,6 +364,7 @@
             Button_Delete.TabIndex = 30;
             Button_Delete.Text = "Delete Ability";
             Button_Delete.UseVisualStyleBackColor = true;
+            Button_Delete.Click += Button_Delete_Click;
             // 
             // Button_Test
             // 

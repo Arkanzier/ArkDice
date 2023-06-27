@@ -294,10 +294,12 @@ namespace Simple_Dice_Roller
             File.WriteAllText(filepath, data);
             if (File.Exists(filepath))
             {
+                LogMessage("Abilities list saved successfully.");
                 return true;
             }
             else
             {
+                LogMessage("Unable to save abilities list.");
                 return false;
             }
         }
@@ -715,6 +717,24 @@ namespace Simple_Dice_Roller
         public void ClosingEditingSpells()
         {
             EditSpellsForm = null;
+        }
+
+        //Removes the specified ability from the library.
+        public void RemoveAbility(string id)
+        {
+            //Make sure the ability is in the abilities library.
+            if (AbilitiesLibrary.ContainsKey(id))
+            {
+                AbilitiesLibrary.Remove(id);
+            }
+
+            LoadedCharacter.RemoveAbility(id);
+
+            //Save the changes to the abilities library to disk.
+            SaveAbilitiesLibrary();
+
+            //Update the list of abilities, in case something relevant changed.
+            DisplayAbilities(LoadedCharacter);
         }
 
         //Takes an updated version of an ability and puts it into the abilities library and the loaded character (as appropriate).
