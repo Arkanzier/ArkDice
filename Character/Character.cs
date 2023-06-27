@@ -13,34 +13,34 @@ namespace Character //change to ArkDice?
     public class Character
     {
         //Basic info
-        public string ID { get; private set; }
-        public string Name { get; private set; }
-        public string Race { get; private set; }
-        public string Subrace { get; private set; }
-        public int MaxHP { get; private set; }
-        public int CurrentHP { get; private set; }
-        public int TempHP { get; private set; }
+        public string ID { get; set; }
+        public string Name { get; set; }
+        public string Race { get; set; }
+        public string Subrace { get; set; }
+        public int MaxHP { get; set; }
+        public int CurrentHP { get; set; }
+        public int TempHP { get; set; }
         //temporary modifiers to max HP?
 
         //Class related info
-        public List<ClassLevel> Classes { get; private set; }
+        public List<ClassLevel> Classes { get; set; }
         //to do: consider setting something up to support gestalt rules.
         //just set up a multiplier for levels or 'class levels per character level' type thing?
         //the character's level equals total class level divided by that number
 
         //Added to the prof bonus calculated based on level. Can be negative.
-        public int BonusToProf { get; private set; }
+        public int BonusToProf { get; set; }
 
         //Automatically managed. Stores prof bonus by level + profBonus.
-        public int Prof { get; private set; }
+        public int Prof { get; set; }
 
         //Stats and related info
         //Starts at 0 and proceeds in the order Str, Dex, Con, Int, Wis, Cha.
-        public int[] Stats { get; private set; }
+        public int[] Stats { get; set; }
         //convert these over to loose ints/bools?
         //there are only 6 of each, and it would cut down a little on the work involved.
 
-        public double[] Saves { get; private set; }
+        public double[] Saves { get; set; }
         //to do: rename to saves?
 
         //how to handle weapon and armor profs?
@@ -56,7 +56,7 @@ namespace Character //change to ArkDice?
         //lump tools and languages together, since they're just going to be lists anyway?
 
         //Skill proficiencies
-        public Dictionary<string, double> Skills { get; private set; }
+        public Dictionary<string, double> Skills { get; set; }
 
         //Skills by stat:
         /*
@@ -88,15 +88,16 @@ namespace Character //change to ArkDice?
          */
 
         //Abilities and related info.
-        public List<Ability> Abilities { get; private set; }
+        public List<Ability> Abilities { get; set; }
         //switch from strings to objects?
-        public List<Ability> BasicAbilities { get; private set; }
+        public List<Ability> BasicAbilities { get; set; }
         //Text describing passive abilities the character has.
-        public List<string> Passives { get; private set; }
+        public List<string> Passives { get; set; }
 
-        public List<Spell> Spells { get; private set; }
+        public List<Spell> Spells { get; set; }
 
         //Automatically managed. Stores the location of the file this was loaded from + should be saved to.
+        [JsonIgnore]
         private string FolderLocation;
 
         //Constructor(s):
@@ -186,9 +187,44 @@ namespace Character //change to ArkDice?
             //to do: look into making this work with deserialize.
             //will i have to make a struct with the same attributes and then write a function to copy stuff from there to here?
 
+            var deserializerOptions = new JsonSerializerOptions
+            {
+                NumberHandling = JsonNumberHandling.AllowReadingFromString
+            };
+            Character? copy = JsonSerializer.Deserialize<Character>(json);
+
+            if (copy != null)
+            {
+                //to do: make this a function?
+                //overload IncorporateChanges();
+
+                ID = copy.ID;
+                Name = copy.Name;
+                Race = copy.Race;
+                Subrace = copy.Subrace;
+                MaxHP = copy.MaxHP;
+                CurrentHP = copy.CurrentHP;
+                TempHP = copy.TempHP;
+
+                Classes = copy.Classes;
+
+                BonusToProf = copy.BonusToProf;
+                Prof = copy.Prof;
+                Stats = copy.Stats;
+                Saves = copy.Saves;
+                Skills = copy.Skills;
+
+                Abilities = copy.Abilities;
+                BasicAbilities = copy.BasicAbilities;
+                Passives = copy.Passives;
+                Spells = copy.Spells;
+
+                return;
+            }
+            
             //Temporarily removed.
             //Doesn't work, I'm guessing it requires public setters to work but I don't want those.
-            
+
             /*
             try
             {
@@ -233,7 +269,7 @@ namespace Character //change to ArkDice?
                 return;
             }
             */
-            
+
 
             //Pull info from the JSON.
             try
