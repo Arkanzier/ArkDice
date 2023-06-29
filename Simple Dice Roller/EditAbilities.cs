@@ -416,6 +416,14 @@ namespace Simple_Dice_Roller
         {
             Ability ability = GetValuesFromFields();
 
+            //Make sure the new / updated ability meets certain requirements.
+            if (ability.ID == "")
+            {
+                //complain?
+                return;
+            }
+            //more?
+
             if (AbilitiesLibrary.ContainsKey(ability.ID))
             {
                 //This ability exists in the list, overwrite it.

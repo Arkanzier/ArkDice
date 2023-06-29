@@ -97,7 +97,7 @@ namespace Simple_Dice_Roller
 
             //Stores the currently loaded character.
             //Character.Character currentCharacter = new Character.Character(contents);
-            Character.Character currentCharacter = new Character.Character("Tiriel", SpellsLibrary, Folderpath);
+            Character.Character currentCharacter = new Character.Character("Tiriel", Folderpath, ref AbilitiesLibrary, ref SpellsLibrary);
             LoadedCharacter = currentCharacter;
             //MessageBox.Show(currentCharacter.ToString());
             DisplayCharacter(currentCharacter);

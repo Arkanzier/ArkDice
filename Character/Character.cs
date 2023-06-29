@@ -159,7 +159,8 @@ namespace Character //change to ArkDice?
         }
 
         //Loads the character from a file containing JSON.
-        public Character (string charID, Dictionary<string, Spell> library, string folderpath = "")
+        //public Character (string charID, Dictionary<string, Spell> library, string folderpath = "")
+        public Character (string charID, string folderpath = "")
             : this()
         {
             if (folderpath != "" && folderpath.Last() != '\\')
@@ -221,56 +222,9 @@ namespace Character //change to ArkDice?
 
                 return;
             }
-            
-            //Temporarily removed.
-            //Doesn't work, I'm guessing it requires public setters to work but I don't want those.
 
+            //Old method: manual parsing of the JSON.
             /*
-            try
-            {
-                var deserializerOptions = new JsonSerializerOptions
-                {
-                    NumberHandling = JsonNumberHandling.AllowReadingFromString
-                };
-                //Character? copy = JsonSerializer.Deserialize<Character>(json);
-                CharacterCopy? copy = JsonSerializer.Deserialize<CharacterCopy> (json);
-                //CharacterCopy? copy = JsonSerializer.Deserialize<CharacterCopy> (json, deserializerOptions);
-
-                if (copy == null)
-                {
-                    //is this even possible?
-                    //complain to a log
-                    return;
-                }
-
-                //copy copy's stuff to here.
-                //do some error checking first?
-
-                ID = copy.ID;
-                Name = copy.Name;
-                Race = copy.Race;
-                MaxHP = copy.MaxHP;
-                CurrentHP = copy.CurrentHP;
-                Classes = copy.Classes;
-                Prof = copy.Prof;
-                BonusToProf = copy.BonusToProf;
-                Stats = copy.Stats;
-                Saves = copy.Saves;
-                Skills = copy.Skills;
-                Abilities = copy.Abilities;
-                BasicAbilities = copy.BasicAbilities;
-                Passives = copy.Passives;
-                return;
-            }
-            catch
-            {
-                //complain to a log?
-                Name = "Error";
-                return;
-            }
-            */
-
-
             //Pull info from the JSON.
             try
             {
@@ -655,6 +609,19 @@ namespace Character //change to ArkDice?
             CalculateProf();
             SortAbilities();
             SortSpells();
+            */
+        }
+
+        //Loads the character from a JSON file, then compares the character's spells and abilities against the provided libraries looking for updates.
+        //to do: make this ask for permission before adding stuff to the library, updating local copies, etc.
+        public Character (string charID, string folderpath, ref Dictionary<string, Ability> abilitiesLibrary, ref Dictionary<string, Spell> spellsLibrary)
+            : this (charID, folderpath)
+        {
+            //Check through the list of abilities.
+            abilitiesLibrary = UpdateAllAbilities(abilitiesLibrary);
+
+            //Then do the same for spells
+            spellsLibrary = UpdateAllSpells(spellsLibrary);
         }
 
         
@@ -1342,23 +1309,94 @@ namespace Character //change to ArkDice?
 
         //Compares all the character's abilities against those in a library.
         //Also updates any abilities here to match those in the library, when there's a conflict.
-        public void UpdateAllAbilities(Dictionary<string, Ability> library)
+        //Returns a modified library in case abilities on the character were added to it.
+        public Dictionary<string,Ability> UpdateAllAbilities(Dictionary<string, Ability> library)
         {
+            Dictionary<string, Ability> ret = library;
+
             for (int a = 0; a < Abilities.Count; a++)
             {
                 Ability localAbility = Abilities[a];
-                Ability libraryAbility = library[localAbility.ID];
-
-                int resp = localAbility.Compare(libraryAbility);
-                //Returns 0 if identical, 1 or -1 if different.
-                if (resp != 0)
+                string id = localAbility.ID;
+                if (id == "")
                 {
-                    Abilities[a] = libraryAbility;
-                    Abilities[a].Uses = localAbility.Uses;
-                    //Logic to make sure Uses is still valid?
-                    //Copy over anything else?
+                    //This shouldn't happen, but we'll check for it just in case.
+                    //complain?
+                    continue;
+                }
+
+                if (!library.ContainsKey(id))
+                {
+                    //This ability does not exist in the library, add it.
+                    ret.Add(id, localAbility);
+                }
+                else
+                {
+                    //This ability does exist in the library, grab it and compare it to the local copy.
+                    Ability libraryAbility = library[id];
+
+                    int resp = localAbility.Compare(libraryAbility);
+                    //Returns 0 if identical, 1 or -1 if different.
+                    if (resp != 0)
+                    {
+                        //These two abilities are not identical.
+                        //Overwrite the local version with the library version.
+                        Abilities[a] = libraryAbility;
+                        Abilities[a].Uses = localAbility.Uses;
+                        if (Abilities[a].Uses > Abilities[a].MaxUses)
+                        {
+                            //The max uses have lowered, fix this.
+                            Abilities[a].Uses = Abilities[a].MaxUses;
+                        }
+                        //Copy over anything else?
+                    }
                 }
             }
+
+            return ret;
+        }
+
+        //Compares all the character's spells against those in a library.
+        //Also updates any spells here to match those in the library, when there's a conflict.
+        //Returns a modified library in case spells on the character were added to it.
+        public Dictionary<string, Spell> UpdateAllSpells(Dictionary<string, Spell> library)
+        {
+            Dictionary<string, Spell> ret = library;
+
+            for (int a = 0; a < Spells.Count; a++)
+            {
+                Spell localSpell = Spells[a];
+                string id = localSpell.ID;
+                if (id == "")
+                {
+                    //This shouldn't happen, but we'll check for it just in case.
+                    //complain?
+                    continue;
+                }
+
+                if (!library.ContainsKey(id))
+                {
+                    //This spell does not exist in the library, add it.
+                    ret.Add(id, localSpell);
+                }
+                else
+                {
+                    //This spell does exist in the library, grab it and compare it to the local copy.
+                    Spell librarySpell = library[id];
+
+                    int resp = localSpell.Compare(librarySpell);
+                    //Returns 0 if identical, 1 or -1 if different.
+                    if (resp != 0)
+                    {
+                        //These two spells are not identical.
+                        //Overwrite the local version with the library version.
+                        Spells[a] = librarySpell;
+                        //Copy over anything else?
+                    }
+                }
+            }
+
+            return ret;
         }
 
         //Uses the specified ability.
