@@ -220,6 +220,9 @@ namespace Character //change to ArkDice?
                 Passives = copy.Passives;
                 Spells = copy.Spells;
 
+                SortAbilities();
+                SortSpells();
+
                 return;
             }
 
@@ -1739,6 +1742,28 @@ namespace Character //change to ArkDice?
             SortAbilities();
         }
 
+        //Adds the specified spell if the character doesn't have it, or updates the character's version of the spell if they do have it.
+        public void AddOrUpdateSpell (Spell spell, bool add = true, bool update = true)
+        {
+            int index = GetSpellIndexByID(spell.ID);
+            if (index >= 0)
+            {
+                if (update)
+                {
+                    Spells[index] = spell;
+                }
+            }
+            else
+            {
+                if (add)
+                {
+                    Spells.Add(spell);
+                }
+            }
+
+            SortSpells();
+        }
+
         //Get whether or not the character is proficient in any given save.
         //Returns the multiple of the character's prof bonus that gets used (0 for no prof, 1 for proficient, etc).
         public double GetSaveProf(string save)
@@ -1796,6 +1821,12 @@ namespace Character //change to ArkDice?
             //to do: perhaps switch this over to something that just outputs data needed to render the things for the abilities.
             //then switch ability class over to internal only again.
             return this.Abilities;
+        }
+
+        //Returns a list of all spells, in the default order.
+        public List<Spell> GetSpells()
+        {
+            return this.Spells;
         }
 
         //Returns an Ability with the specified ID, if this character has one.
@@ -2027,6 +2058,18 @@ namespace Character //change to ArkDice?
             }
 
             SortAbilities();
+        }
+
+        //Removes the specified spell, if present.
+        public void RemoveSpell(string id)
+        {
+            int index = GetSpellIndexByID(id);
+            if (index >= 0)
+            {
+                Spells.RemoveAt(index);
+            }
+
+            SortSpells();
         }
     }
 }

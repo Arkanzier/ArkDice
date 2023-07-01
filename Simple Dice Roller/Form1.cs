@@ -197,6 +197,7 @@ namespace Simple_Dice_Roller
                 }
                 catch (Exception ex)
                 {
+                    MessageBox.Show("Error: could not read abilities library from file.");
                     AbilitiesLibrary = new Dictionary<string, Ability>();
                     return false;
                 }
@@ -216,10 +217,10 @@ namespace Simple_Dice_Roller
 
             if (File.Exists(filepath))
             {
-                string spellContents = File.ReadAllText(filepath);
+                string fileContents = File.ReadAllText(filepath);
                 try
                 {
-                    List<Spell>? temp = JsonSerializer.Deserialize<List<Spell>>(spellContents);
+                    Dictionary<string,Spell>? temp = JsonSerializer.Deserialize<Dictionary<string,Spell>>(fileContents);
 
                     if (temp == null)
                     {
@@ -229,16 +230,13 @@ namespace Simple_Dice_Roller
                     else
                     {
                         //Copy temp's contents into SpellsLibrary.
-                        for (int a = 0; a < temp.Count; a++)
-                        {
-                            string id = temp[a].ID.ToString();
-                            SpellsLibrary[id] = temp[a];
-                        }
+                        SpellsLibrary = temp;
                         return true;
                     }
                 }
                 catch (Exception ex)
                 {
+                    MessageBox.Show("Error: could not read spells library from file.");
                     SpellsLibrary = new Dictionary<string, Spell>();
                     return false;
                 }
@@ -300,6 +298,48 @@ namespace Simple_Dice_Roller
             else
             {
                 LogMessage("Unable to save abilities list.");
+                return false;
+            }
+        }
+
+        //Writes the contents of the spells library to disk.
+        private bool SaveSpellsLibrary()
+        {
+            if (Folderpath.Last() != '\\')
+            {
+                Folderpath += "\\";
+            }
+            string filepath = Folderpath + "dat\\Spells.dat";
+
+            if (File.Exists(filepath))
+            {
+                //The library file already exists, let's make a backup before we overwrite it.
+                string backupFolderpath = Folderpath + "dat\\Backups\\";
+                string backupFilepath = backupFolderpath + "Spells_" + DateTime.Now.ToString("yyyy-MM-dd_hh-mm-ss") + ".dat";
+                if (!File.Exists(backupFolderpath))
+                {
+                    Directory.CreateDirectory(backupFolderpath);
+                }
+
+                //Now we can move the old one into the backup folder.
+                File.Move(filepath, backupFilepath);
+            }
+
+            //Save the new info to the file.
+            var serializerOptions = new JsonSerializerOptions
+            {
+                WriteIndented = true
+            };
+            string data = JsonSerializer.Serialize(SpellsLibrary, serializerOptions);
+            File.WriteAllText(filepath, data);
+            if (File.Exists(filepath))
+            {
+                LogMessage("Spells list saved successfully.");
+                return true;
+            }
+            else
+            {
+                LogMessage("Unable to save spells list.");
                 return false;
             }
         }
@@ -618,7 +658,7 @@ namespace Simple_Dice_Roller
             }
             else
             {
-                EditSpells editing = new EditSpells();
+                EditSpells editing = new EditSpells(this);
                 //editing.Parent = this;
                 editing.Show();
 
@@ -737,6 +777,24 @@ namespace Simple_Dice_Roller
             DisplayAbilities(LoadedCharacter);
         }
 
+        //Removes the specified spell from the library.
+        public void RemoveSpell (string id)
+        {
+            //Make sure the ability is in the abilities library.
+            if (SpellsLibrary.ContainsKey(id))
+            {
+                SpellsLibrary.Remove(id);
+            }
+
+            LoadedCharacter.RemoveSpell(id);
+
+            //Save the changes to the abilities library to disk.
+            SaveSpellsLibrary();
+
+            //Update the list of abilities, in case something relevant changed.
+            DisplaySpells(LoadedCharacter);
+        }
+
         //Takes an updated version of an ability and puts it into the abilities library and the loaded character (as appropriate).
         public void SaveUpdatedAbility (Ability ability)
         {
@@ -761,6 +819,33 @@ namespace Simple_Dice_Roller
 
             //Update the list of abilities, in case something relevant changed.
             DisplayAbilities(LoadedCharacter);
+        }
+
+        //Takes an updated version of a spell and puts it into the spells library and the loaded character (as appropriate).
+        public void SaveUpdatedSpell(Spell spell)
+        {
+            string id = spell.ID;
+
+            //Make sure the spell is in the abilities library.
+            if (SpellsLibrary.ContainsKey(id))
+            {
+                SpellsLibrary[id] = spell;
+            }
+            else
+            {
+                SpellsLibrary.Add(id, spell);
+            }
+
+            //Make sure the spell is in the character, as appropriate.
+            LoadedCharacter.AddOrUpdateSpell(spell, false, true);
+
+            //Save the changes to the spells library to disk.
+            SaveSpellsLibrary();
+
+            //Also save the character? Maybe not.
+
+            //Update the list of spells, in case something relevant changed.
+            DisplaySpells(LoadedCharacter);
         }
 
         #endregion

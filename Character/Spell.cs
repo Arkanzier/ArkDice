@@ -16,6 +16,13 @@ namespace Character
         public int Level { get;  set; }
         //The spell's school
         public string School { get; set; }
+        //Whether the spell is prepared/known or not.
+        public bool Prepared { get; set; }
+        //add known flag?
+            //on character, known = known
+            //on character, prepared = prepared
+            //on character, neither known nor prepared = in spellbook or whatever.
+            //let people prepare spells they know, if they really want?
 
         //Components
         //-------- -------- -------- -------- -------- -------- -------- -------- 
@@ -71,6 +78,7 @@ namespace Character
             Name = "";
             Level = 0;
             School = "";
+            Prepared = false;
             Vocal = false;
             Somatic = false;
             Material = false;
@@ -486,6 +494,7 @@ namespace Character
             Name = other.Name;
             Level = other.Level;
             School = other.School;
+            Prepared = other.Prepared;
             Vocal = other.Vocal;
             Somatic = other.Somatic;
             Material = other.Material;
