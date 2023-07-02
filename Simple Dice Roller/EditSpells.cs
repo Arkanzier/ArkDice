@@ -51,6 +51,10 @@ namespace Simple_Dice_Roller
             DrawAssignedSpellsList();
         }
 
+        //to do:
+        //need custom sorting for the lists
+        //sorting by level: break ties by name
+        //also, trigger the sorting on load
 
 
         //Displays the provided spell in the inputs.
@@ -183,20 +187,61 @@ namespace Simple_Dice_Roller
             return ret;
         }
 
-        //to do:
-        //hook up the Prepared flag somewhere
-        //spells tab: can toggle between all spells and prepared spells?
-        //can toggle spells when seeing all?
-        //replaces the use buttons?
-        //I might need custom sorting to get the spell levels working properly.
-        //then again, as long as it breaks ties by name I'm good.
+        //Selects the provided ability in both forms and displays it's info in the inputs.
+        private void SelectSpell(string id)
+        {
+            int libraryIndex = -1;
+            int assignedIndex = -1;
+            if (id != "")
+            {
+                libraryIndex = GetIndexOfRowWithSpell(id, SpellsLibraryList);
+                assignedIndex = GetIndexOfRowWithSpell(id, AssignedSpellsList);
+            }
 
+            Spell? spell;
+            if (id != "" && SpellsLibrary.ContainsKey(id))
+            {
+                spell = SpellsLibrary[id];
+            }
+            else
+            {
+                spell = new Spell();
+            }
 
+            DrawingLists = true;
+            //Make it selected in the library list.
+            if (libraryIndex == -1)
+            {
+                //There is no such spell in the library, somehow.
+                SpellsLibraryList.ClearSelection();
+            }
+            else
+            {
+                //We found this spell in the library, select it.
+                SpellsLibraryList.Rows[libraryIndex].Selected = true;
+            }
 
+            //Make it selected in the assigned list.
+            if (assignedIndex == -1)
+            {
+                //There is no such spell in the library, somehow.
+                AssignedSpellsList.ClearSelection();
+            }
+            else
+            {
+                //We found this spell in the library, select it.
+                AssignedSpellsList.Rows[assignedIndex].Selected = true;
+            }
+            DrawingLists = false;
+
+            //Spell will either be populated by this point, or be a blank new spell.
+            DisplaySpell(spell);
+        }
 
         #region Functions triggered by the form
 
-        //
+        //A row in the assigned spells list was just clicked.
+        //Select the corresponding row in the library list and display the spell's info.
         private void AssignedSpellsList_SelectionChanged(object sender, EventArgs e)
         {
             if (DrawingLists == true)
@@ -206,17 +251,14 @@ namespace Simple_Dice_Roller
             }
 
             //Figure out which spell was just selected.
-            Spell selectedSpell;
+            string id = "";
             if (AssignedSpellsList.SelectedRows.Count == 0)
             {
                 //The selection was just cleared, there is no spell selected.
-                //We can mimic this by passing a blank spell to the appropriate places.
-                selectedSpell = new Spell();
+                //Just leave id blank.
             }
             else
             {
-                //Get the spell's info.
-                string id = "";
                 try
                 {
                     id = AssignedSpellsList.SelectedRows[0].Cells["Assigned_ID"].Value.ToString();
@@ -224,45 +266,11 @@ namespace Simple_Dice_Roller
                 catch (Exception ex)
                 {
                     //do nothing?
-                }
-                if (id == "")
-                {
-                    selectedSpell = new Spell();
-                }
-                else
-                {
-                    //to do: needs error protection.
-                    //if the spell isn't in the library, this will cause problems.
-                    //library cannot load after being saved. figure out why
-                    if (id != null && SpellsLibrary.ContainsKey(id))
-                    {
-                        selectedSpell = SpellsLibrary[id];
-                    }
-                    else
-                    {
-                        //Complain?
-                        selectedSpell = new Spell();
-                        id = "";
-                    }
-                }
-
-                //Now we have the spell, or a blank one for no selection.
-                if (id != "")
-                {
-                    //Mirror this selection into the other grid, if the spell exists there.
-                    int assignedIndex = GetIndexOfRowWithSpell(id, SpellsLibraryList);
-
-                    if (assignedIndex >= 0)
-                    {
-                        //This spell exists in the library list. Select it there.
-                        DrawingLists = true;
-                        SpellsLibraryList.Rows[assignedIndex].Selected = true;
-                        DrawingLists = false;
-                    }
+                    id = "";
                 }
             }
-            //Now display the spell's info in the text boxes.
-            DisplaySpell(selectedSpell);
+
+            SelectSpell(id);
         }
 
         //Add the currently selected spell to the character.
@@ -271,12 +279,12 @@ namespace Simple_Dice_Roller
             string? id = null;
             try
             {
-                id = SpellsLibraryList.SelectedRows[0].Cells["Library_IDCol"].Value.ToString();
+                id = SpellsLibraryList.SelectedRows[0].Cells["Library_ID"].Value.ToString();
             }
             catch
             {
-                //complain?
                 //This shouldn't happen.
+                MessageBox.Show("Error: couldn't retrieve spell ID.");
             }
 
 
@@ -288,6 +296,8 @@ namespace Simple_Dice_Roller
             ParentOfThisForm.LoadedCharacter.AddOrUpdateSpell(spell);
 
             DrawAssignedSpellsList();
+
+            SelectSpell(id);
         }
 
         //Close this form.
@@ -302,7 +312,7 @@ namespace Simple_Dice_Roller
             string? id = null;
             try
             {
-                id = SpellsLibraryList.SelectedRows[0].Cells["Library_IDCol"].Value.ToString();
+                id = SpellsLibraryList.SelectedRows[0].Cells["Library_ID"].Value.ToString();
             }
             catch
             {
@@ -320,13 +330,13 @@ namespace Simple_Dice_Roller
 
             //Delete the ability from the library.
             SpellsLibrary.Remove(id);
-            ParentOfThisForm.RemoveAbility(id);
+            ParentOfThisForm.RemoveSpell(id);
 
             DrawSpellsLibraryList();
             DrawAssignedSpellsList();
 
-            AssignedSpellsList.ClearSelection();
-            SpellsLibraryList.ClearSelection();
+            //Make sure nothing is selected, since we just deleted the only thing that was.
+            SelectSpell("");
         }
 
         //Clear the inputs and get ready for a new spell to be entered.
@@ -341,7 +351,7 @@ namespace Simple_Dice_Roller
             string? id = null;
             try
             {
-                id = SpellsLibraryList.SelectedRows[0].Cells["Library_IDCol"].Value.ToString();
+                id = SpellsLibraryList.SelectedRows[0].Cells["Library_ID"].Value.ToString();
             }
             catch
             {
@@ -355,9 +365,12 @@ namespace Simple_Dice_Roller
                 return;
             }
 
-            ParentOfThisForm.RemoveSpell(id);
+            //Remove the spell from the current character.
+            ParentOfThisForm.LoadedCharacter.RemoveSpell(id);
 
             DrawAssignedSpellsList();
+
+            SelectSpell(id);
         }
 
         //Save the information from the inputs into a new spell.
@@ -401,7 +414,7 @@ namespace Simple_Dice_Roller
             DrawSpellsLibraryList();
             DrawAssignedSpellsList();
 
-            //to do: select the spell again?
+            SelectSpell(spell.ID);
         }
 
         //Clean things up when the form is closing.
@@ -420,7 +433,8 @@ namespace Simple_Dice_Roller
             SpellsLibraryList.ClearSelection();
         }
 
-        //
+        //A row in the spells library list was just clicked.
+        //Select the corresponding row in the assigned list and display the spell's info.
         private void SpellsLibraryList_SelectionChanged(object sender, EventArgs e)
         {
             if (DrawingLists == true)
@@ -430,17 +444,14 @@ namespace Simple_Dice_Roller
             }
 
             //Figure out which spell was just selected.
-            Spell selectedSpell;
+            string id = "";
             if (SpellsLibraryList.SelectedRows.Count == 0)
             {
                 //The selection was just cleared, there is no spell selected.
-                //We can mimic this by passing a blank spell to the appropriate places.
-                selectedSpell = new Spell();
+                //Just leave id blank.
             }
             else
             {
-                //Get the spell's info.
-                string id = "";
                 try
                 {
                     id = SpellsLibraryList.SelectedRows[0].Cells["Library_ID"].Value.ToString();
@@ -448,42 +459,11 @@ namespace Simple_Dice_Roller
                 catch (Exception ex)
                 {
                     //do nothing?
-                }
-                if (id == "")
-                {
-                    selectedSpell = new Spell();
-                }
-                else
-                {
-                    selectedSpell = SpellsLibrary[id];
-                }
-
-                //Now we have the spell, or a blank one for no selection.
-                if (id != "")
-                {
-                    //Mirror this selection into the other grid, if the spell exists there.
-                    int assignedIndex = GetIndexOfRowWithSpell(id, AssignedSpellsList);
-
-                    if (assignedIndex >= 0)
-                    {
-                        //This spell exists in the assigned list. Select it there.
-                        DrawingLists = true;
-                        AssignedSpellsList.Rows[assignedIndex].Selected = true;
-                        DrawingLists = false;
-                        //to do: how do i move the little triangle?
-                    }
-                    else
-                    {
-                        //There is no matching spell, clear the selection.
-                        DrawingLists = true;
-                        //unselect the selected row
-                        AssignedSpellsList.ClearSelection();
-                        DrawingLists = false;
-                    }
+                    id = "";
                 }
             }
-            //Now display the spell's info in the text boxes.
-            DisplaySpell(selectedSpell);
+
+            SelectSpell(id);
         }
 
         #endregion

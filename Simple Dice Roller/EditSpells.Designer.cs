@@ -313,16 +313,16 @@
             // 
             // Input_Description
             // 
-            Input_Description.Location = new Point(14, 609);
+            Input_Description.Location = new Point(14, 592);
             Input_Description.Multiline = true;
             Input_Description.Name = "Input_Description";
-            Input_Description.Size = new Size(600, 75);
+            Input_Description.Size = new Size(600, 92);
             Input_Description.TabIndex = 22;
             // 
             // Label_Description
             // 
             Label_Description.AutoSize = true;
-            Label_Description.Location = new Point(14, 591);
+            Label_Description.Location = new Point(14, 574);
             Label_Description.Name = "Label_Description";
             Label_Description.Size = new Size(67, 15);
             Label_Description.TabIndex = 23;
@@ -357,7 +357,7 @@
             // Label_Action
             // 
             Label_Action.AutoSize = true;
-            Label_Action.Location = new Point(14, 546);
+            Label_Action.Location = new Point(187, 546);
             Label_Action.Name = "Label_Action";
             Label_Action.Size = new Size(42, 15);
             Label_Action.TabIndex = 27;
@@ -399,7 +399,7 @@
             // 
             // Input_Action
             // 
-            Input_Action.Location = new Point(68, 543);
+            Input_Action.Location = new Point(236, 543);
             Input_Action.Name = "Input_Action";
             Input_Action.Size = new Size(100, 23);
             Input_Action.TabIndex = 32;

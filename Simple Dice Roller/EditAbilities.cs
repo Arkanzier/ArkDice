@@ -401,7 +401,7 @@ namespace Simple_Dice_Roller
                 return;
             }
 
-            ParentOfThisForm.RemoveAbility(id);
+            ParentOfThisForm.LoadedCharacter.RemoveAbility(id);
 
             DrawAssignedAbilitiesList();
         }
