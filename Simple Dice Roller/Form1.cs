@@ -1603,6 +1603,8 @@ namespace Simple_Dice_Roller
                 ToggleGridExpand("Abilities", rowNum);
             }
         }
+
+        //
         private void AbilitiesArea_Click(object sender, EventArgs e)
         {
             //Not currently used, EventArgs doesn't include the info we need from DataGridViewCellEventArgs.

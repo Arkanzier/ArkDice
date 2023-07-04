@@ -49,13 +49,85 @@ namespace Simple_Dice_Roller
 
             DrawSpellsLibraryList();
             DrawAssignedSpellsList();
+
+            //Set up the initial sorting on the lists.
+            SpellsLibraryList.Sort(SpellsLibraryList.Columns["Library_Level"], ListSortDirection.Ascending);
+            AssignedSpellsList.Sort(AssignedSpellsList.Columns["Assigned_Level"], ListSortDirection.Ascending);
         }
 
-        //to do:
-        //need custom sorting for the lists
-        //sorting by level: break ties by name
-        //also, trigger the sorting on load
 
+
+        //Handles the sorting for the two lists.
+        private int CompareForSorting(string column, string name1, int level1, string name2, int level2)
+        {
+            //Now that we have the info, we'll compare it.
+            if (column == "Name")
+            {
+                //We're sorting by name and breaking ties by level.
+                int resp = string.Compare(name1, name2, StringComparison.OrdinalIgnoreCase);
+                //We're going to change the return values here to only -1, 0, and 1.
+                if (resp < 0)
+                {
+                    return -1;
+                }
+                else if (resp > 0)
+                {
+                    return 1;
+                }
+
+                //Someone did something stupid and these names are the same.
+                //Break ties by level, in case there's a difference there.
+                if (level1 < level2)
+                {
+                    return -1;
+                }
+                else if (level1 > level2)
+                {
+                    return 1;
+                }
+                else
+                {
+                    //These are identical
+                    return 0;
+                }
+            }
+            else if (column == "Level")
+            {
+                //We're sorting by level and breaking ties by name.
+                if (level1 < level2)
+                {
+                    return -1;
+                }
+                else if (level1 > level2)
+                {
+                    return 1;
+                }
+
+                //These are the same level, look at the names.
+                int resp = string.Compare(name1, name2, StringComparison.OrdinalIgnoreCase);
+                //We're going to change the return values here to only -1, 0, and 1.
+                if (resp < 0)
+                {
+                    return -1;
+                }
+                else if (resp > 0)
+                {
+                    return 1;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            else
+            {
+                //We don't have support for sorting by this column.
+                //Just let the default stuff deal with it.
+
+                //Complain to a log file?
+                return -2;
+            }
+        }
 
         //Displays the provided spell in the inputs.
         private void DisplaySpell(Spell spell)
@@ -238,6 +310,8 @@ namespace Simple_Dice_Roller
             DisplaySpell(spell);
         }
 
+
+
         #region Functions triggered by the form
 
         //A row in the assigned spells list was just clicked.
@@ -271,6 +345,62 @@ namespace Simple_Dice_Roller
             }
 
             SelectSpell(id);
+        }
+
+        //Handles the sorting for the assigned spells list.
+        private void AssignedSpellsList_SortCompare(object sender, DataGridViewSortCompareEventArgs e)
+        {
+            //Figure out which column we're sorting by.
+            int colIndex = e.Column.Index;
+            string colName = AssignedSpellsList.Columns[colIndex].Name;
+
+            //Get the relevant info from the two rows being compared.
+            //We can just load this from the grid, no need to look up spell objects.
+            int index1 = e.RowIndex1;
+            int index2 = e.RowIndex2;
+
+            int level1;
+            int level2;
+            string name1;
+            string name2;
+
+            try
+            {
+                level1 = Int32.Parse(AssignedSpellsList.Rows[index1].Cells["Assigned_Level"].Value.ToString());
+                level2 = Int32.Parse(AssignedSpellsList.Rows[index2].Cells["Assigned_Level"].Value.ToString());
+                name1 = AssignedSpellsList.Rows[index1].Cells["Assigned_Name"].Value.ToString();
+                name2 = AssignedSpellsList.Rows[index2].Cells["Assigned_Name"].Value.ToString();
+            }
+            catch
+            {
+                //We can't find the info, so this can't do it's thing.
+                e.Handled = false;
+                return;
+            }
+
+            string col = "Name";
+            if (colName == "Assigned_Name")
+            {
+                col = "Name";
+            } else if (colName == "Assigned_Level")
+            {
+                col = "Level";
+            }
+
+            //Now we compare the columns.
+            int resp = CompareForSorting(col, name1, level1, name2, level2);
+            if (resp == -2)
+            {
+                //Something went wrong and we don't have a result.
+                //Just let the default sorting handle it.
+                e.Handled = false;
+            }
+            else
+            {
+                //We have a result, pass it along.
+                e.Handled = true;
+                e.SortResult = resp;
+            }
         }
 
         //Add the currently selected spell to the character.
@@ -466,6 +596,66 @@ namespace Simple_Dice_Roller
             SelectSpell(id);
         }
 
+        //Handles the custom sorting.
+        //We want ties broken by name when sorting by level.
+        //Toss in something to break ties by level when sorting by name, just in case some idiot duplicates a spell name.
+        private void SpellsLibraryList_SortCompare(object sender, DataGridViewSortCompareEventArgs e)
+        {
+            //Figure out which column we're sorting by.
+            int colIndex = e.Column.Index;
+            string colName = SpellsLibraryList.Columns[colIndex].Name;
+
+            //Get the relevant info from the two rows being compared.
+            //We can just load this from the grid, no need to look up spell objects.
+            int index1 = e.RowIndex1;
+            int index2 = e.RowIndex2;
+
+            int level1;
+            int level2;
+            string name1;
+            string name2;
+
+            try
+            {
+                level1 = Int32.Parse(SpellsLibraryList.Rows[index1].Cells["Library_Level"].Value.ToString());
+                level2 = Int32.Parse(SpellsLibraryList.Rows[index2].Cells["Library_Level"].Value.ToString());
+                name1 = SpellsLibraryList.Rows[index1].Cells["Library_Name"].Value.ToString();
+                name2 = SpellsLibraryList.Rows[index2].Cells["Library_Name"].Value.ToString();
+            }
+            catch
+            {
+                //We can't find the info, so this can't do it's thing.
+                e.Handled = false;
+                return;
+            }
+
+            string col = "Name";
+            if (colName == "Library_Name")
+            {
+                col = "Name";
+            }
+            else if (colName == "Library_Level")
+            {
+                col = "Level";
+            }
+
+            //Now we compare the columns.
+            int resp = CompareForSorting(col, name1, level1, name2, level2);
+            if (resp == -2)
+            {
+                //Something went wrong and we don't have a result.
+                //Just let the default sorting handle it.
+                e.Handled = false;
+            }
+            else
+            {
+                //We have a result, pass it along.
+                e.Handled = true;
+                e.SortResult = resp;
+            }
+        }
+
         #endregion
+
     }
 }

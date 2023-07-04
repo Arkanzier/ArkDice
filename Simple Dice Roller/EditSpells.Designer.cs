@@ -78,6 +78,7 @@
             // 
             // SpellsLibraryList
             // 
+            SpellsLibraryList.AllowUserToAddRows = false;
             SpellsLibraryList.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             SpellsLibraryList.Columns.AddRange(new DataGridViewColumn[] { Library_ID, Library_Name, Library_Level });
             SpellsLibraryList.EditMode = DataGridViewEditMode.EditProgrammatically;
@@ -89,6 +90,7 @@
             SpellsLibraryList.Size = new Size(390, 423);
             SpellsLibraryList.TabIndex = 0;
             SpellsLibraryList.SelectionChanged += SpellsLibraryList_SelectionChanged;
+            SpellsLibraryList.SortCompare += SpellsLibraryList_SortCompare;
             // 
             // Library_ID
             // 
@@ -126,6 +128,7 @@
             // 
             // AssignedSpellsList
             // 
+            AssignedSpellsList.AllowUserToAddRows = false;
             AssignedSpellsList.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             AssignedSpellsList.Columns.AddRange(new DataGridViewColumn[] { Assigned_ID, Assigned_Name, Assigned_Level });
             AssignedSpellsList.EditMode = DataGridViewEditMode.EditProgrammatically;
@@ -137,6 +140,7 @@
             AssignedSpellsList.Size = new Size(380, 423);
             AssignedSpellsList.TabIndex = 3;
             AssignedSpellsList.SelectionChanged += AssignedSpellsList_SelectionChanged;
+            AssignedSpellsList.SortCompare += AssignedSpellsList_SortCompare;
             // 
             // Assigned_ID
             // 

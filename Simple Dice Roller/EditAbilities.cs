@@ -166,6 +166,12 @@ namespace Simple_Dice_Roller
             return ret;
         }
 
+        //
+        private void SelectAbility ()
+        {
+            //to do
+        }
+
 
         #region Functions triggered by the form
 
