@@ -181,7 +181,7 @@ namespace Simple_Dice_Roller
                 string fileContents = File.ReadAllText(filepath);
                 try
                 {
-                   Dictionary<string,Ability>? temp = JsonSerializer.Deserialize<Dictionary<string,Ability>>(fileContents);
+                    Dictionary<string, Ability>? temp = JsonSerializer.Deserialize<Dictionary<string, Ability>>(fileContents);
 
                     if (temp == null)
                     {
@@ -220,7 +220,7 @@ namespace Simple_Dice_Roller
                 string fileContents = File.ReadAllText(filepath);
                 try
                 {
-                    Dictionary<string,Spell>? temp = JsonSerializer.Deserialize<Dictionary<string,Spell>>(fileContents);
+                    Dictionary<string, Spell>? temp = JsonSerializer.Deserialize<Dictionary<string, Spell>>(fileContents);
 
                     if (temp == null)
                     {
@@ -280,7 +280,7 @@ namespace Simple_Dice_Roller
                 }
 
                 //Now we can move the old one into the backup folder.
-                File.Move (filepath, backupFilepath);
+                File.Move(filepath, backupFilepath);
             }
 
             //Save the new info to the file.
@@ -288,7 +288,7 @@ namespace Simple_Dice_Roller
             {
                 WriteIndented = true
             };
-            string data = JsonSerializer.Serialize (AbilitiesLibrary, serializerOptions);
+            string data = JsonSerializer.Serialize(AbilitiesLibrary, serializerOptions);
             File.WriteAllText(filepath, data);
             if (File.Exists(filepath))
             {
@@ -778,7 +778,7 @@ namespace Simple_Dice_Roller
         }
 
         //Removes the specified spell from the library.
-        public void RemoveSpell (string id)
+        public void RemoveSpell(string id)
         {
             //Make sure the ability is in the abilities library.
             if (SpellsLibrary.ContainsKey(id))
@@ -796,7 +796,7 @@ namespace Simple_Dice_Roller
         }
 
         //Takes an updated version of an ability and puts it into the abilities library and the loaded character (as appropriate).
-        public void SaveUpdatedAbility (Ability ability)
+        public void SaveUpdatedAbility(Ability ability)
         {
             string id = ability.ID;
 
@@ -804,7 +804,8 @@ namespace Simple_Dice_Roller
             if (AbilitiesLibrary.ContainsKey(id))
             {
                 AbilitiesLibrary[id] = ability;
-            } else
+            }
+            else
             {
                 AbilitiesLibrary.Add(id, ability);
             }
@@ -1122,6 +1123,8 @@ namespace Simple_Dice_Roller
             DisplayAbilities(character);
 
             DisplaySpells(character);
+
+            DisplaySpellSlots();
 
             //Generic abilities
             BasicAbilitiesArea.Rows.Clear();
@@ -1464,6 +1467,7 @@ namespace Simple_Dice_Roller
             if (colName == "Recharge_Button")
             {
                 LoadedCharacter.RechargeAbilities(rechargeCondition);
+                LoadedCharacter.RechargeSpellSlots(rechargeCondition);
             }
 
             DisplayClassList(LoadedCharacter);
@@ -1755,6 +1759,34 @@ namespace Simple_Dice_Roller
         #endregion
 
         //-------- -------- -------- -------- -------- -------- -------- -------- 
+
+        #region Magic Tab: Spell Slots
+
+        private void DisplaySpellSlots()
+        {
+            SpellSlotsList.Rows.Clear();
+
+            for (int a = 1; a <= 9; a++)
+            {
+                //Standard slots first.
+                if (LoadedCharacter.SpellSlotsMax[a] > 0)
+                {
+                    string usesString = LoadedCharacter.SpellSlotsCurrent[a].ToString() + " / " + LoadedCharacter.SpellSlotsMax[a].ToString();
+                    SpellSlotsList.Rows.Add(a, "Standard", usesString, "+1", "-1");
+                }
+
+                //Warlock slots second.
+                if (a <= 5 && LoadedCharacter.SpellSlotsWarlockMax[a] > 0)
+                {
+                    string usesString = LoadedCharacter.SpellSlotsWarlockCurrent[a].ToString() + " / " + LoadedCharacter.SpellSlotsWarlockMax[a].ToString();
+                    SpellSlotsList.Rows.Add(a, "Warlock", usesString, "+1", "-1");
+                }
+            }
+
+            return;
+        }
+
+        #endregion
 
         #region Magic Tab: Spells List
 

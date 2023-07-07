@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle4 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
             rollDice = new Button();
             outputTotal = new Label();
             diceStringBox = new TextBox();
@@ -202,6 +202,12 @@
             Abilities_Plus1Col = new DataGridViewButtonColumn();
             Abilities_Minus1Col = new DataGridViewButtonColumn();
             MagicTab = new TabPage();
+            SpellSlotsList = new DataGridView();
+            SpellSlots_Level = new DataGridViewTextBoxColumn();
+            SpellSlots_RestType = new DataGridViewTextBoxColumn();
+            SpellSlots_Uses = new DataGridViewTextBoxColumn();
+            SpellSlots_PlusOne = new DataGridViewTextBoxColumn();
+            SpellSlots_MinusOne = new DataGridViewTextBoxColumn();
             SpellsArea = new DataGridView();
             Spells_NumberCol = new DataGridViewTextBoxColumn();
             Spells_IDCol = new DataGridViewTextBoxColumn();
@@ -227,6 +233,8 @@
             Button_EditChar = new Button();
             Button_EditAbilities = new Button();
             Button_EditSpells = new Button();
+            label1 = new Label();
+            label2 = new Label();
             MainTabArea.SuspendLayout();
             DiceTab.SuspendLayout();
             CharacterTab.SuspendLayout();
@@ -236,6 +244,7 @@
             AbilitiesTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)AbilitiesArea).BeginInit();
             MagicTab.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)SpellSlotsList).BeginInit();
             ((System.ComponentModel.ISupportInitialize)SpellsArea).BeginInit();
             SuspendLayout();
             // 
@@ -2002,14 +2011,14 @@
             AbilitiesArea.AllowUserToDeleteRows = false;
             AbilitiesArea.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             AbilitiesArea.Columns.AddRange(new DataGridViewColumn[] { Abilities_NumberCol, Abilities_IDCol, Abilities_NameCol, Abilities_TextCol, Abilities_RechargeCol, Abilities_DiceCol, Abilities_UsesCol, Abilities_ChangeCol, Abilities_UseButtonCol, Abilities_Plus1Col, Abilities_Minus1Col });
-            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.TopLeft;
-            dataGridViewCellStyle1.BackColor = SystemColors.Window;
-            dataGridViewCellStyle1.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            dataGridViewCellStyle1.ForeColor = SystemColors.ControlText;
-            dataGridViewCellStyle1.SelectionBackColor = SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = DataGridViewTriState.False;
-            AbilitiesArea.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.TopLeft;
+            dataGridViewCellStyle4.BackColor = SystemColors.Window;
+            dataGridViewCellStyle4.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            dataGridViewCellStyle4.ForeColor = SystemColors.ControlText;
+            dataGridViewCellStyle4.SelectionBackColor = SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = DataGridViewTriState.False;
+            AbilitiesArea.DefaultCellStyle = dataGridViewCellStyle4;
             AbilitiesArea.EditMode = DataGridViewEditMode.EditProgrammatically;
             AbilitiesArea.Location = new Point(6, 6);
             AbilitiesArea.MultiSelect = false;
@@ -2106,6 +2115,9 @@
             // 
             // MagicTab
             // 
+            MagicTab.Controls.Add(label2);
+            MagicTab.Controls.Add(label1);
+            MagicTab.Controls.Add(SpellSlotsList);
             MagicTab.Controls.Add(SpellsArea);
             MagicTab.Controls.Add(label7);
             MagicTab.Location = new Point(4, 24);
@@ -2116,6 +2128,50 @@
             MagicTab.Text = "Magic";
             MagicTab.UseVisualStyleBackColor = true;
             // 
+            // SpellSlotsList
+            // 
+            SpellSlotsList.AllowUserToAddRows = false;
+            SpellSlotsList.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            SpellSlotsList.Columns.AddRange(new DataGridViewColumn[] { SpellSlots_Level, SpellSlots_RestType, SpellSlots_Uses, SpellSlots_PlusOne, SpellSlots_MinusOne });
+            SpellSlotsList.EditMode = DataGridViewEditMode.EditProgrammatically;
+            SpellSlotsList.Location = new Point(6, 6);
+            SpellSlotsList.Name = "SpellSlotsList";
+            SpellSlotsList.RowTemplate.Height = 25;
+            SpellSlotsList.Size = new Size(418, 101);
+            SpellSlotsList.TabIndex = 2;
+            // 
+            // SpellSlots_Level
+            // 
+            SpellSlots_Level.HeaderText = "Level";
+            SpellSlots_Level.Name = "SpellSlots_Level";
+            SpellSlots_Level.SortMode = DataGridViewColumnSortMode.NotSortable;
+            SpellSlots_Level.Width = 50;
+            // 
+            // SpellSlots_RestType
+            // 
+            SpellSlots_RestType.HeaderText = "Type";
+            SpellSlots_RestType.Name = "SpellSlots_RestType";
+            SpellSlots_RestType.SortMode = DataGridViewColumnSortMode.NotSortable;
+            // 
+            // SpellSlots_Uses
+            // 
+            SpellSlots_Uses.HeaderText = "Uses";
+            SpellSlots_Uses.Name = "SpellSlots_Uses";
+            SpellSlots_Uses.SortMode = DataGridViewColumnSortMode.NotSortable;
+            SpellSlots_Uses.Width = 75;
+            // 
+            // SpellSlots_PlusOne
+            // 
+            SpellSlots_PlusOne.HeaderText = "+1";
+            SpellSlots_PlusOne.Name = "SpellSlots_PlusOne";
+            SpellSlots_PlusOne.Width = 50;
+            // 
+            // SpellSlots_MinusOne
+            // 
+            SpellSlots_MinusOne.HeaderText = "-1";
+            SpellSlots_MinusOne.Name = "SpellSlots_MinusOne";
+            SpellSlots_MinusOne.Width = 50;
+            // 
             // SpellsArea
             // 
             SpellsArea.AllowUserToAddRows = false;
@@ -2123,14 +2179,14 @@
             SpellsArea.AllowUserToOrderColumns = true;
             SpellsArea.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             SpellsArea.Columns.AddRange(new DataGridViewColumn[] { Spells_NumberCol, Spells_IDCol, Spells_NameCol, Spells_LevelCol, Spells_SchoolCol, Spells_RangeCol, Spells_DurationCol, Spells_ConcentrationCol, Spells_VocalCol, Spells_SomaticCol, Spells_MaterialCol, Spells_ActionCol, Spells_DescriptionCol, Spells_UpcastingBenefitCol, Spells_CastCol, Spells_UpcastCol, Spells_BookCol, Spells_PageCol });
-            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.TopLeft;
-            dataGridViewCellStyle2.BackColor = SystemColors.Window;
-            dataGridViewCellStyle2.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            dataGridViewCellStyle2.ForeColor = SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = DataGridViewTriState.False;
-            SpellsArea.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle3.Alignment = DataGridViewContentAlignment.TopLeft;
+            dataGridViewCellStyle3.BackColor = SystemColors.Window;
+            dataGridViewCellStyle3.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            dataGridViewCellStyle3.ForeColor = SystemColors.ControlText;
+            dataGridViewCellStyle3.SelectionBackColor = SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = DataGridViewTriState.False;
+            SpellsArea.DefaultCellStyle = dataGridViewCellStyle3;
             SpellsArea.EditMode = DataGridViewEditMode.EditProgrammatically;
             SpellsArea.Location = new Point(6, 113);
             SpellsArea.MultiSelect = false;
@@ -2288,11 +2344,11 @@
             // label7
             // 
             label7.AutoSize = true;
-            label7.Location = new Point(121, 14);
+            label7.Location = new Point(576, 3);
             label7.Name = "label7";
-            label7.Size = new Size(102, 15);
+            label7.Size = new Size(50, 15);
             label7.TabIndex = 0;
-            label7.Text = "Spell slots go here";
+            label7.Text = "Save DC";
             // 
             // Button_SaveCharacter
             // 
@@ -2344,6 +2400,24 @@
             Button_EditSpells.UseVisualStyleBackColor = true;
             Button_EditSpells.Click += Button_EditSpells_Click;
             // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(512, 38);
+            label1.Name = "label1";
+            label1.Size = new Size(144, 15);
+            label1.TabIndex = 3;
+            label1.Text = "Button to roll spell attack?";
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new Point(532, 67);
+            label2.Name = "label2";
+            label2.Size = new Size(177, 15);
+            label2.TabIndex = 4;
+            label2.Text = "Button to roll caster level check?";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -2369,6 +2443,7 @@
             ((System.ComponentModel.ISupportInitialize)AbilitiesArea).EndInit();
             MagicTab.ResumeLayout(false);
             MagicTab.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)SpellSlotsList).EndInit();
             ((System.ComponentModel.ISupportInitialize)SpellsArea).EndInit();
             ResumeLayout(false);
             PerformLayout();
@@ -2573,5 +2648,13 @@
         private Button Button_EditChar;
         private Button Button_EditAbilities;
         private Button Button_EditSpells;
+        private DataGridView SpellSlotsList;
+        private DataGridViewTextBoxColumn SpellSlots_Level;
+        private DataGridViewTextBoxColumn SpellSlots_RestType;
+        private DataGridViewTextBoxColumn SpellSlots_Uses;
+        private DataGridViewTextBoxColumn SpellSlots_PlusOne;
+        private DataGridViewTextBoxColumn SpellSlots_MinusOne;
+        private Label label1;
+        private Label label2;
     }
 }

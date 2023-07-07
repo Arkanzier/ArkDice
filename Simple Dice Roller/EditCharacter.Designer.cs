@@ -110,10 +110,42 @@
             Label_WisSkills = new Label();
             Label_ProfBonusBonus = new Label();
             Input_ProfBonusBonus = new TextBox();
+            Wrapper_StandardSlots = new GroupBox();
+            Label_StandardSlots1 = new Label();
+            Input_StandardSlots1 = new TextBox();
+            Input_StandardSlots2 = new TextBox();
+            Label_StandardSlots2 = new Label();
+            Input_StandardSlots3 = new TextBox();
+            Label_StandardSlots3 = new Label();
+            Input_StandardSlots4 = new TextBox();
+            Label_StandardSlots4 = new Label();
+            Input_StandardSlots5 = new TextBox();
+            Label_StandardSlots5 = new Label();
+            Input_StandardSlots6 = new TextBox();
+            Label_StandardSlots6 = new Label();
+            Input_StandardSlots7 = new TextBox();
+            Label_StandardSlots7 = new Label();
+            Input_StandardSlots8 = new TextBox();
+            Label_StandardSlots8 = new Label();
+            Input_StandardSlots9 = new TextBox();
+            Label_StandardSlots9 = new Label();
+            Wrapper_WarlockSlots = new GroupBox();
+            Input_WarlockSlots5 = new TextBox();
+            Label_WarlockSlots5 = new Label();
+            Input_WarlockSlots4 = new TextBox();
+            Label_WarlockSlots4 = new Label();
+            Input_WarlockSlots3 = new TextBox();
+            Label_WarlockSlots3 = new Label();
+            Input_WarlockSlots2 = new TextBox();
+            Label_WarlockSlots2 = new Label();
+            Input_WarlockSlots1 = new TextBox();
+            Label_WarlockSlots1 = new Label();
             Wrapper_BasicAttributes.SuspendLayout();
             Wrapper_Stats.SuspendLayout();
             Wrapper_SaveProfs.SuspendLayout();
             Wrapper_SkillProfs.SuspendLayout();
+            Wrapper_StandardSlots.SuspendLayout();
+            Wrapper_WarlockSlots.SuspendLayout();
             SuspendLayout();
             // 
             // Label_Strength
@@ -642,7 +674,7 @@
             // Label_ChaSkills
             // 
             Label_ChaSkills.AutoSize = true;
-            Label_ChaSkills.Location = new Point(259, 192);
+            Label_ChaSkills.Location = new Point(312, 192);
             Label_ChaSkills.Name = "Label_ChaSkills";
             Label_ChaSkills.Size = new Size(57, 15);
             Label_ChaSkills.TabIndex = 18;
@@ -832,7 +864,7 @@
             // Label_StrSkills
             // 
             Label_StrSkills.AutoSize = true;
-            Label_StrSkills.Location = new Point(6, 19);
+            Label_StrSkills.Location = new Point(64, 19);
             Label_StrSkills.Name = "Label_StrSkills";
             Label_StrSkills.Size = new Size(52, 15);
             Label_StrSkills.TabIndex = 0;
@@ -842,7 +874,7 @@
             // Label_DexSkills
             // 
             Label_DexSkills.AutoSize = true;
-            Label_DexSkills.Location = new Point(6, 74);
+            Label_DexSkills.Location = new Point(62, 77);
             Label_DexSkills.Name = "Label_DexSkills";
             Label_DexSkills.Size = new Size(54, 15);
             Label_DexSkills.TabIndex = 3;
@@ -851,7 +883,7 @@
             // Label_IntSaves
             // 
             Label_IntSaves.AutoSize = true;
-            Label_IntSaves.Location = new Point(6, 192);
+            Label_IntSaves.Location = new Point(48, 192);
             Label_IntSaves.Name = "Label_IntSaves";
             Label_IntSaves.Size = new Size(68, 15);
             Label_IntSaves.TabIndex = 6;
@@ -860,7 +892,7 @@
             // Label_WisSkills
             // 
             Label_WisSkills.AutoSize = true;
-            Label_WisSkills.Location = new Point(259, 23);
+            Label_WisSkills.Location = new Point(318, 19);
             Label_WisSkills.Name = "Label_WisSkills";
             Label_WisSkills.Size = new Size(51, 15);
             Label_WisSkills.TabIndex = 12;
@@ -882,11 +914,283 @@
             Input_ProfBonusBonus.Size = new Size(100, 23);
             Input_ProfBonusBonus.TabIndex = 22;
             // 
+            // Wrapper_StandardSlots
+            // 
+            Wrapper_StandardSlots.Controls.Add(Input_StandardSlots9);
+            Wrapper_StandardSlots.Controls.Add(Label_StandardSlots9);
+            Wrapper_StandardSlots.Controls.Add(Input_StandardSlots8);
+            Wrapper_StandardSlots.Controls.Add(Label_StandardSlots8);
+            Wrapper_StandardSlots.Controls.Add(Input_StandardSlots7);
+            Wrapper_StandardSlots.Controls.Add(Label_StandardSlots7);
+            Wrapper_StandardSlots.Controls.Add(Input_StandardSlots6);
+            Wrapper_StandardSlots.Controls.Add(Label_StandardSlots6);
+            Wrapper_StandardSlots.Controls.Add(Input_StandardSlots5);
+            Wrapper_StandardSlots.Controls.Add(Label_StandardSlots5);
+            Wrapper_StandardSlots.Controls.Add(Input_StandardSlots4);
+            Wrapper_StandardSlots.Controls.Add(Label_StandardSlots4);
+            Wrapper_StandardSlots.Controls.Add(Input_StandardSlots3);
+            Wrapper_StandardSlots.Controls.Add(Label_StandardSlots3);
+            Wrapper_StandardSlots.Controls.Add(Input_StandardSlots2);
+            Wrapper_StandardSlots.Controls.Add(Label_StandardSlots2);
+            Wrapper_StandardSlots.Controls.Add(Input_StandardSlots1);
+            Wrapper_StandardSlots.Controls.Add(Label_StandardSlots1);
+            Wrapper_StandardSlots.Location = new Point(12, 510);
+            Wrapper_StandardSlots.Name = "Wrapper_StandardSlots";
+            Wrapper_StandardSlots.Size = new Size(237, 172);
+            Wrapper_StandardSlots.TabIndex = 23;
+            Wrapper_StandardSlots.TabStop = false;
+            Wrapper_StandardSlots.Text = "Standard Spell Slots";
+            // 
+            // Label_StandardSlots1
+            // 
+            Label_StandardSlots1.AutoSize = true;
+            Label_StandardSlots1.Location = new Point(4, 25);
+            Label_StandardSlots1.Name = "Label_StandardSlots1";
+            Label_StandardSlots1.Size = new Size(43, 15);
+            Label_StandardSlots1.TabIndex = 0;
+            Label_StandardSlots1.Text = "Level 1";
+            // 
+            // Input_StandardSlots1
+            // 
+            Input_StandardSlots1.Location = new Point(53, 22);
+            Input_StandardSlots1.Name = "Input_StandardSlots1";
+            Input_StandardSlots1.Size = new Size(50, 23);
+            Input_StandardSlots1.TabIndex = 1;
+            // 
+            // Input_StandardSlots2
+            // 
+            Input_StandardSlots2.Location = new Point(53, 51);
+            Input_StandardSlots2.Name = "Input_StandardSlots2";
+            Input_StandardSlots2.Size = new Size(50, 23);
+            Input_StandardSlots2.TabIndex = 3;
+            // 
+            // Label_StandardSlots2
+            // 
+            Label_StandardSlots2.AutoSize = true;
+            Label_StandardSlots2.Location = new Point(4, 54);
+            Label_StandardSlots2.Name = "Label_StandardSlots2";
+            Label_StandardSlots2.Size = new Size(43, 15);
+            Label_StandardSlots2.TabIndex = 2;
+            Label_StandardSlots2.Text = "Level 2";
+            // 
+            // Input_StandardSlots3
+            // 
+            Input_StandardSlots3.Location = new Point(53, 80);
+            Input_StandardSlots3.Name = "Input_StandardSlots3";
+            Input_StandardSlots3.Size = new Size(50, 23);
+            Input_StandardSlots3.TabIndex = 5;
+            // 
+            // Label_StandardSlots3
+            // 
+            Label_StandardSlots3.AutoSize = true;
+            Label_StandardSlots3.Location = new Point(4, 83);
+            Label_StandardSlots3.Name = "Label_StandardSlots3";
+            Label_StandardSlots3.Size = new Size(43, 15);
+            Label_StandardSlots3.TabIndex = 4;
+            Label_StandardSlots3.Text = "Level 3";
+            // 
+            // Input_StandardSlots4
+            // 
+            Input_StandardSlots4.Location = new Point(53, 109);
+            Input_StandardSlots4.Name = "Input_StandardSlots4";
+            Input_StandardSlots4.Size = new Size(50, 23);
+            Input_StandardSlots4.TabIndex = 7;
+            // 
+            // Label_StandardSlots4
+            // 
+            Label_StandardSlots4.AutoSize = true;
+            Label_StandardSlots4.Location = new Point(4, 112);
+            Label_StandardSlots4.Name = "Label_StandardSlots4";
+            Label_StandardSlots4.Size = new Size(43, 15);
+            Label_StandardSlots4.TabIndex = 6;
+            Label_StandardSlots4.Text = "Level 4";
+            // 
+            // Input_StandardSlots5
+            // 
+            Input_StandardSlots5.Location = new Point(53, 138);
+            Input_StandardSlots5.Name = "Input_StandardSlots5";
+            Input_StandardSlots5.Size = new Size(50, 23);
+            Input_StandardSlots5.TabIndex = 9;
+            // 
+            // Label_StandardSlots5
+            // 
+            Label_StandardSlots5.AutoSize = true;
+            Label_StandardSlots5.Location = new Point(4, 141);
+            Label_StandardSlots5.Name = "Label_StandardSlots5";
+            Label_StandardSlots5.Size = new Size(43, 15);
+            Label_StandardSlots5.TabIndex = 8;
+            Label_StandardSlots5.Text = "Level 5";
+            // 
+            // Input_StandardSlots6
+            // 
+            Input_StandardSlots6.Location = new Point(172, 22);
+            Input_StandardSlots6.Name = "Input_StandardSlots6";
+            Input_StandardSlots6.Size = new Size(50, 23);
+            Input_StandardSlots6.TabIndex = 11;
+            // 
+            // Label_StandardSlots6
+            // 
+            Label_StandardSlots6.AutoSize = true;
+            Label_StandardSlots6.Location = new Point(123, 25);
+            Label_StandardSlots6.Name = "Label_StandardSlots6";
+            Label_StandardSlots6.Size = new Size(43, 15);
+            Label_StandardSlots6.TabIndex = 10;
+            Label_StandardSlots6.Text = "Level 6";
+            // 
+            // Input_StandardSlots7
+            // 
+            Input_StandardSlots7.Location = new Point(172, 51);
+            Input_StandardSlots7.Name = "Input_StandardSlots7";
+            Input_StandardSlots7.Size = new Size(50, 23);
+            Input_StandardSlots7.TabIndex = 13;
+            // 
+            // Label_StandardSlots7
+            // 
+            Label_StandardSlots7.AutoSize = true;
+            Label_StandardSlots7.Location = new Point(123, 54);
+            Label_StandardSlots7.Name = "Label_StandardSlots7";
+            Label_StandardSlots7.Size = new Size(43, 15);
+            Label_StandardSlots7.TabIndex = 12;
+            Label_StandardSlots7.Text = "Level 7";
+            // 
+            // Input_StandardSlots8
+            // 
+            Input_StandardSlots8.Location = new Point(172, 80);
+            Input_StandardSlots8.Name = "Input_StandardSlots8";
+            Input_StandardSlots8.Size = new Size(50, 23);
+            Input_StandardSlots8.TabIndex = 15;
+            // 
+            // Label_StandardSlots8
+            // 
+            Label_StandardSlots8.AutoSize = true;
+            Label_StandardSlots8.Location = new Point(123, 83);
+            Label_StandardSlots8.Name = "Label_StandardSlots8";
+            Label_StandardSlots8.Size = new Size(43, 15);
+            Label_StandardSlots8.TabIndex = 14;
+            Label_StandardSlots8.Text = "Level 8";
+            // 
+            // Input_StandardSlots9
+            // 
+            Input_StandardSlots9.Location = new Point(172, 109);
+            Input_StandardSlots9.Name = "Input_StandardSlots9";
+            Input_StandardSlots9.Size = new Size(50, 23);
+            Input_StandardSlots9.TabIndex = 17;
+            // 
+            // Label_StandardSlots9
+            // 
+            Label_StandardSlots9.AutoSize = true;
+            Label_StandardSlots9.Location = new Point(123, 112);
+            Label_StandardSlots9.Name = "Label_StandardSlots9";
+            Label_StandardSlots9.Size = new Size(43, 15);
+            Label_StandardSlots9.TabIndex = 16;
+            Label_StandardSlots9.Text = "Level 9";
+            // 
+            // Wrapper_WarlockSlots
+            // 
+            Wrapper_WarlockSlots.Controls.Add(Input_WarlockSlots5);
+            Wrapper_WarlockSlots.Controls.Add(Label_WarlockSlots1);
+            Wrapper_WarlockSlots.Controls.Add(Label_WarlockSlots5);
+            Wrapper_WarlockSlots.Controls.Add(Input_WarlockSlots1);
+            Wrapper_WarlockSlots.Controls.Add(Input_WarlockSlots4);
+            Wrapper_WarlockSlots.Controls.Add(Label_WarlockSlots2);
+            Wrapper_WarlockSlots.Controls.Add(Label_WarlockSlots4);
+            Wrapper_WarlockSlots.Controls.Add(Input_WarlockSlots2);
+            Wrapper_WarlockSlots.Controls.Add(Input_WarlockSlots3);
+            Wrapper_WarlockSlots.Controls.Add(Label_WarlockSlots3);
+            Wrapper_WarlockSlots.Location = new Point(261, 513);
+            Wrapper_WarlockSlots.Name = "Wrapper_WarlockSlots";
+            Wrapper_WarlockSlots.Size = new Size(126, 169);
+            Wrapper_WarlockSlots.TabIndex = 24;
+            Wrapper_WarlockSlots.TabStop = false;
+            Wrapper_WarlockSlots.Text = "Warlock Spell Slots";
+            // 
+            // Input_WarlockSlots5
+            // 
+            Input_WarlockSlots5.Location = new Point(60, 135);
+            Input_WarlockSlots5.Name = "Input_WarlockSlots5";
+            Input_WarlockSlots5.Size = new Size(50, 23);
+            Input_WarlockSlots5.TabIndex = 27;
+            // 
+            // Label_WarlockSlots5
+            // 
+            Label_WarlockSlots5.AutoSize = true;
+            Label_WarlockSlots5.Location = new Point(11, 138);
+            Label_WarlockSlots5.Name = "Label_WarlockSlots5";
+            Label_WarlockSlots5.Size = new Size(43, 15);
+            Label_WarlockSlots5.TabIndex = 26;
+            Label_WarlockSlots5.Text = "Level 5";
+            // 
+            // Input_WarlockSlots4
+            // 
+            Input_WarlockSlots4.Location = new Point(60, 106);
+            Input_WarlockSlots4.Name = "Input_WarlockSlots4";
+            Input_WarlockSlots4.Size = new Size(50, 23);
+            Input_WarlockSlots4.TabIndex = 25;
+            // 
+            // Label_WarlockSlots4
+            // 
+            Label_WarlockSlots4.AutoSize = true;
+            Label_WarlockSlots4.Location = new Point(11, 109);
+            Label_WarlockSlots4.Name = "Label_WarlockSlots4";
+            Label_WarlockSlots4.Size = new Size(43, 15);
+            Label_WarlockSlots4.TabIndex = 24;
+            Label_WarlockSlots4.Text = "Level 4";
+            // 
+            // Input_WarlockSlots3
+            // 
+            Input_WarlockSlots3.Location = new Point(60, 77);
+            Input_WarlockSlots3.Name = "Input_WarlockSlots3";
+            Input_WarlockSlots3.Size = new Size(50, 23);
+            Input_WarlockSlots3.TabIndex = 23;
+            // 
+            // Label_WarlockSlots3
+            // 
+            Label_WarlockSlots3.AutoSize = true;
+            Label_WarlockSlots3.Location = new Point(11, 80);
+            Label_WarlockSlots3.Name = "Label_WarlockSlots3";
+            Label_WarlockSlots3.Size = new Size(43, 15);
+            Label_WarlockSlots3.TabIndex = 22;
+            Label_WarlockSlots3.Text = "Level 3";
+            // 
+            // Input_WarlockSlots2
+            // 
+            Input_WarlockSlots2.Location = new Point(60, 48);
+            Input_WarlockSlots2.Name = "Input_WarlockSlots2";
+            Input_WarlockSlots2.Size = new Size(50, 23);
+            Input_WarlockSlots2.TabIndex = 21;
+            // 
+            // Label_WarlockSlots2
+            // 
+            Label_WarlockSlots2.AutoSize = true;
+            Label_WarlockSlots2.Location = new Point(11, 51);
+            Label_WarlockSlots2.Name = "Label_WarlockSlots2";
+            Label_WarlockSlots2.Size = new Size(43, 15);
+            Label_WarlockSlots2.TabIndex = 20;
+            Label_WarlockSlots2.Text = "Level 2";
+            // 
+            // Input_WarlockSlots1
+            // 
+            Input_WarlockSlots1.Location = new Point(60, 19);
+            Input_WarlockSlots1.Name = "Input_WarlockSlots1";
+            Input_WarlockSlots1.Size = new Size(50, 23);
+            Input_WarlockSlots1.TabIndex = 19;
+            // 
+            // Label_WarlockSlots1
+            // 
+            Label_WarlockSlots1.AutoSize = true;
+            Label_WarlockSlots1.Location = new Point(11, 22);
+            Label_WarlockSlots1.Name = "Label_WarlockSlots1";
+            Label_WarlockSlots1.Size = new Size(43, 15);
+            Label_WarlockSlots1.TabIndex = 18;
+            Label_WarlockSlots1.Text = "Level 1";
+            // 
             // EditCharacter
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(799, 701);
+            Controls.Add(Wrapper_WarlockSlots);
+            Controls.Add(Wrapper_StandardSlots);
             Controls.Add(Input_ProfBonusBonus);
             Controls.Add(Label_ProfBonusBonus);
             Controls.Add(Wrapper_SkillProfs);
@@ -907,6 +1211,10 @@
             Wrapper_SaveProfs.PerformLayout();
             Wrapper_SkillProfs.ResumeLayout(false);
             Wrapper_SkillProfs.PerformLayout();
+            Wrapper_StandardSlots.ResumeLayout(false);
+            Wrapper_StandardSlots.PerformLayout();
+            Wrapper_WarlockSlots.ResumeLayout(false);
+            Wrapper_WarlockSlots.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -995,5 +1303,35 @@
         private ComboBox Input_Insight;
         private Label Label_ProfBonusBonus;
         private TextBox Input_ProfBonusBonus;
+        private GroupBox Wrapper_StandardSlots;
+        private TextBox Input_StandardSlots1;
+        private Label Label_StandardSlots1;
+        private TextBox Input_StandardSlots2;
+        private Label Label_StandardSlots2;
+        private TextBox Input_StandardSlots9;
+        private Label Label_StandardSlots9;
+        private TextBox Input_StandardSlots8;
+        private Label Label_StandardSlots8;
+        private TextBox Input_StandardSlots7;
+        private Label Label_StandardSlots7;
+        private TextBox Input_StandardSlots6;
+        private Label Label_StandardSlots6;
+        private TextBox Input_StandardSlots5;
+        private Label Label_StandardSlots5;
+        private TextBox Input_StandardSlots4;
+        private Label Label_StandardSlots4;
+        private TextBox Input_StandardSlots3;
+        private Label Label_StandardSlots3;
+        private GroupBox Wrapper_WarlockSlots;
+        private TextBox Input_WarlockSlots5;
+        private Label Label_WarlockSlots1;
+        private Label Label_WarlockSlots5;
+        private TextBox Input_WarlockSlots1;
+        private TextBox Input_WarlockSlots4;
+        private Label Label_WarlockSlots2;
+        private Label Label_WarlockSlots4;
+        private TextBox Input_WarlockSlots2;
+        private TextBox Input_WarlockSlots3;
+        private Label Label_WarlockSlots3;
     }
 }

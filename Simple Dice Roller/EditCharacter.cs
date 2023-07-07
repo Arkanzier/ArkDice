@@ -133,7 +133,6 @@ namespace Simple_Dice_Roller
             Input_Performance.Items.AddRange(ProficiencyLevelStrings);
             Input_Persuasion.Items.AddRange(ProficiencyLevelStrings);
 
-            //i need a GetSkillProf function in Character
             SetProfDropdown(EditingCharacter.GetSkillProf("Athletics"), Input_Athletics);
             SetProfDropdown(EditingCharacter.GetSkillProf("Acrobatics"), Input_Acrobatics);
             SetProfDropdown(EditingCharacter.GetSkillProf("SleightOfHand"), Input_SleightOfHand);
@@ -154,6 +153,22 @@ namespace Simple_Dice_Roller
             SetProfDropdown(EditingCharacter.GetSkillProf("Persuasion"), Input_Persuasion);
 
             Input_ProfBonusBonus.Text = EditingCharacter.BonusToProf.ToString();
+
+            //Spell slots
+            Input_StandardSlots1.Text = EditingCharacter.GetSpellSlotsForLevel(1, false, "standard").ToString();
+            Input_StandardSlots2.Text = EditingCharacter.GetSpellSlotsForLevel(2, false, "standard").ToString();
+            Input_StandardSlots3.Text = EditingCharacter.GetSpellSlotsForLevel(3, false, "standard").ToString();
+            Input_StandardSlots4.Text = EditingCharacter.GetSpellSlotsForLevel(4, false, "standard").ToString();
+            Input_StandardSlots5.Text = EditingCharacter.GetSpellSlotsForLevel(5, false, "standard").ToString();
+            Input_StandardSlots6.Text = EditingCharacter.GetSpellSlotsForLevel(6, false, "standard").ToString();
+            Input_StandardSlots7.Text = EditingCharacter.GetSpellSlotsForLevel(7, false, "standard").ToString();
+            Input_StandardSlots8.Text = EditingCharacter.GetSpellSlotsForLevel(8, false, "standard").ToString();
+            Input_StandardSlots9.Text = EditingCharacter.GetSpellSlotsForLevel(9, false, "standard").ToString();
+            Input_WarlockSlots1.Text = EditingCharacter.GetSpellSlotsForLevel(1, false, "warlock").ToString();
+            Input_WarlockSlots2.Text = EditingCharacter.GetSpellSlotsForLevel(2, false, "warlock").ToString();
+            Input_WarlockSlots3.Text = EditingCharacter.GetSpellSlotsForLevel(3, false, "warlock").ToString();
+            Input_WarlockSlots4.Text = EditingCharacter.GetSpellSlotsForLevel(4, false, "warlock").ToString();
+            Input_WarlockSlots5.Text = EditingCharacter.GetSpellSlotsForLevel(5, false, "warlock").ToString();
 
             //classes somehow
 
@@ -256,7 +271,23 @@ namespace Simple_Dice_Roller
             changes["Performance"] = GetProfFromDropdown(Input_Performance).ToString();
             changes["Persuasion"] = GetProfFromDropdown(Input_Persuasion).ToString();
 
-            changes["ProfBonusBonus"] = Input_ProfBonusBonus.ToString();
+            changes["ProfBonusBonus"] = Input_ProfBonusBonus.Text;
+
+            changes["SpellsLvl1"] = Input_StandardSlots1.Text;
+            changes["SpellsLvl2"] = Input_StandardSlots2.Text;
+            changes["SpellsLvl3"] = Input_StandardSlots3.Text;
+            changes["SpellsLvl4"] = Input_StandardSlots4.Text;
+            changes["SpellsLvl5"] = Input_StandardSlots5.Text;
+            changes["SpellsLvl6"] = Input_StandardSlots6.Text;
+            changes["SpellsLvl7"] = Input_StandardSlots7.Text;
+            changes["SpellsLvl8"] = Input_StandardSlots8.Text;
+            changes["SpellsLvl9"] = Input_StandardSlots9.Text;
+
+            changes["SpellsWarlockLvl1"] = Input_WarlockSlots1.Text;
+            changes["SpellsWarlockLvl2"] = Input_WarlockSlots2.Text;
+            changes["SpellsWarlockLvl3"] = Input_WarlockSlots3.Text;
+            changes["SpellsWarlockLvl4"] = Input_WarlockSlots4.Text;
+            changes["SpellsWarlockLvl5"] = Input_WarlockSlots5.Text;
 
             //Do some extra error checking?
 

@@ -94,6 +94,13 @@ namespace Character //change to ArkDice?
         //Text describing passive abilities the character has.
         public List<string> Passives { get; set; }
 
+        //The character's spell slots.
+        public int[] SpellSlotsMax { get; set; }
+        public int[] SpellSlotsCurrent { get; set; }
+        public int[] SpellSlotsWarlockMax { get; set; }
+        public int[] SpellSlotsWarlockCurrent { get; set; }
+
+        //The character's known, prepared, and frequently used spells.
         public List<Spell> Spells { get; set; }
 
         //Automatically managed. Stores the location of the file this was loaded from + should be saved to.
@@ -151,6 +158,22 @@ namespace Character //change to ArkDice?
             Abilities = new List<Ability>();
             BasicAbilities = new List<Ability>();
             Passives = new List<string>();
+
+            SpellSlotsMax = new int[10];
+            SpellSlotsCurrent = new int[10];
+            SpellSlotsWarlockMax = new int[6];
+            SpellSlotsWarlockCurrent = new int[6];
+            //Note: I know I'm "wasting" index 0 here, but I'm ok with that for the convenience of index = spell slot level.
+            for (int a = 1; a <= 9; a++)
+            {
+                SpellSlotsMax[a] = 0;
+                SpellSlotsCurrent[a] = 0;
+            }
+            for (int a = 1; a <= 5; a++)
+            {
+                SpellSlotsWarlockMax[a] = 0;
+                SpellSlotsWarlockCurrent[a] = 0;
+            }
             Spells = new List<Spell>();
 
             FolderLocation = "";
@@ -218,7 +241,13 @@ namespace Character //change to ArkDice?
                 Abilities = copy.Abilities;
                 BasicAbilities = copy.BasicAbilities;
                 Passives = copy.Passives;
+
+                SpellSlotsCurrent = copy.SpellSlotsCurrent;
+                SpellSlotsMax = copy.SpellSlotsMax;
+                SpellSlotsWarlockCurrent = copy.SpellSlotsWarlockCurrent;
+                SpellSlotsWarlockMax = copy.SpellSlotsWarlockMax;
                 Spells = copy.Spells;
+
 
                 SortAbilities();
                 SortSpells();
@@ -716,51 +745,8 @@ namespace Character //change to ArkDice?
                 return true;
             }
 
-            //Calculate the ability ID for the appropriate types of spell slots.
-
-            //We'll attempt to use the Warlock spell slots first, since they come back quicker.
-            int warlockSlotsIndex = GetAbilityIndexByID("WarlockSlotslvl"+level);
-            if (warlockSlotsIndex >= 0)
-            {
-                if (Abilities[warlockSlotsIndex].Uses > 0)
-                {
-                    //There is a slot here that can be used, do so and indicate success.
-                    DiceResponse resp = Abilities[warlockSlotsIndex].Use(GetGeneralStatistics());
-                    if (resp.Success)
-                    {
-                        return true;
-                    } else
-                    {
-                        //Something went wrong.
-                        //Complain to a log file.
-                        return false;
-                    }
-                }
-            }
-
-            //Now we fall back on standard spell slots.
-            int standardSlotsIndex = GetAbilityIndexByID("Spellslvl"+level);
-            if (standardSlotsIndex >= 0)
-            {
-                if (Abilities[standardSlotsIndex].Uses > 0)
-                {
-                    //There is a slot here that can be used, do so and indicate success.
-                    DiceResponse resp = Abilities[standardSlotsIndex].Use(GetGeneralStatistics());
-                    if (resp.Success)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        //Something went wrong.
-                        //Complain to a log file.
-                        return false;
-                    }
-                }
-            }
-
-            //If we get here, this character doesn't have any spell slots of the specified level.
-            return false;
+            //Now it comes down to whether this character has a suitable spell slot.
+            return TrySpendSpellSlot(level);
         }
 
         //Changes the number of uses remaining of the specified ability, by index.
@@ -1060,10 +1046,42 @@ namespace Character //change to ArkDice?
                 BonusToProf = tempint;
             }
 
+            //Standard Spell Slots
+            for (int a = 1; a <= 9; a++)
+            {
+                string index = "SpellsLvl" + a;
+                if (changes.ContainsKey (index) && Int32.TryParse(changes[index], out tempint))
+                {
+                    SpellSlotsMax[a] = tempint;
 
-                //...
+                    //Make sure this spell level doesn't have more current slots than maximum.
+                    if (SpellSlotsCurrent[a] > SpellSlotsMax[a])
+                    {
+                        SpellSlotsCurrent[a] = SpellSlotsMax[a];
+                    }
+                }
+            }
 
-                return true;
+            //Warlock Spell Slots
+            for (int a = 1; a <= 5; a++)
+            {
+                string index = "SpellsWarlockLvl" + a;
+                if (changes.ContainsKey(index) && Int32.TryParse(changes[index], out tempint))
+                {
+                    SpellSlotsWarlockMax[a] = tempint;
+
+                    //Make sure this spell level doesn't have more current slots than maximum.
+                    if (SpellSlotsWarlockCurrent[a] > SpellSlotsWarlockMax[a])
+                    {
+                        SpellSlotsWarlockCurrent[a] = SpellSlotsWarlockMax[a];
+                    }
+                }
+            }
+
+
+            //...
+
+            return true;
         }
 
         //Heal the character
@@ -1102,6 +1120,28 @@ namespace Character //change to ArkDice?
             }
 
             return true;
+        }
+
+        //Recharges spell slots (or not) on long / short rest.
+        public void RechargeSpellSlots (string condition)
+        {
+            //Standard spell slots.
+            if (condition.ToLower() == "long rest")
+            {
+                for (int a = 1; a <= 9; a++)
+                {
+                    SpellSlotsCurrent[a] = SpellSlotsMax[a];
+                }
+            }
+
+            //Warlock spell slots.
+            if (condition.ToLower() == "long rest" || condition.ToLower() == "short rest")
+            {
+                for (int a = 1; a <= 5; a++)
+                {
+                    SpellSlotsWarlockCurrent[a] = SpellSlotsWarlockMax[a];
+                }
+            }
         }
 
         //Replenishes the character's spent HD.
@@ -1153,6 +1193,30 @@ namespace Character //change to ArkDice?
             }
 
             return true;
+        }
+
+        //Removes the specified ability, if present.
+        public void RemoveAbility(string id)
+        {
+            int index = GetAbilityIndexByID(id);
+            if (index >= 0)
+            {
+                Abilities.RemoveAt(index);
+            }
+
+            SortAbilities();
+        }
+
+        //Removes the specified spell, if present.
+        public void RemoveSpell(string id)
+        {
+            int index = GetSpellIndexByID(id);
+            if (index >= 0)
+            {
+                Spells.RemoveAt(index);
+            }
+
+            SortSpells();
         }
 
         //Makes a roll using the character's stats and proficiencies.
@@ -1297,6 +1361,41 @@ namespace Character //change to ArkDice?
 
             //If we get here, we couldn't find that class.
             return new DiceResponse(false, "Could not find class "+className);
+        }
+
+        //Attempts to spend one spell slot of the specified level.
+        public bool TrySpendSpellSlot (int level, string type = "")
+        {
+            //Do some basic error checking.
+            if (level < 0)
+            {
+                return false;
+            }
+
+            //Check for Warlock slots first.
+            if (level <= 5 && (type == "" || type.ToLower() == "warlock"))
+            {
+                if (SpellSlotsWarlockCurrent[level] > 0)
+                {
+                    //We have one to spend, use it.
+                    SpellSlotsWarlockCurrent[level]--;
+                    return true;
+                }
+            }
+
+            //Then check standard slots.
+            if (level <= 5 && (type == "" || type.ToLower() == "standard"))
+            {
+                if (SpellSlotsCurrent[level] > 0)
+                {
+                    //We have one to spend, use it.
+                    SpellSlotsCurrent[level]--;
+                    return true;
+                }
+            }
+
+            //If we get this far, there are no suitable spell slots of this level.
+            return false;
         }
 
         //Converts the character and all of it's stuff to a JSON string, presumably for saving to a file.
@@ -1823,12 +1922,6 @@ namespace Character //change to ArkDice?
             return this.Abilities;
         }
 
-        //Returns a list of all spells, in the default order.
-        public List<Spell> GetSpells()
-        {
-            return this.Spells;
-        }
-
         //Returns an Ability with the specified ID, if this character has one.
         //Returns null if the character doesn't have a matching Ability.
         public Ability GetAbilityByID (string abilityID)
@@ -2023,53 +2116,37 @@ namespace Character //change to ArkDice?
             return null;
         }
 
-        //Returns the number of available spell slots of the specified level.
-        public int GetSpellSlotsForLevel (int level, bool includeStandard = true, bool includeWarlock = true)
+        //Returns a list of all spells, in the default order.
+        public List<Spell> GetSpells()
         {
-            int total = 0;
-            if (includeStandard)
-            {
-                Ability? standardSlots = GetAbilityByID("Spellslvl" + level);
-                if (standardSlots != null)
+            return this.Spells;
+        }
+
+        //Returns the number of available spell slots of the specified level and type.
+        //fetchCurrent controls whether this returns the currently-available number of spell slots (true) or the maximum (false).
+        //type controls whether this returns all spell slots of the specified level ("") or just those of a particular type (ie: "warlock"). Case insensitive.
+        public int GetSpellSlotsForLevel(int level, bool fetchCurrent = true, string type = "")
+        {
+            int ret = 0;
+
+            //Maybe add standard spell slots.
+            if (type == "" || type.ToLower() == "standard") {
+                if (level >= 1 && level <= 9)
                 {
-                    total += standardSlots.Uses;
+                    ret += (fetchCurrent) ? SpellSlotsCurrent[level] : SpellSlotsMax[level];
                 }
             }
 
-            if (includeWarlock)
+            //Maybe add warlock spell slots.
+            if (type == "" || type.ToLower() == "warlock")
             {
-                Ability? warlockSlots = GetAbilityByID("WarlockSpellslvl" + level);
-                if (warlockSlots != null)
+                if (level >= 1 && level <= 5)
                 {
-                    total += warlockSlots.Uses;
+                    ret += (fetchCurrent) ? SpellSlotsWarlockCurrent[level] : SpellSlotsWarlockMax[level];
                 }
             }
 
-            return total;
-        }
-
-        //Removes the specified ability, if present.
-        public void RemoveAbility (string id)
-        {
-            int index = GetAbilityIndexByID(id);
-            if (index >= 0)
-            {
-                Abilities.RemoveAt(index);
-            }
-
-            SortAbilities();
-        }
-
-        //Removes the specified spell, if present.
-        public void RemoveSpell(string id)
-        {
-            int index = GetSpellIndexByID(id);
-            if (index >= 0)
-            {
-                Spells.RemoveAt(index);
-            }
-
-            SortSpells();
+            return ret;
         }
     }
 }
