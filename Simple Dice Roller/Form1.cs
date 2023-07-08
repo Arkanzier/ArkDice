@@ -1472,6 +1472,7 @@ namespace Simple_Dice_Roller
 
             DisplayClassList(LoadedCharacter);
             DisplayAbilities(LoadedCharacter);
+            DisplaySpellSlots();
         }
 
         #endregion
