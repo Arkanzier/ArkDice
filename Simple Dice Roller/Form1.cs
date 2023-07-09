@@ -2063,6 +2063,7 @@ namespace Simple_Dice_Roller
             {
                 //trigger a popup with buttons for each possible upcast level.
                 //also the description of what's gained by upcasting.
+                CreateUpcastPanel(spellID);
             }
             else
             {
@@ -2204,6 +2205,59 @@ namespace Simple_Dice_Roller
                 SetAndPositionDetailPanel("Spells", id);
 
             }
+        }
+
+        #endregion
+
+        #region Magic Tab: Upcast Panel
+
+        private void CloseUpcastPanel ()
+        {
+
+        }
+
+        //Create the popup panel for upcasting a spell.
+        private void CreateUpcastPanel (string spellID)
+        {
+            //to do: consider passing in the spell object
+            //we can access the character via this form
+
+            //to do: I'll want to store a reference to this somewhere, so I can delete it later.
+            //clicking elsewhere should close it.
+            //just declare a Panel? variable somewhere?
+
+            //get the spell object by it's ID.
+
+            Panel newPanel = new Panel();
+            this.Controls.Add(newPanel);
+
+
+            //display some spell info
+            //name, description etc
+
+            //display upcasting benefits
+            //button for casting at the regular level
+                //handle this like the upcast buttons, but with a 0 shoved somewhere for number of additional spell levels?
+                //store things based on spell slot level, not spell slot level offset?
+            //buttons for casting at every higher level
+                //see if i can visibly disable buttons for spell levels that the character is out of slots for.
+                //maybe just leave gaps for nonfunctional buttons
+            //button to close the popup
+
+            //position the panel
+            int left = 100;
+            int top = 100;
+            int width = 100;
+            int height = 100;
+            Rectangle rect = new Rectangle(left, top, width, height);
+            newPanel.Bounds = rect;
+            newPanel.Visible = true;
+            newPanel.BringToFront();
+        }
+
+        private void UpcastSpell (string spellID)
+        {
+
         }
 
         #endregion

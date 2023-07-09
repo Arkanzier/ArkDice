@@ -250,6 +250,14 @@ namespace Simple_Dice_Roller
                 changes["Subrace"] = Input_Subrace.Text;
             }
 
+            if (Int32.TryParse(Input_MaxHealth.Text, out temp))
+            {
+                if (temp >= 0)
+                {
+                    changes["MaxHP"] = temp.ToString();
+                }
+            }
+
             //We'll blindly grab the values of all skill dropdowns, since we don't currently have a way to check if they've been changed.
             //We could add one, but this is cheap enough that it's probably not worth it.
             changes["Athletics"] = GetProfFromDropdown(Input_Athletics).ToString();
