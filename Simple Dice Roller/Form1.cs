@@ -1763,6 +1763,7 @@ namespace Simple_Dice_Roller
 
         #region Magic Tab: Spell Slots
 
+        //Displays the list of the character's spell slots in the magic tab.
         private void DisplaySpellSlots()
         {
             SpellSlotsList.Rows.Clear();
@@ -1785,6 +1786,98 @@ namespace Simple_Dice_Roller
             }
 
             return;
+        }
+
+        //Handles the onclick for the two button columns in the spell slots list.
+        private void SpellSlotsList_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            int colIndex = e.ColumnIndex;
+            if (colIndex < 0)
+            {
+                //Complain to a log file?
+                return;
+            }
+            string colName = SpellSlotsList.Columns[colIndex].Name;
+
+            //MessageBox.Show("Button clicked: col is " + colName);
+
+            int rowNum = e.RowIndex;
+
+            //Figure out which type of spell slot we're looking at.\
+            string levelString;
+            string type;
+            try
+            {
+                levelString = SpellSlotsList.Rows[rowNum].Cells[0].Value.ToString();
+                type = SpellSlotsList.Rows[rowNum].Cells[1].Value.ToString();
+            }
+            catch
+            {
+                //Complain to a log?
+                MessageBox.Show("Error: unable to identify spell slot level or type.");
+                return;
+            }
+
+            //MessageBox.Show("Looking at spell slots of level " + levelString + " and type " + type);
+
+            //Convert the level we got from a string to an int.
+            int tempint;
+            int level;
+            if (Int32.TryParse(levelString, out tempint))
+            {
+                level = tempint;
+            }
+            else
+            {
+                //Complain to a log?
+                return;
+            }
+
+            if (colName == "SpellSlots_PlusOne")
+            {
+                ReplenishSpellSlot(level, type);
+            }
+            else if (colName == "SpellSlots_MinusOne")
+            {
+                SpendSpellSlot(level, type);
+            }
+            else
+            {
+                //This is a different column, we don't need to do anything.
+            }
+        }
+
+        //Replenishes 1 spell slot for the specified level and type.
+        //type can be "standard" or "warlock"
+        private void ReplenishSpellSlot(int level, string type)
+        {
+            type = type.ToLower();
+
+            bool resp = LoadedCharacter.ChangeSpellSlots(level, type, 1);
+            if (!resp)
+            {
+                //We were unable to add this spell slot. Are there any to replenish here?
+                //do we want to do anything here?
+            }
+
+            //Update the list.
+            DisplaySpellSlots();
+        }
+
+        //Spends 1 spell slot for the specified level and type.
+        private void SpendSpellSlot(int level, string type)
+        {
+            type = type.ToLower();
+
+            bool resp = LoadedCharacter.ChangeSpellSlots(level, type, -1);
+            if (!resp)
+            {
+                //We were unable to add this spell slot. Are there any to replenish here?
+                //do we want to do anything here?
+            }
+
+            //Update the list.
+            DisplaySpellSlots();
         }
 
         #endregion
@@ -1981,6 +2074,7 @@ namespace Simple_Dice_Roller
             //DisplayCharacter(LoadedCharacter);
             //DisplayClassList(LoadedCharacter);
             //UpdateHealthDisplay();
+            DisplaySpellSlots();
         }
 
         private void SpellsArea_Click(object sender, EventArgs e)

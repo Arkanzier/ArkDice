@@ -770,6 +770,70 @@ namespace Character //change to ArkDice?
             return ChangeAbilityUses(index, change);
         }
 
+        //Changes the number of remaining spell slots of the specified level and type.
+        //Returns true when it was able to do so and false when it was unable.
+        public bool ChangeSpellSlots (int level, string type, int change)
+        {
+            type = type.ToLower();
+            if (level < 1 || level > 9)
+            {
+                return false;
+            }
+            if (type == "warlock" && level > 5)
+            {
+                return false;
+            }
+
+            if (change == 0)
+            {
+                //We're already done.
+                return true;
+            }
+
+            if (type == "standard")
+            {
+                if (SpellSlotsCurrent[level] + change < 0)
+                {
+                    //We can't remove this many slots.
+                    return false;
+                }
+                else if (SpellSlotsCurrent[level] + change > SpellSlotsMax[level])
+                {
+                    //We can't add this many slots.
+                    return false;
+                } else
+                {
+                    //We can add/remove this many slots.
+                    SpellSlotsCurrent[level] += change;
+                    return true;
+                }
+            }
+            else if (type == "warlock")
+            {
+                if (SpellSlotsWarlockCurrent[level] + change < 0)
+                {
+                    //We can't remove this many slots.
+                    return false;
+                }
+                else if (SpellSlotsWarlockCurrent[level] + change > SpellSlotsWarlockMax[level])
+                {
+                    //We can't add this many slots.
+                    return false;
+                }
+                else
+                {
+                    //We can add/remove this many slots.
+                    SpellSlotsWarlockCurrent[level] += change;
+                    return true;
+                }
+            } else
+            {
+                //We got a bad type.
+                //Complain to a log?
+                return false;
+            }
+        }
+
         //Returns the number of abilities that don't match those in the library provided.
         public int CheckForOutdatedAbilities(Dictionary<string, Ability> library)
         {
