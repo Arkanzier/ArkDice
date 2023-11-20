@@ -1532,6 +1532,13 @@ namespace Simple_Dice_Roller
             //MessageBox.Show("Button clicked: col is " + colName);
 
             int rowNum = e.RowIndex;
+            if (rowNum < 0)
+            {
+                //This is mainly triggered by someone clicking on one of the column headers, which registers as row -1.
+
+                //Complain to a log file?
+                return;
+            }
             string? abilityID = AbilitiesArea.Rows[rowNum].Cells[1].Value.ToString();
             if (abilityID == null)
             {
@@ -2078,6 +2085,13 @@ namespace Simple_Dice_Roller
             //MessageBox.Show("Button clicked: col is " + colName);
 
             int rowNum = e.RowIndex;
+            if (rowNum < 0)
+            {
+                //This is mainly triggered by someone clicking on one of the column headers, which registers as row -1.
+
+                //Complain to a log file?
+                return;
+            }
             string? spellID = SpellsArea.Rows[rowNum].Cells["Spells_IDCol"].Value.ToString();
             if (spellID == null)
             {
