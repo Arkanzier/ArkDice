@@ -484,6 +484,30 @@ namespace Simple_Dice_Roller
 
         private void TestButton_Click(object sender, EventArgs e)
         {
+            while (LogMessages.Count > 0)
+            {
+                LogMessages.RemoveAt(LogMessages.Count - 1);
+            }
+
+            DisplayMessages();
+
+
+
+            //Test populating a ListView and compare it to a DataGridView
+
+            TestListView.Items.Clear();
+
+            for (int a = 0; a < 50; a++)
+            {
+                string[] temp = { "item" + a, "something" };
+                TestListView.Items.Add(new ListViewItem(temp));
+            }
+
+            //was here
+            //need to test making one row bigger, or something along those lines, for the detail views.
+
+
+
             //testing listviews
             /*
             ListViewTest.Columns.Add("Col1", 100, HorizontalAlignment.Left);
@@ -1555,6 +1579,9 @@ namespace Simple_Dice_Roller
                 return;
             }
 
+            //Get the current scroll location.
+            int scrollloc = AbilitiesArea.FirstDisplayedScrollingRowIndex;
+            
             //Update everything in case stuff changed.
             //to do:
             //redo any sorting or whatever that was done, after running these.
@@ -1565,6 +1592,9 @@ namespace Simple_Dice_Roller
             DisplayCharacter(LoadedCharacter);
             DisplayClassList(LoadedCharacter);
             UpdateHealthDisplay();
+
+            //Now scroll back to that same spot.
+            AbilitiesArea.FirstDisplayedScrollingRowIndex = scrollloc;
         }
 
         //Used to trigger the expansion / contraction of rows for the details views.
@@ -2071,11 +2101,17 @@ namespace Simple_Dice_Roller
                 return;
             }
 
+            //Get the current scroll location.
+            int scrollloc = SpellsArea.FirstDisplayedScrollingRowIndex;
+            
             DisplayAbilities(LoadedCharacter);
             //DisplayCharacter(LoadedCharacter);
             //DisplayClassList(LoadedCharacter);
             //UpdateHealthDisplay();
             DisplaySpellSlots();
+
+            //Now scroll back to that same spot.
+            SpellsArea.FirstDisplayedScrollingRowIndex = scrollloc;
         }
 
         private void SpellsArea_Click(object sender, EventArgs e)
@@ -2211,13 +2247,13 @@ namespace Simple_Dice_Roller
 
         #region Magic Tab: Upcast Panel
 
-        private void CloseUpcastPanel ()
+        private void CloseUpcastPanel()
         {
 
         }
 
         //Create the popup panel for upcasting a spell.
-        private void CreateUpcastPanel (string spellID)
+        private void CreateUpcastPanel(string spellID)
         {
             //to do: consider passing in the spell object
             //we can access the character via this form
@@ -2237,11 +2273,11 @@ namespace Simple_Dice_Roller
 
             //display upcasting benefits
             //button for casting at the regular level
-                //handle this like the upcast buttons, but with a 0 shoved somewhere for number of additional spell levels?
-                //store things based on spell slot level, not spell slot level offset?
+            //handle this like the upcast buttons, but with a 0 shoved somewhere for number of additional spell levels?
+            //store things based on spell slot level, not spell slot level offset?
             //buttons for casting at every higher level
-                //see if i can visibly disable buttons for spell levels that the character is out of slots for.
-                //maybe just leave gaps for nonfunctional buttons
+            //see if i can visibly disable buttons for spell levels that the character is out of slots for.
+            //maybe just leave gaps for nonfunctional buttons
             //button to close the popup
 
             //position the panel
@@ -2255,7 +2291,7 @@ namespace Simple_Dice_Roller
             newPanel.BringToFront();
         }
 
-        private void UpcastSpell (string spellID)
+        private void UpcastSpell(string spellID)
         {
 
         }

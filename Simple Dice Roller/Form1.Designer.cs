@@ -230,6 +230,10 @@
             Spells_BookCol = new DataGridViewTextBoxColumn();
             Spells_PageCol = new DataGridViewTextBoxColumn();
             label7 = new Label();
+            TestingTab = new TabPage();
+            TestListView = new ListView();
+            TestListName = new ColumnHeader();
+            TestListRecharge = new ColumnHeader();
             Button_SaveCharacter = new Button();
             TestButton = new Button();
             Button_EditChar = new Button();
@@ -246,6 +250,7 @@
             MagicTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)SpellSlotsList).BeginInit();
             ((System.ComponentModel.ISupportInitialize)SpellsArea).BeginInit();
+            TestingTab.SuspendLayout();
             SuspendLayout();
             // 
             // rollDice
@@ -290,6 +295,7 @@
             MainTabArea.Controls.Add(CharacterTab);
             MainTabArea.Controls.Add(AbilitiesTab);
             MainTabArea.Controls.Add(MagicTab);
+            MainTabArea.Controls.Add(TestingTab);
             MainTabArea.Location = new Point(12, 12);
             MainTabArea.Name = "MainTabArea";
             MainTabArea.SelectedIndex = 0;
@@ -2131,7 +2137,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(497, 42);
+            label2.Location = new Point(550, 6);
             label2.Name = "label2";
             label2.Size = new Size(177, 15);
             label2.TabIndex = 4;
@@ -2140,7 +2146,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(497, 27);
+            label1.Location = new Point(369, 6);
             label1.Name = "label1";
             label1.Size = new Size(144, 15);
             label1.TabIndex = 3;
@@ -2154,30 +2160,32 @@
             SpellSlotsList.EditMode = DataGridViewEditMode.EditProgrammatically;
             SpellSlotsList.Location = new Point(6, 6);
             SpellSlotsList.Name = "SpellSlotsList";
+            SpellSlotsList.RowHeadersVisible = false;
             SpellSlotsList.RowTemplate.Height = 25;
-            SpellSlotsList.Size = new Size(418, 101);
+            SpellSlotsList.Size = new Size(259, 520);
             SpellSlotsList.TabIndex = 2;
             SpellSlotsList.CellContentClick += SpellSlotsList_CellContentClick;
             // 
             // SpellSlots_Level
             // 
-            SpellSlots_Level.HeaderText = "Level";
+            SpellSlots_Level.HeaderText = "Lvl";
             SpellSlots_Level.Name = "SpellSlots_Level";
             SpellSlots_Level.SortMode = DataGridViewColumnSortMode.NotSortable;
-            SpellSlots_Level.Width = 50;
+            SpellSlots_Level.Width = 30;
             // 
             // SpellSlots_RestType
             // 
             SpellSlots_RestType.HeaderText = "Type";
             SpellSlots_RestType.Name = "SpellSlots_RestType";
             SpellSlots_RestType.SortMode = DataGridViewColumnSortMode.NotSortable;
+            SpellSlots_RestType.Width = 75;
             // 
             // SpellSlots_Uses
             // 
             SpellSlots_Uses.HeaderText = "Uses";
             SpellSlots_Uses.Name = "SpellSlots_Uses";
             SpellSlots_Uses.SortMode = DataGridViewColumnSortMode.NotSortable;
-            SpellSlots_Uses.Width = 75;
+            SpellSlots_Uses.Width = 50;
             // 
             // SpellSlots_PlusOne
             // 
@@ -2185,7 +2193,7 @@
             SpellSlots_PlusOne.Name = "SpellSlots_PlusOne";
             SpellSlots_PlusOne.Resizable = DataGridViewTriState.True;
             SpellSlots_PlusOne.SortMode = DataGridViewColumnSortMode.Automatic;
-            SpellSlots_PlusOne.Width = 50;
+            SpellSlots_PlusOne.Width = 30;
             // 
             // SpellSlots_MinusOne
             // 
@@ -2193,7 +2201,7 @@
             SpellSlots_MinusOne.Name = "SpellSlots_MinusOne";
             SpellSlots_MinusOne.Resizable = DataGridViewTriState.True;
             SpellSlots_MinusOne.SortMode = DataGridViewColumnSortMode.Automatic;
-            SpellSlots_MinusOne.Width = 50;
+            SpellSlots_MinusOne.Width = 30;
             // 
             // SpellsArea
             // 
@@ -2211,13 +2219,14 @@
             dataGridViewCellStyle2.WrapMode = DataGridViewTriState.False;
             SpellsArea.DefaultCellStyle = dataGridViewCellStyle2;
             SpellsArea.EditMode = DataGridViewEditMode.EditProgrammatically;
-            SpellsArea.Location = new Point(6, 113);
+            SpellsArea.Location = new Point(271, 24);
             SpellsArea.MultiSelect = false;
             SpellsArea.Name = "SpellsArea";
             SpellsArea.ReadOnly = true;
+            SpellsArea.RowHeadersVisible = false;
             SpellsArea.RowTemplate.Height = 25;
             SpellsArea.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            SpellsArea.Size = new Size(760, 413);
+            SpellsArea.Size = new Size(495, 502);
             SpellsArea.TabIndex = 1;
             SpellsArea.CellContentClick += SpellsArea_CellContentClick;
             SpellsArea.CellMouseUp += SpellsArea_CellMouseUp;
@@ -2262,6 +2271,7 @@
             Spells_SchoolCol.Name = "Spells_SchoolCol";
             Spells_SchoolCol.ReadOnly = true;
             Spells_SchoolCol.ToolTipText = "School";
+            Spells_SchoolCol.Visible = false;
             Spells_SchoolCol.Width = 75;
             // 
             // Spells_RangeCol
@@ -2270,7 +2280,7 @@
             Spells_RangeCol.Name = "Spells_RangeCol";
             Spells_RangeCol.ReadOnly = true;
             Spells_RangeCol.ToolTipText = "Range";
-            Spells_RangeCol.Width = 75;
+            Spells_RangeCol.Width = 50;
             // 
             // Spells_DurationCol
             // 
@@ -2278,6 +2288,7 @@
             Spells_DurationCol.Name = "Spells_DurationCol";
             Spells_DurationCol.ReadOnly = true;
             Spells_DurationCol.ToolTipText = "Duration in rounds";
+            Spells_DurationCol.Visible = false;
             Spells_DurationCol.Width = 75;
             // 
             // Spells_ConcentrationCol
@@ -2318,7 +2329,7 @@
             Spells_ActionCol.Name = "Spells_ActionCol";
             Spells_ActionCol.ReadOnly = true;
             Spells_ActionCol.ToolTipText = "Action Used to Cast";
-            Spells_ActionCol.Width = 75;
+            Spells_ActionCol.Width = 50;
             // 
             // Spells_DescriptionCol
             // 
@@ -2367,11 +2378,42 @@
             // label7
             // 
             label7.AutoSize = true;
-            label7.Location = new Point(497, 9);
+            label7.Location = new Point(271, 6);
             label7.Name = "label7";
             label7.Size = new Size(50, 15);
             label7.TabIndex = 0;
             label7.Text = "Save DC";
+            // 
+            // TestingTab
+            // 
+            TestingTab.Controls.Add(TestListView);
+            TestingTab.Location = new Point(4, 24);
+            TestingTab.Name = "TestingTab";
+            TestingTab.Padding = new Padding(3);
+            TestingTab.Size = new Size(772, 532);
+            TestingTab.TabIndex = 4;
+            TestingTab.Text = "Testing Tab";
+            TestingTab.UseVisualStyleBackColor = true;
+            // 
+            // TestListView
+            // 
+            TestListView.Columns.AddRange(new ColumnHeader[] { TestListName, TestListRecharge });
+            TestListView.FullRowSelect = true;
+            TestListView.Location = new Point(6, 6);
+            TestListView.MultiSelect = false;
+            TestListView.Name = "TestListView";
+            TestListView.Size = new Size(374, 324);
+            TestListView.TabIndex = 0;
+            TestListView.UseCompatibleStateImageBehavior = false;
+            TestListView.View = View.Details;
+            // 
+            // TestListName
+            // 
+            TestListName.Text = "Name";
+            // 
+            // TestListRecharge
+            // 
+            TestListRecharge.Text = "Recharge";
             // 
             // Button_SaveCharacter
             // 
@@ -2450,6 +2492,7 @@
             MagicTab.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)SpellSlotsList).EndInit();
             ((System.ComponentModel.ISupportInitialize)SpellsArea).EndInit();
+            TestingTab.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -2632,6 +2675,12 @@
         private DataGridViewButtonColumn Recharge_Button;
         private Button DiceRoller_Clear;
         private DataGridView SpellsArea;
+        private Button Button_EditChar;
+        private Button Button_EditAbilities;
+        private Button Button_EditSpells;
+        private DataGridView SpellSlotsList;
+        private Label label1;
+        private Label label2;
         private DataGridViewTextBoxColumn Spells_NumberCol;
         private DataGridViewTextBoxColumn Spells_IDCol;
         private DataGridViewTextBoxColumn Spells_NameCol;
@@ -2650,16 +2699,14 @@
         private DataGridViewButtonColumn Spells_UpcastCol;
         private DataGridViewTextBoxColumn Spells_BookCol;
         private DataGridViewTextBoxColumn Spells_PageCol;
-        private Button Button_EditChar;
-        private Button Button_EditAbilities;
-        private Button Button_EditSpells;
-        private DataGridView SpellSlotsList;
-        private Label label1;
-        private Label label2;
         private DataGridViewTextBoxColumn SpellSlots_Level;
         private DataGridViewTextBoxColumn SpellSlots_RestType;
         private DataGridViewTextBoxColumn SpellSlots_Uses;
         private DataGridViewButtonColumn SpellSlots_PlusOne;
         private DataGridViewButtonColumn SpellSlots_MinusOne;
+        private TabPage TestingTab;
+        private ListView TestListView;
+        private ColumnHeader TestListName;
+        private ColumnHeader TestListRecharge;
     }
 }
