@@ -457,6 +457,17 @@ namespace Simple_Dice_Roller
             int gridTop = grid.AccessibilityObject.Bounds.Top;
             int gridLeft = grid.AccessibilityObject.Bounds.Left;
 
+            //Don't show panels if there's nothing to actually show.
+            //We'll be told top/bottom and left/right coordinates that exactly match the top left of the visible part of the grid.
+            if (gridTop == top && gridTop == bottom && gridLeft == left && gridLeft == right)
+            {
+                panel.Visible = false;
+                return;
+            } else
+            {
+                panel.Visible = true;
+            }
+
             top -= gridTop;
             left -= gridLeft;
 
@@ -478,7 +489,7 @@ namespace Simple_Dice_Roller
 
             //Now set the panel's size and location.
             panel.Bounds = rect;
-            panel.Visible = true;
+            //panel.Visible = true;
             panel.BringToFront();
         }
 
@@ -1921,6 +1932,10 @@ namespace Simple_Dice_Roller
             descriptionLabel.Text = row.Cells["Spells_DescriptionCol"].Value.ToString();
             descriptionLabel.Left = 6;
             descriptionLabel.Top = 21;  //place it 1 row down
+
+            //set height and width to the panel's height and width -12 each
+            descriptionLabel.Width = SpellsArea.Rows[0].AccessibilityObject.Bounds.Width - 12;
+            descriptionLabel.Height = 88; //hardcoded 100px height - 12px for margins = 88px
 
             p.Controls.Add(descriptionLabel);
         }
