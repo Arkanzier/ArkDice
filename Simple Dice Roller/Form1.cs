@@ -395,7 +395,7 @@ namespace Simple_Dice_Roller
             int rowIndex = GetIndexForRow(gridName, id);
 
             int baseRowHeight = grid.Rows[rowIndex].GetPreferredHeight(rowIndex, DataGridViewAutoSizeRowMode.AllCellsExceptHeader, true);
-            //MessageBox.Show("This row reports that it would like to have a height of " + rowHeight);
+            //MessageBox.Show("This row reports that it would like to have a height of " + baseRowHeight);
             //to do: get this working
             baseRowHeight = 25;
 
@@ -424,10 +424,15 @@ namespace Simple_Dice_Roller
             //We want to figure out how tall stuff wants to be.
             //Note: labels seem to default to being 15px tall.
             int panelHeight = panel.GetPreferredSize(new Size(100, expandAmount)).Height;
+            //MessageBox.Show("Might set panel height to " + panelHeight);
+            //Note: this is calculating 94px every time.
+                //Do I need to do this for the text area?
             if (panelHeight < minHeight)
             {
                 panelHeight = minHeight;
+                //MessageBox.Show("Panel height is too small, setting it to the minimum height of " + minHeight);
             }
+            //aaaaa
 
             int rowHeight = baseRowHeight + panelHeight;
 
@@ -452,6 +457,7 @@ namespace Simple_Dice_Roller
             int left = grid.Rows[rowIndex].AccessibilityObject.Bounds.Left;
             int bottom = grid.Rows[rowIndex].AccessibilityObject.Bounds.Bottom;
             int right = grid.Rows[rowIndex].AccessibilityObject.Bounds.Right;
+            //to do: change the bottom right corner to that of the last cell, not the row itself.
 
             //We need to position things in relation to the grid, not the program.
             int gridTop = grid.AccessibilityObject.Bounds.Top;
@@ -463,7 +469,8 @@ namespace Simple_Dice_Roller
             {
                 panel.Visible = false;
                 return;
-            } else
+            }
+            else
             {
                 panel.Visible = true;
             }
@@ -1599,7 +1606,7 @@ namespace Simple_Dice_Roller
 
             //Get the current scroll location.
             int scrollloc = AbilitiesArea.FirstDisplayedScrollingRowIndex;
-            
+
             //Update everything in case stuff changed.
             //to do:
             //redo any sorting or whatever that was done, after running these.
@@ -1749,7 +1756,10 @@ namespace Simple_Dice_Roller
 
             //set height and width to the panel's height and width -12 each
             newLabel.Width = AbilitiesArea.Rows[0].AccessibilityObject.Bounds.Width - 12;
-            newLabel.Height = 88; //hardcoded 100px height - 12px for margins = 88px
+            //newLabel.Height = 88; //hardcoded 100px height - 12px for margins = 88px
+            //Figure out how tall the text area wants to be, then add 12px for a margin.
+            int temp = newLabel.GetPreferredSize(new Size (newLabel.Width, 100)).Height + 12;
+            newLabel.Height = temp;
             p.Controls.Add(newLabel);
         }
 
@@ -2132,7 +2142,7 @@ namespace Simple_Dice_Roller
 
             //Get the current scroll location.
             int scrollloc = SpellsArea.FirstDisplayedScrollingRowIndex;
-            
+
             DisplayAbilities(LoadedCharacter);
             //DisplayCharacter(LoadedCharacter);
             //DisplayClassList(LoadedCharacter);

@@ -79,8 +79,8 @@
             button4 = new Button();
             button1 = new Button();
             button2 = new Button();
-            label4 = new Label();
-            label3 = new Label();
+            DiceRollerD3Label = new Label();
+            DiceRollerD2Label = new Label();
             RemoveD100Button = new Button();
             RemoveD20Button = new Button();
             RemoveD12Button = new Button();
@@ -239,6 +239,13 @@
             Button_EditChar = new Button();
             Button_EditAbilities = new Button();
             Button_EditSpells = new Button();
+            DiceRollerD4Label = new Label();
+            DiceRollerD6Label = new Label();
+            DiceRollerD8Label = new Label();
+            DiceRollerD10Label = new Label();
+            DiceRollerD12Label = new Label();
+            DiceRollerD20Label = new Label();
+            DiceRollerD100Label = new Label();
             MainTabArea.SuspendLayout();
             DiceTab.SuspendLayout();
             CharacterTab.SuspendLayout();
@@ -305,6 +312,13 @@
             // 
             // DiceTab
             // 
+            DiceTab.Controls.Add(DiceRollerD100Label);
+            DiceTab.Controls.Add(DiceRollerD20Label);
+            DiceTab.Controls.Add(DiceRollerD12Label);
+            DiceTab.Controls.Add(DiceRollerD10Label);
+            DiceTab.Controls.Add(DiceRollerD8Label);
+            DiceTab.Controls.Add(DiceRollerD6Label);
+            DiceTab.Controls.Add(DiceRollerD4Label);
             DiceTab.Controls.Add(DiceRoller_Clear);
             DiceTab.Controls.Add(button42);
             DiceTab.Controls.Add(button41);
@@ -348,8 +362,8 @@
             DiceTab.Controls.Add(button4);
             DiceTab.Controls.Add(button1);
             DiceTab.Controls.Add(button2);
-            DiceTab.Controls.Add(label4);
-            DiceTab.Controls.Add(label3);
+            DiceTab.Controls.Add(DiceRollerD3Label);
+            DiceTab.Controls.Add(DiceRollerD2Label);
             DiceTab.Controls.Add(RemoveD100Button);
             DiceTab.Controls.Add(RemoveD20Button);
             DiceTab.Controls.Add(RemoveD12Button);
@@ -462,7 +476,7 @@
             // 
             // button33
             // 
-            button33.Location = new Point(442, 418);
+            button33.Location = new Point(466, 418);
             button33.Name = "button33";
             button33.Size = new Size(60, 40);
             button33.TabIndex = 66;
@@ -473,7 +487,7 @@
             // 
             // button34
             // 
-            button34.Location = new Point(376, 418);
+            button34.Location = new Point(400, 418);
             button34.Name = "button34";
             button34.Size = new Size(60, 40);
             button34.TabIndex = 65;
@@ -484,7 +498,7 @@
             // 
             // button35
             // 
-            button35.Location = new Point(310, 418);
+            button35.Location = new Point(322, 418);
             button35.Name = "button35";
             button35.Size = new Size(60, 40);
             button35.TabIndex = 64;
@@ -495,7 +509,7 @@
             // 
             // button36
             // 
-            button36.Location = new Point(244, 418);
+            button36.Location = new Point(256, 418);
             button36.Name = "button36";
             button36.Size = new Size(60, 40);
             button36.TabIndex = 63;
@@ -506,7 +520,7 @@
             // 
             // button29
             // 
-            button29.Location = new Point(442, 372);
+            button29.Location = new Point(466, 372);
             button29.Name = "button29";
             button29.Size = new Size(60, 40);
             button29.TabIndex = 62;
@@ -517,7 +531,7 @@
             // 
             // button30
             // 
-            button30.Location = new Point(376, 372);
+            button30.Location = new Point(400, 372);
             button30.Name = "button30";
             button30.Size = new Size(60, 40);
             button30.TabIndex = 61;
@@ -528,7 +542,7 @@
             // 
             // button31
             // 
-            button31.Location = new Point(310, 372);
+            button31.Location = new Point(322, 372);
             button31.Name = "button31";
             button31.Size = new Size(60, 40);
             button31.TabIndex = 60;
@@ -539,7 +553,7 @@
             // 
             // button32
             // 
-            button32.Location = new Point(244, 372);
+            button32.Location = new Point(256, 372);
             button32.Name = "button32";
             button32.Size = new Size(60, 40);
             button32.TabIndex = 59;
@@ -550,7 +564,7 @@
             // 
             // button25
             // 
-            button25.Location = new Point(442, 326);
+            button25.Location = new Point(466, 326);
             button25.Name = "button25";
             button25.Size = new Size(60, 40);
             button25.TabIndex = 58;
@@ -561,7 +575,7 @@
             // 
             // button26
             // 
-            button26.Location = new Point(376, 326);
+            button26.Location = new Point(400, 326);
             button26.Name = "button26";
             button26.Size = new Size(60, 40);
             button26.TabIndex = 57;
@@ -572,7 +586,7 @@
             // 
             // button27
             // 
-            button27.Location = new Point(310, 326);
+            button27.Location = new Point(322, 326);
             button27.Name = "button27";
             button27.Size = new Size(60, 40);
             button27.TabIndex = 56;
@@ -583,7 +597,7 @@
             // 
             // button28
             // 
-            button28.Location = new Point(244, 326);
+            button28.Location = new Point(256, 326);
             button28.Name = "button28";
             button28.Size = new Size(60, 40);
             button28.TabIndex = 55;
@@ -594,7 +608,7 @@
             // 
             // button21
             // 
-            button21.Location = new Point(442, 280);
+            button21.Location = new Point(466, 280);
             button21.Name = "button21";
             button21.Size = new Size(60, 40);
             button21.TabIndex = 54;
@@ -605,7 +619,7 @@
             // 
             // button22
             // 
-            button22.Location = new Point(376, 280);
+            button22.Location = new Point(400, 280);
             button22.Name = "button22";
             button22.Size = new Size(60, 40);
             button22.TabIndex = 53;
@@ -616,7 +630,7 @@
             // 
             // button23
             // 
-            button23.Location = new Point(310, 280);
+            button23.Location = new Point(322, 280);
             button23.Name = "button23";
             button23.Size = new Size(60, 40);
             button23.TabIndex = 52;
@@ -627,7 +641,7 @@
             // 
             // button24
             // 
-            button24.Location = new Point(244, 280);
+            button24.Location = new Point(256, 280);
             button24.Name = "button24";
             button24.Size = new Size(60, 40);
             button24.TabIndex = 51;
@@ -638,7 +652,7 @@
             // 
             // button17
             // 
-            button17.Location = new Point(442, 234);
+            button17.Location = new Point(466, 234);
             button17.Name = "button17";
             button17.Size = new Size(60, 40);
             button17.TabIndex = 50;
@@ -649,7 +663,7 @@
             // 
             // button18
             // 
-            button18.Location = new Point(376, 234);
+            button18.Location = new Point(400, 234);
             button18.Name = "button18";
             button18.Size = new Size(60, 40);
             button18.TabIndex = 49;
@@ -660,7 +674,7 @@
             // 
             // button19
             // 
-            button19.Location = new Point(310, 234);
+            button19.Location = new Point(322, 234);
             button19.Name = "button19";
             button19.Size = new Size(60, 40);
             button19.TabIndex = 48;
@@ -671,7 +685,7 @@
             // 
             // button20
             // 
-            button20.Location = new Point(244, 234);
+            button20.Location = new Point(256, 234);
             button20.Name = "button20";
             button20.Size = new Size(60, 40);
             button20.TabIndex = 47;
@@ -682,7 +696,7 @@
             // 
             // button13
             // 
-            button13.Location = new Point(442, 188);
+            button13.Location = new Point(466, 188);
             button13.Name = "button13";
             button13.Size = new Size(60, 40);
             button13.TabIndex = 46;
@@ -693,7 +707,7 @@
             // 
             // button14
             // 
-            button14.Location = new Point(376, 188);
+            button14.Location = new Point(400, 188);
             button14.Name = "button14";
             button14.Size = new Size(60, 40);
             button14.TabIndex = 45;
@@ -704,7 +718,7 @@
             // 
             // button15
             // 
-            button15.Location = new Point(310, 188);
+            button15.Location = new Point(322, 188);
             button15.Name = "button15";
             button15.Size = new Size(60, 40);
             button15.TabIndex = 44;
@@ -715,7 +729,7 @@
             // 
             // button16
             // 
-            button16.Location = new Point(244, 188);
+            button16.Location = new Point(256, 188);
             button16.Name = "button16";
             button16.Size = new Size(60, 40);
             button16.TabIndex = 43;
@@ -726,7 +740,7 @@
             // 
             // button9
             // 
-            button9.Location = new Point(442, 142);
+            button9.Location = new Point(466, 142);
             button9.Name = "button9";
             button9.Size = new Size(60, 40);
             button9.TabIndex = 42;
@@ -737,7 +751,7 @@
             // 
             // button10
             // 
-            button10.Location = new Point(376, 142);
+            button10.Location = new Point(400, 142);
             button10.Name = "button10";
             button10.Size = new Size(60, 40);
             button10.TabIndex = 41;
@@ -748,7 +762,7 @@
             // 
             // button11
             // 
-            button11.Location = new Point(310, 142);
+            button11.Location = new Point(322, 142);
             button11.Name = "button11";
             button11.Size = new Size(60, 40);
             button11.TabIndex = 40;
@@ -759,7 +773,7 @@
             // 
             // button12
             // 
-            button12.Location = new Point(244, 142);
+            button12.Location = new Point(256, 142);
             button12.Name = "button12";
             button12.Size = new Size(60, 40);
             button12.TabIndex = 39;
@@ -770,7 +784,7 @@
             // 
             // button5
             // 
-            button5.Location = new Point(442, 96);
+            button5.Location = new Point(466, 96);
             button5.Name = "button5";
             button5.Size = new Size(60, 40);
             button5.TabIndex = 38;
@@ -781,7 +795,7 @@
             // 
             // button6
             // 
-            button6.Location = new Point(376, 96);
+            button6.Location = new Point(400, 96);
             button6.Name = "button6";
             button6.Size = new Size(60, 40);
             button6.TabIndex = 37;
@@ -792,7 +806,7 @@
             // 
             // button7
             // 
-            button7.Location = new Point(310, 96);
+            button7.Location = new Point(322, 96);
             button7.Name = "button7";
             button7.Size = new Size(60, 40);
             button7.TabIndex = 36;
@@ -803,7 +817,7 @@
             // 
             // button8
             // 
-            button8.Location = new Point(244, 96);
+            button8.Location = new Point(256, 96);
             button8.Name = "button8";
             button8.Size = new Size(60, 40);
             button8.TabIndex = 35;
@@ -814,7 +828,7 @@
             // 
             // button3
             // 
-            button3.Location = new Point(442, 50);
+            button3.Location = new Point(466, 50);
             button3.Name = "button3";
             button3.Size = new Size(60, 40);
             button3.TabIndex = 34;
@@ -825,7 +839,7 @@
             // 
             // button4
             // 
-            button4.Location = new Point(376, 50);
+            button4.Location = new Point(400, 50);
             button4.Name = "button4";
             button4.Size = new Size(60, 40);
             button4.TabIndex = 33;
@@ -836,7 +850,7 @@
             // 
             // button1
             // 
-            button1.Location = new Point(310, 50);
+            button1.Location = new Point(322, 50);
             button1.Name = "button1";
             button1.Size = new Size(60, 40);
             button1.TabIndex = 32;
@@ -847,7 +861,7 @@
             // 
             // button2
             // 
-            button2.Location = new Point(244, 50);
+            button2.Location = new Point(256, 50);
             button2.Name = "button2";
             button2.Size = new Size(60, 40);
             button2.TabIndex = 31;
@@ -856,23 +870,23 @@
             button2.UseVisualStyleBackColor = true;
             button2.Click += AddDice;
             // 
-            // label4
+            // DiceRollerD3Label
             // 
-            label4.AutoSize = true;
-            label4.Location = new Point(6, 109);
-            label4.Name = "label4";
-            label4.Size = new Size(20, 15);
-            label4.TabIndex = 30;
-            label4.Text = "d3";
+            DiceRollerD3Label.AutoSize = true;
+            DiceRollerD3Label.Location = new Point(6, 109);
+            DiceRollerD3Label.Name = "DiceRollerD3Label";
+            DiceRollerD3Label.Size = new Size(20, 15);
+            DiceRollerD3Label.TabIndex = 30;
+            DiceRollerD3Label.Text = "d3";
             // 
-            // label3
+            // DiceRollerD2Label
             // 
-            label3.AutoSize = true;
-            label3.Location = new Point(6, 63);
-            label3.Name = "label3";
-            label3.Size = new Size(20, 15);
-            label3.TabIndex = 29;
-            label3.Text = "d2";
+            DiceRollerD2Label.AutoSize = true;
+            DiceRollerD2Label.Location = new Point(6, 63);
+            DiceRollerD2Label.Name = "DiceRollerD2Label";
+            DiceRollerD2Label.Size = new Size(20, 15);
+            DiceRollerD2Label.TabIndex = 29;
+            DiceRollerD2Label.Text = "d2";
             // 
             // RemoveD100Button
             // 
@@ -2465,6 +2479,69 @@
             Button_EditSpells.UseVisualStyleBackColor = true;
             Button_EditSpells.Click += Button_EditSpells_Click;
             // 
+            // DiceRollerD4Label
+            // 
+            DiceRollerD4Label.AutoSize = true;
+            DiceRollerD4Label.Location = new Point(6, 155);
+            DiceRollerD4Label.Name = "DiceRollerD4Label";
+            DiceRollerD4Label.Size = new Size(20, 15);
+            DiceRollerD4Label.TabIndex = 74;
+            DiceRollerD4Label.Text = "d4";
+            // 
+            // DiceRollerD6Label
+            // 
+            DiceRollerD6Label.AutoSize = true;
+            DiceRollerD6Label.Location = new Point(6, 201);
+            DiceRollerD6Label.Name = "DiceRollerD6Label";
+            DiceRollerD6Label.Size = new Size(20, 15);
+            DiceRollerD6Label.TabIndex = 75;
+            DiceRollerD6Label.Text = "d6";
+            // 
+            // DiceRollerD8Label
+            // 
+            DiceRollerD8Label.AutoSize = true;
+            DiceRollerD8Label.Location = new Point(6, 247);
+            DiceRollerD8Label.Name = "DiceRollerD8Label";
+            DiceRollerD8Label.Size = new Size(20, 15);
+            DiceRollerD8Label.TabIndex = 76;
+            DiceRollerD8Label.Text = "d8";
+            // 
+            // DiceRollerD10Label
+            // 
+            DiceRollerD10Label.AutoSize = true;
+            DiceRollerD10Label.Location = new Point(6, 293);
+            DiceRollerD10Label.Name = "DiceRollerD10Label";
+            DiceRollerD10Label.Size = new Size(26, 15);
+            DiceRollerD10Label.TabIndex = 77;
+            DiceRollerD10Label.Text = "d10";
+            // 
+            // DiceRollerD12Label
+            // 
+            DiceRollerD12Label.AutoSize = true;
+            DiceRollerD12Label.Location = new Point(6, 339);
+            DiceRollerD12Label.Name = "DiceRollerD12Label";
+            DiceRollerD12Label.Size = new Size(26, 15);
+            DiceRollerD12Label.TabIndex = 78;
+            DiceRollerD12Label.Text = "d12";
+            // 
+            // DiceRollerD20Label
+            // 
+            DiceRollerD20Label.AutoSize = true;
+            DiceRollerD20Label.Location = new Point(6, 385);
+            DiceRollerD20Label.Name = "DiceRollerD20Label";
+            DiceRollerD20Label.Size = new Size(26, 15);
+            DiceRollerD20Label.TabIndex = 79;
+            DiceRollerD20Label.Text = "d20";
+            // 
+            // DiceRollerD100Label
+            // 
+            DiceRollerD100Label.AutoSize = true;
+            DiceRollerD100Label.Location = new Point(6, 431);
+            DiceRollerD100Label.Name = "DiceRollerD100Label";
+            DiceRollerD100Label.Size = new Size(32, 15);
+            DiceRollerD100Label.TabIndex = 80;
+            DiceRollerD100Label.Text = "d100";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -2549,8 +2626,8 @@
         private DataGridViewTextBoxColumn Basic_NameCol;
         private DataGridViewTextBoxColumn Basic_TextCol;
         private DataGridViewButtonColumn Basic_UseButtonCol;
-        private Label label4;
-        private Label label3;
+        private Label DiceRollerD3Label;
+        private Label DiceRollerD2Label;
         private Button button33;
         private Button button34;
         private Button button35;
@@ -2708,5 +2785,12 @@
         private ListView TestListView;
         private ColumnHeader TestListName;
         private ColumnHeader TestListRecharge;
+        private Label DiceRollerD4Label;
+        private Label DiceRollerD100Label;
+        private Label DiceRollerD20Label;
+        private Label DiceRollerD12Label;
+        private Label DiceRollerD10Label;
+        private Label DiceRollerD8Label;
+        private Label DiceRollerD6Label;
     }
 }
