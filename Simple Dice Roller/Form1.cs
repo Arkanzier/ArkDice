@@ -1404,7 +1404,8 @@ namespace Simple_Dice_Roller
             Button_Investigation.Text = "Investigation " + LoadedCharacter.GetBonusForRollAsString("Investigation");
             Button_Nature.Text = "Nature " + LoadedCharacter.GetBonusForRollAsString("Nature");
             Button_Religion.Text = "Religion " + LoadedCharacter.GetBonusForRollAsString("Religion");
-            Button_AnimalHandling.Text = "Animal Handling " + LoadedCharacter.GetBonusForRollAsString("Animal Handling");
+            //Button_AnimalHandling.Text = "Animal Handling " + LoadedCharacter.GetBonusForRollAsString("Animal Handling");
+            Button_AnimalHandling.Text = "Animal Handl. " + LoadedCharacter.GetBonusForRollAsString("Animal Handling");
             Button_Insight.Text = "Insight " + LoadedCharacter.GetBonusForRollAsString("Insight");
             Button_Medicine.Text = "Medicine " + LoadedCharacter.GetBonusForRollAsString("Medicine");
             Button_Perception.Text = "Perception " + LoadedCharacter.GetBonusForRollAsString("Perception");
