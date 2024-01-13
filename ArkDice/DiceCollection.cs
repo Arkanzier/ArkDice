@@ -95,7 +95,7 @@ namespace ArkDice
 
                     return true;
                 }
-                else if (pile.DieSize == dieSize)
+                else if (!flatBonus && pile.DieSize == dieSize)
                 {
                     //Figure out whether we're adding dice or subtracting them.
                     //We add if subtract and the multiplier match.
@@ -118,9 +118,9 @@ namespace ArkDice
                     //if the multipliers are both negative, add instead
 
                     //logic:
-                        //if adding and the multiplier is positive, add
-                        //if subtracting and the multiplier is negative, add
-                        //otherwise, subtract
+                    //if adding and the multiplier is positive, add
+                    //if subtracting and the multiplier is negative, add
+                    //otherwise, subtract
 
                     if (advdis == 0)
                     {

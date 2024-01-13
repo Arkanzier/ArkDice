@@ -28,21 +28,28 @@
         /// </summary>
         private void InitializeComponent()
         {
-            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle4 = new DataGridViewCellStyle();
             rollDice = new Button();
             outputTotal = new Label();
             diceStringBox = new TextBox();
             outputDescription = new Label();
             MainTabArea = new TabControl();
             DiceTab = new TabPage();
+            DiceRollerD100Label = new Label();
+            DiceRollerD20Label = new Label();
+            DiceRollerD12Label = new Label();
+            DiceRollerD10Label = new Label();
+            DiceRollerD8Label = new Label();
+            DiceRollerD6Label = new Label();
+            DiceRollerD4Label = new Label();
             DiceRoller_Clear = new Button();
-            button42 = new Button();
-            button41 = new Button();
-            button40 = new Button();
-            button39 = new Button();
-            button38 = new Button();
-            button37 = new Button();
+            Remove10Button = new Button();
+            Remove5Button = new Button();
+            Remove1Button = new Button();
+            Add10Button = new Button();
+            Add5Button = new Button();
+            Add1Button = new Button();
             button33 = new Button();
             button34 = new Button();
             button35 = new Button();
@@ -239,13 +246,6 @@
             Button_EditChar = new Button();
             Button_EditAbilities = new Button();
             Button_EditSpells = new Button();
-            DiceRollerD4Label = new Label();
-            DiceRollerD6Label = new Label();
-            DiceRollerD8Label = new Label();
-            DiceRollerD10Label = new Label();
-            DiceRollerD12Label = new Label();
-            DiceRollerD20Label = new Label();
-            DiceRollerD100Label = new Label();
             MainTabArea.SuspendLayout();
             DiceTab.SuspendLayout();
             CharacterTab.SuspendLayout();
@@ -320,12 +320,12 @@
             DiceTab.Controls.Add(DiceRollerD6Label);
             DiceTab.Controls.Add(DiceRollerD4Label);
             DiceTab.Controls.Add(DiceRoller_Clear);
-            DiceTab.Controls.Add(button42);
-            DiceTab.Controls.Add(button41);
-            DiceTab.Controls.Add(button40);
-            DiceTab.Controls.Add(button39);
-            DiceTab.Controls.Add(button38);
-            DiceTab.Controls.Add(button37);
+            DiceTab.Controls.Add(Remove10Button);
+            DiceTab.Controls.Add(Remove5Button);
+            DiceTab.Controls.Add(Remove1Button);
+            DiceTab.Controls.Add(Add10Button);
+            DiceTab.Controls.Add(Add5Button);
+            DiceTab.Controls.Add(Add1Button);
             DiceTab.Controls.Add(button33);
             DiceTab.Controls.Add(button34);
             DiceTab.Controls.Add(button35);
@@ -398,6 +398,69 @@
             DiceTab.Text = "Dice";
             DiceTab.UseVisualStyleBackColor = true;
             // 
+            // DiceRollerD100Label
+            // 
+            DiceRollerD100Label.AutoSize = true;
+            DiceRollerD100Label.Location = new Point(6, 431);
+            DiceRollerD100Label.Name = "DiceRollerD100Label";
+            DiceRollerD100Label.Size = new Size(32, 15);
+            DiceRollerD100Label.TabIndex = 80;
+            DiceRollerD100Label.Text = "d100";
+            // 
+            // DiceRollerD20Label
+            // 
+            DiceRollerD20Label.AutoSize = true;
+            DiceRollerD20Label.Location = new Point(6, 385);
+            DiceRollerD20Label.Name = "DiceRollerD20Label";
+            DiceRollerD20Label.Size = new Size(26, 15);
+            DiceRollerD20Label.TabIndex = 79;
+            DiceRollerD20Label.Text = "d20";
+            // 
+            // DiceRollerD12Label
+            // 
+            DiceRollerD12Label.AutoSize = true;
+            DiceRollerD12Label.Location = new Point(6, 339);
+            DiceRollerD12Label.Name = "DiceRollerD12Label";
+            DiceRollerD12Label.Size = new Size(26, 15);
+            DiceRollerD12Label.TabIndex = 78;
+            DiceRollerD12Label.Text = "d12";
+            // 
+            // DiceRollerD10Label
+            // 
+            DiceRollerD10Label.AutoSize = true;
+            DiceRollerD10Label.Location = new Point(6, 293);
+            DiceRollerD10Label.Name = "DiceRollerD10Label";
+            DiceRollerD10Label.Size = new Size(26, 15);
+            DiceRollerD10Label.TabIndex = 77;
+            DiceRollerD10Label.Text = "d10";
+            // 
+            // DiceRollerD8Label
+            // 
+            DiceRollerD8Label.AutoSize = true;
+            DiceRollerD8Label.Location = new Point(6, 247);
+            DiceRollerD8Label.Name = "DiceRollerD8Label";
+            DiceRollerD8Label.Size = new Size(20, 15);
+            DiceRollerD8Label.TabIndex = 76;
+            DiceRollerD8Label.Text = "d8";
+            // 
+            // DiceRollerD6Label
+            // 
+            DiceRollerD6Label.AutoSize = true;
+            DiceRollerD6Label.Location = new Point(6, 201);
+            DiceRollerD6Label.Name = "DiceRollerD6Label";
+            DiceRollerD6Label.Size = new Size(20, 15);
+            DiceRollerD6Label.TabIndex = 75;
+            DiceRollerD6Label.Text = "d6";
+            // 
+            // DiceRollerD4Label
+            // 
+            DiceRollerD4Label.AutoSize = true;
+            DiceRollerD4Label.Location = new Point(6, 155);
+            DiceRollerD4Label.Name = "DiceRollerD4Label";
+            DiceRollerD4Label.Size = new Size(20, 15);
+            DiceRollerD4Label.TabIndex = 74;
+            DiceRollerD4Label.Text = "d4";
+            // 
             // DiceRoller_Clear
             // 
             DiceRoller_Clear.Location = new Point(691, 6);
@@ -408,71 +471,71 @@
             DiceRoller_Clear.UseVisualStyleBackColor = true;
             DiceRoller_Clear.Click += DiceRoller_Clear_Click;
             // 
-            // button42
+            // Remove10Button
             // 
-            button42.Location = new Point(342, 464);
-            button42.Name = "button42";
-            button42.Size = new Size(40, 40);
-            button42.TabIndex = 72;
-            button42.Tag = "subtract 10";
-            button42.Text = "-10";
-            button42.UseVisualStyleBackColor = true;
-            button42.Click += AddDice;
+            Remove10Button.Location = new Point(342, 464);
+            Remove10Button.Name = "Remove10Button";
+            Remove10Button.Size = new Size(40, 40);
+            Remove10Button.TabIndex = 72;
+            Remove10Button.Tag = "subtract 10";
+            Remove10Button.Text = "-10";
+            Remove10Button.UseVisualStyleBackColor = true;
+            Remove10Button.Click += AddDice;
             // 
-            // button41
+            // Remove5Button
             // 
-            button41.Location = new Point(296, 464);
-            button41.Name = "button41";
-            button41.Size = new Size(40, 40);
-            button41.TabIndex = 71;
-            button41.Tag = "subtract 5";
-            button41.Text = "-5";
-            button41.UseVisualStyleBackColor = true;
-            button41.Click += AddDice;
+            Remove5Button.Location = new Point(296, 464);
+            Remove5Button.Name = "Remove5Button";
+            Remove5Button.Size = new Size(40, 40);
+            Remove5Button.TabIndex = 71;
+            Remove5Button.Tag = "subtract 5";
+            Remove5Button.Text = "-5";
+            Remove5Button.UseVisualStyleBackColor = true;
+            Remove5Button.Click += AddDice;
             // 
-            // button40
+            // Remove1Button
             // 
-            button40.Location = new Point(250, 464);
-            button40.Name = "button40";
-            button40.Size = new Size(40, 40);
-            button40.TabIndex = 70;
-            button40.Tag = "subtract 1";
-            button40.Text = "-1";
-            button40.UseVisualStyleBackColor = true;
-            button40.Click += AddDice;
+            Remove1Button.Location = new Point(250, 464);
+            Remove1Button.Name = "Remove1Button";
+            Remove1Button.Size = new Size(40, 40);
+            Remove1Button.TabIndex = 70;
+            Remove1Button.Tag = "subtract 1";
+            Remove1Button.Text = "-1";
+            Remove1Button.UseVisualStyleBackColor = true;
+            Remove1Button.Click += AddDice;
             // 
-            // button39
+            // Add10Button
             // 
-            button39.Location = new Point(204, 464);
-            button39.Name = "button39";
-            button39.Size = new Size(40, 40);
-            button39.TabIndex = 69;
-            button39.Tag = "add 10";
-            button39.Text = "+10";
-            button39.UseVisualStyleBackColor = true;
-            button39.Click += AddDice;
+            Add10Button.Location = new Point(204, 464);
+            Add10Button.Name = "Add10Button";
+            Add10Button.Size = new Size(40, 40);
+            Add10Button.TabIndex = 69;
+            Add10Button.Tag = "add 10";
+            Add10Button.Text = "+10";
+            Add10Button.UseVisualStyleBackColor = true;
+            Add10Button.Click += AddDice;
             // 
-            // button38
+            // Add5Button
             // 
-            button38.Location = new Point(158, 464);
-            button38.Name = "button38";
-            button38.Size = new Size(40, 40);
-            button38.TabIndex = 68;
-            button38.Tag = "add 5";
-            button38.Text = "+5";
-            button38.UseVisualStyleBackColor = true;
-            button38.Click += AddDice;
+            Add5Button.Location = new Point(158, 464);
+            Add5Button.Name = "Add5Button";
+            Add5Button.Size = new Size(40, 40);
+            Add5Button.TabIndex = 68;
+            Add5Button.Tag = "add 5";
+            Add5Button.Text = "+5";
+            Add5Button.UseVisualStyleBackColor = true;
+            Add5Button.Click += AddDice;
             // 
-            // button37
+            // Add1Button
             // 
-            button37.Location = new Point(112, 464);
-            button37.Name = "button37";
-            button37.Size = new Size(40, 40);
-            button37.TabIndex = 67;
-            button37.Tag = "add 1";
-            button37.Text = "+1";
-            button37.UseVisualStyleBackColor = true;
-            button37.Click += AddDice;
+            Add1Button.Location = new Point(112, 464);
+            Add1Button.Name = "Add1Button";
+            Add1Button.Size = new Size(40, 40);
+            Add1Button.TabIndex = 67;
+            Add1Button.Tag = "add 1";
+            Add1Button.Text = "+1";
+            Add1Button.UseVisualStyleBackColor = true;
+            Add1Button.Click += AddDice;
             // 
             // button33
             // 
@@ -2031,14 +2094,14 @@
             AbilitiesArea.AllowUserToDeleteRows = false;
             AbilitiesArea.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             AbilitiesArea.Columns.AddRange(new DataGridViewColumn[] { Abilities_NumberCol, Abilities_IDCol, Abilities_NameCol, Abilities_TextCol, Abilities_RechargeCol, Abilities_DiceCol, Abilities_UsesCol, Abilities_ChangeCol, Abilities_UseButtonCol, Abilities_Plus1Col, Abilities_Minus1Col });
-            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.TopLeft;
-            dataGridViewCellStyle1.BackColor = SystemColors.Window;
-            dataGridViewCellStyle1.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            dataGridViewCellStyle1.ForeColor = SystemColors.ControlText;
-            dataGridViewCellStyle1.SelectionBackColor = SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = DataGridViewTriState.False;
-            AbilitiesArea.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle3.Alignment = DataGridViewContentAlignment.TopLeft;
+            dataGridViewCellStyle3.BackColor = SystemColors.Window;
+            dataGridViewCellStyle3.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            dataGridViewCellStyle3.ForeColor = SystemColors.ControlText;
+            dataGridViewCellStyle3.SelectionBackColor = SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = DataGridViewTriState.False;
+            AbilitiesArea.DefaultCellStyle = dataGridViewCellStyle3;
             AbilitiesArea.EditMode = DataGridViewEditMode.EditProgrammatically;
             AbilitiesArea.Location = new Point(6, 6);
             AbilitiesArea.MultiSelect = false;
@@ -2224,14 +2287,14 @@
             SpellsArea.AllowUserToOrderColumns = true;
             SpellsArea.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             SpellsArea.Columns.AddRange(new DataGridViewColumn[] { Spells_NumberCol, Spells_IDCol, Spells_NameCol, Spells_LevelCol, Spells_SchoolCol, Spells_RangeCol, Spells_DurationCol, Spells_ConcentrationCol, Spells_VocalCol, Spells_SomaticCol, Spells_MaterialCol, Spells_ActionCol, Spells_DescriptionCol, Spells_UpcastingBenefitCol, Spells_CastCol, Spells_UpcastCol, Spells_BookCol, Spells_PageCol });
-            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.TopLeft;
-            dataGridViewCellStyle2.BackColor = SystemColors.Window;
-            dataGridViewCellStyle2.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            dataGridViewCellStyle2.ForeColor = SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = DataGridViewTriState.False;
-            SpellsArea.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.TopLeft;
+            dataGridViewCellStyle4.BackColor = SystemColors.Window;
+            dataGridViewCellStyle4.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            dataGridViewCellStyle4.ForeColor = SystemColors.ControlText;
+            dataGridViewCellStyle4.SelectionBackColor = SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = DataGridViewTriState.False;
+            SpellsArea.DefaultCellStyle = dataGridViewCellStyle4;
             SpellsArea.EditMode = DataGridViewEditMode.EditProgrammatically;
             SpellsArea.Location = new Point(271, 24);
             SpellsArea.MultiSelect = false;
@@ -2479,69 +2542,6 @@
             Button_EditSpells.UseVisualStyleBackColor = true;
             Button_EditSpells.Click += Button_EditSpells_Click;
             // 
-            // DiceRollerD4Label
-            // 
-            DiceRollerD4Label.AutoSize = true;
-            DiceRollerD4Label.Location = new Point(6, 155);
-            DiceRollerD4Label.Name = "DiceRollerD4Label";
-            DiceRollerD4Label.Size = new Size(20, 15);
-            DiceRollerD4Label.TabIndex = 74;
-            DiceRollerD4Label.Text = "d4";
-            // 
-            // DiceRollerD6Label
-            // 
-            DiceRollerD6Label.AutoSize = true;
-            DiceRollerD6Label.Location = new Point(6, 201);
-            DiceRollerD6Label.Name = "DiceRollerD6Label";
-            DiceRollerD6Label.Size = new Size(20, 15);
-            DiceRollerD6Label.TabIndex = 75;
-            DiceRollerD6Label.Text = "d6";
-            // 
-            // DiceRollerD8Label
-            // 
-            DiceRollerD8Label.AutoSize = true;
-            DiceRollerD8Label.Location = new Point(6, 247);
-            DiceRollerD8Label.Name = "DiceRollerD8Label";
-            DiceRollerD8Label.Size = new Size(20, 15);
-            DiceRollerD8Label.TabIndex = 76;
-            DiceRollerD8Label.Text = "d8";
-            // 
-            // DiceRollerD10Label
-            // 
-            DiceRollerD10Label.AutoSize = true;
-            DiceRollerD10Label.Location = new Point(6, 293);
-            DiceRollerD10Label.Name = "DiceRollerD10Label";
-            DiceRollerD10Label.Size = new Size(26, 15);
-            DiceRollerD10Label.TabIndex = 77;
-            DiceRollerD10Label.Text = "d10";
-            // 
-            // DiceRollerD12Label
-            // 
-            DiceRollerD12Label.AutoSize = true;
-            DiceRollerD12Label.Location = new Point(6, 339);
-            DiceRollerD12Label.Name = "DiceRollerD12Label";
-            DiceRollerD12Label.Size = new Size(26, 15);
-            DiceRollerD12Label.TabIndex = 78;
-            DiceRollerD12Label.Text = "d12";
-            // 
-            // DiceRollerD20Label
-            // 
-            DiceRollerD20Label.AutoSize = true;
-            DiceRollerD20Label.Location = new Point(6, 385);
-            DiceRollerD20Label.Name = "DiceRollerD20Label";
-            DiceRollerD20Label.Size = new Size(26, 15);
-            DiceRollerD20Label.TabIndex = 79;
-            DiceRollerD20Label.Text = "d20";
-            // 
-            // DiceRollerD100Label
-            // 
-            DiceRollerD100Label.AutoSize = true;
-            DiceRollerD100Label.Location = new Point(6, 431);
-            DiceRollerD100Label.Name = "DiceRollerD100Label";
-            DiceRollerD100Label.Size = new Size(32, 15);
-            DiceRollerD100Label.TabIndex = 80;
-            DiceRollerD100Label.Text = "d100";
-            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -2664,12 +2664,12 @@
         private Button button4;
         private Button button1;
         private Button button2;
-        private Button button37;
-        private Button button38;
-        private Button button42;
-        private Button button41;
-        private Button button40;
-        private Button button39;
+        private Button Add1Button;
+        private Button Add5Button;
+        private Button Remove10Button;
+        private Button Remove5Button;
+        private Button Remove1Button;
+        private Button Add10Button;
         private Button Button_Str;
         private Button Button_StrSave;
         private Button Button_Athletics;

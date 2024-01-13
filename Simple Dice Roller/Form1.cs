@@ -426,7 +426,7 @@ namespace Simple_Dice_Roller
             int panelHeight = panel.GetPreferredSize(new Size(100, expandAmount)).Height;
             //MessageBox.Show("Might set panel height to " + panelHeight);
             //Note: this is calculating 94px every time.
-                //Do I need to do this for the text area?
+            //Do I need to do this for the text area?
             if (panelHeight < minHeight)
             {
                 panelHeight = minHeight;
@@ -1758,7 +1758,7 @@ namespace Simple_Dice_Roller
             newLabel.Width = AbilitiesArea.Rows[0].AccessibilityObject.Bounds.Width - 12;
             //newLabel.Height = 88; //hardcoded 100px height - 12px for margins = 88px
             //Figure out how tall the text area wants to be, then add 12px for a margin.
-            int temp = newLabel.GetPreferredSize(new Size (newLabel.Width, 100)).Height + 12;
+            int temp = newLabel.GetPreferredSize(new Size(newLabel.Width, 100)).Height + 12;
             newLabel.Height = temp;
             p.Controls.Add(newLabel);
         }
