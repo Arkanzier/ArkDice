@@ -819,21 +819,21 @@ namespace Simple_Dice_Roller
         public void ClosingEditingAbilities()
         {
             EditAbilitiesForm = null;
-            LoadCharacter(LoadedCharacter.Name);
+            DisplayCharacter(LoadedCharacter);
         }
 
         //Called when something is closing the form for editing characters.
         public void ClosingEditingCharacter()
         {
             EditCharacterForm = null;
-            LoadCharacter(LoadedCharacter.Name);
+            DisplayCharacter(LoadedCharacter);
         }
 
         //Called when something is closing the form for editing spells.
         public void ClosingEditingSpells()
         {
             EditSpellsForm = null;
-            LoadCharacter(LoadedCharacter.Name);
+            DisplayCharacter(LoadedCharacter);
         }
 
         //Removes the specified ability from the library.
