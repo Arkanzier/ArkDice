@@ -75,6 +75,10 @@ namespace Simple_Dice_Roller
             //make this a global variable?
             Folderpath = "C:\\Users\\david\\Programs\\Simple Dice Roller\\";
 
+
+            //Switching this stuff to it's own function
+            LoadCharacter("Tiriel");
+            /*
             //A collection of spell information so we can load them by ID.
             SpellsLibrary = new Dictionary<string, Spell>();
             AbilitiesLibrary = new Dictionary<string, Ability>();
@@ -103,6 +107,7 @@ namespace Simple_Dice_Roller
             DisplayCharacter(currentCharacter);
 
             DrawRecharges();
+            */
         }
 
         //Misc functions
@@ -204,6 +209,36 @@ namespace Simple_Dice_Roller
             }
 
             return false;
+        }
+
+        //Loads a specified character.
+        private void LoadCharacter (string characterName)
+        {
+            //MessageBox.Show("Loading character: " + characterName);
+
+            //Load the libraries every time in case something has changed while we were doing stuff.
+            SpellsLibrary = new Dictionary<string, Spell>();
+            AbilitiesLibrary = new Dictionary<string, Ability>();
+
+            LoadSpellsLibrary(Folderpath);
+            LoadAbilitiesLibrary(Folderpath);
+
+            //Detail views for the lists of abilities and spells.
+            AbilitiesAreaDetails = new Dictionary<string, Panel>();
+            SpellsAreaDetails = new Dictionary<string, Panel>();
+
+            //Currently selected dice for the dice roller.
+            CurrentDice = new DiceCollection();
+
+            //Stores the last-rolled collection of dice from the dice roller.
+            LastDice = new DiceCollection();
+
+            //Stores the currently loaded character.
+            Character.Character currentCharacter = new Character.Character(characterName, Folderpath, ref AbilitiesLibrary, ref SpellsLibrary);
+            LoadedCharacter = currentCharacter;
+            DisplayCharacter(currentCharacter);
+
+            DrawRecharges();
         }
 
         //Loads a collection of spells into a library that can be referenced later to quickly load spells without having to type them or whatever.
@@ -425,14 +460,11 @@ namespace Simple_Dice_Roller
             //Note: labels seem to default to being 15px tall.
             int panelHeight = panel.GetPreferredSize(new Size(100, expandAmount)).Height;
             //MessageBox.Show("Might set panel height to " + panelHeight);
-            //Note: this is calculating 94px every time.
-            //Do I need to do this for the text area?
             if (panelHeight < minHeight)
             {
                 panelHeight = minHeight;
                 //MessageBox.Show("Panel height is too small, setting it to the minimum height of " + minHeight);
             }
-            //aaaaa
 
             int rowHeight = baseRowHeight + panelHeight;
 
@@ -787,18 +819,21 @@ namespace Simple_Dice_Roller
         public void ClosingEditingAbilities()
         {
             EditAbilitiesForm = null;
+            LoadCharacter(LoadedCharacter.Name);
         }
 
         //Called when something is closing the form for editing characters.
         public void ClosingEditingCharacter()
         {
             EditCharacterForm = null;
+            LoadCharacter(LoadedCharacter.Name);
         }
 
         //Called when something is closing the form for editing spells.
         public void ClosingEditingSpells()
         {
             EditSpellsForm = null;
+            LoadCharacter(LoadedCharacter.Name);
         }
 
         //Removes the specified ability from the library.
