@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle4 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
             rollDice = new Button();
             outputTotal = new Label();
             diceStringBox = new TextBox();
@@ -246,6 +246,7 @@
             Button_EditChar = new Button();
             Button_EditAbilities = new Button();
             Button_EditSpells = new Button();
+            SettingsTab = new TabPage();
             MainTabArea.SuspendLayout();
             DiceTab.SuspendLayout();
             CharacterTab.SuspendLayout();
@@ -302,6 +303,7 @@
             MainTabArea.Controls.Add(CharacterTab);
             MainTabArea.Controls.Add(AbilitiesTab);
             MainTabArea.Controls.Add(MagicTab);
+            MainTabArea.Controls.Add(SettingsTab);
             MainTabArea.Controls.Add(TestingTab);
             MainTabArea.Location = new Point(12, 12);
             MainTabArea.Name = "MainTabArea";
@@ -2094,14 +2096,14 @@
             AbilitiesArea.AllowUserToDeleteRows = false;
             AbilitiesArea.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             AbilitiesArea.Columns.AddRange(new DataGridViewColumn[] { Abilities_NumberCol, Abilities_IDCol, Abilities_NameCol, Abilities_TextCol, Abilities_RechargeCol, Abilities_DiceCol, Abilities_UsesCol, Abilities_ChangeCol, Abilities_UseButtonCol, Abilities_Plus1Col, Abilities_Minus1Col });
-            dataGridViewCellStyle3.Alignment = DataGridViewContentAlignment.TopLeft;
-            dataGridViewCellStyle3.BackColor = SystemColors.Window;
-            dataGridViewCellStyle3.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            dataGridViewCellStyle3.ForeColor = SystemColors.ControlText;
-            dataGridViewCellStyle3.SelectionBackColor = SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = DataGridViewTriState.False;
-            AbilitiesArea.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.TopLeft;
+            dataGridViewCellStyle1.BackColor = SystemColors.Window;
+            dataGridViewCellStyle1.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            dataGridViewCellStyle1.ForeColor = SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = DataGridViewTriState.False;
+            AbilitiesArea.DefaultCellStyle = dataGridViewCellStyle1;
             AbilitiesArea.EditMode = DataGridViewEditMode.EditProgrammatically;
             AbilitiesArea.Location = new Point(6, 6);
             AbilitiesArea.MultiSelect = false;
@@ -2287,14 +2289,14 @@
             SpellsArea.AllowUserToOrderColumns = true;
             SpellsArea.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             SpellsArea.Columns.AddRange(new DataGridViewColumn[] { Spells_NumberCol, Spells_IDCol, Spells_NameCol, Spells_LevelCol, Spells_SchoolCol, Spells_RangeCol, Spells_DurationCol, Spells_ConcentrationCol, Spells_VocalCol, Spells_SomaticCol, Spells_MaterialCol, Spells_ActionCol, Spells_DescriptionCol, Spells_UpcastingBenefitCol, Spells_CastCol, Spells_UpcastCol, Spells_BookCol, Spells_PageCol });
-            dataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.TopLeft;
-            dataGridViewCellStyle4.BackColor = SystemColors.Window;
-            dataGridViewCellStyle4.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            dataGridViewCellStyle4.ForeColor = SystemColors.ControlText;
-            dataGridViewCellStyle4.SelectionBackColor = SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = DataGridViewTriState.False;
-            SpellsArea.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.TopLeft;
+            dataGridViewCellStyle2.BackColor = SystemColors.Window;
+            dataGridViewCellStyle2.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            dataGridViewCellStyle2.ForeColor = SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = DataGridViewTriState.False;
+            SpellsArea.DefaultCellStyle = dataGridViewCellStyle2;
             SpellsArea.EditMode = DataGridViewEditMode.EditProgrammatically;
             SpellsArea.Location = new Point(271, 24);
             SpellsArea.MultiSelect = false;
@@ -2541,6 +2543,15 @@
             Button_EditSpells.Text = "Edit Spells";
             Button_EditSpells.UseVisualStyleBackColor = true;
             Button_EditSpells.Click += Button_EditSpells_Click;
+            // 
+            // SettingsTab
+            // 
+            SettingsTab.Location = new Point(4, 24);
+            SettingsTab.Name = "SettingsTab";
+            SettingsTab.Size = new Size(772, 532);
+            SettingsTab.TabIndex = 5;
+            SettingsTab.Text = "Settings";
+            SettingsTab.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -2792,5 +2803,6 @@
         private Label DiceRollerD10Label;
         private Label DiceRollerD8Label;
         private Label DiceRollerD6Label;
+        private TabPage SettingsTab;
     }
 }

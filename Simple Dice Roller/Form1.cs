@@ -212,7 +212,7 @@ namespace Simple_Dice_Roller
         }
 
         //Loads a specified character.
-        private void LoadCharacter (string characterName)
+        private void LoadCharacter(string characterName)
         {
             //MessageBox.Show("Loading character: " + characterName);
 
@@ -379,14 +379,7 @@ namespace Simple_Dice_Roller
             }
         }
 
-        //
-        //rename?
-        //to do: set up auto sizing for abilities.
-        //make sure the auto sizing for spells works properly.
-        //go over the minimum sizes and make sure I like them.
-        //change to 50? 75?
-        //to do: properly calculate width.
-        //check the boundaries of the leftmost and rightmost visible cells?
+        //Sets the size and location of the detail panels in the Abilities and Spells lists.
         private void SetAndPositionDetailPanel(string gridName, string id)
         {
             Panel? panel;
@@ -532,6 +525,7 @@ namespace Simple_Dice_Roller
             panel.BringToFront();
         }
 
+        //The business end of a button used for testing things.
         private void TestButton_Click(object sender, EventArgs e)
         {
             while (LogMessages.Count > 0)
