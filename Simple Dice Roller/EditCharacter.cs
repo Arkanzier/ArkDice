@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Character;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -54,6 +55,34 @@ namespace Simple_Dice_Roller
 
         #region renameme
 
+        private void DrawClassList()
+        {
+            //Get a list of all of this character's classes.
+            List<ClassLevel> classes = EditingCharacter.Classes;
+
+            //Now put them into the list.
+            //Need to be able to change (at least add) subclass.
+            //Need to be able to change level.
+            //Allow changing name and HD, since the others can be changed?
+            //Need to be able to delete entries.
+            //Something more elegant than just clearing out all the fields?
+            for (int a = 0; a < classes.Count; a++)
+            {
+                string name = classes[a].Name;
+                string subclass = classes[a].Subclass;
+                int level = classes[a].Level;
+                int hd = classes[a].HDSize;
+                //also a delete button?
+
+                string[] row = { name, subclass, level.ToString(), "d" + hd.ToString(), "X" };
+                EditCharacterClassesList.Rows.Add(row);
+            }
+
+            //there will be an empty row to add new ones.
+            //need a function to take info from that row and add it to the character.
+            //put it in save character?
+        }
+
         private double GetProfFromDropdown(ComboBox dropdown)
         {
             string strval = dropdown.Text;
@@ -97,14 +126,6 @@ namespace Simple_Dice_Roller
             Input_IntSave.Items.AddRange(ProficiencyLevelStrings);
             Input_WisSave.Items.AddRange(ProficiencyLevelStrings);
             Input_ChaSave.Items.AddRange(ProficiencyLevelStrings);
-            //to do:
-            //remove the ability to free type into these
-            //set up a const above that determines the names
-            //just use an array in order?
-            //different labels for saves and skills?
-            //convert all decimals to doubles, since apparently I got those backwards?
-            //do these need to be objects?
-            //could i pass in my const array?
 
             SetProfDropdown(EditingCharacter.GetSaveProf("Str"), Input_StrSave);
             SetProfDropdown(EditingCharacter.GetSaveProf("Dex"), Input_DexSave);
@@ -170,7 +191,8 @@ namespace Simple_Dice_Roller
             Input_WarlockSlots4.Text = EditingCharacter.GetSpellSlotsForLevel(4, false, "warlock").ToString();
             Input_WarlockSlots5.Text = EditingCharacter.GetSpellSlotsForLevel(5, false, "warlock").ToString();
 
-            //classes somehow
+            //Classes and class levels.
+            DrawClassList();
 
             //Make sure nothing is in focus.
             ActiveControl = null;
