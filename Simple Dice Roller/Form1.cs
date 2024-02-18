@@ -1975,6 +1975,12 @@ namespace Simple_Dice_Roller
         //Populate the details panel for the spells list when it appears.
         private void CreateSpellDetailPanel(Panel p, DataGridViewRow row)
         {
+            //spell school goes here
+            //more in the same row?
+            //duration
+            //book and page
+            //expensive material component?
+
             Label descriptionLabel = new Label();
             descriptionLabel.Text = row.Cells["Spells_DescriptionCol"].Value.ToString();
             descriptionLabel.Left = 6;
@@ -1983,6 +1989,8 @@ namespace Simple_Dice_Roller
             //set height and width to the panel's height and width -12 each
             descriptionLabel.Width = SpellsArea.Rows[0].AccessibilityObject.Bounds.Width - 12;
             descriptionLabel.Height = 88; //hardcoded 100px height - 12px for margins = 88px
+
+            //upcasting benefit goes here
 
             p.Controls.Add(descriptionLabel);
         }

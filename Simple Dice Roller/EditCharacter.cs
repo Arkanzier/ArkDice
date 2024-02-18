@@ -60,6 +60,8 @@ namespace Simple_Dice_Roller
             //Get a list of all of this character's classes.
             List<ClassLevel> classes = EditingCharacter.Classes;
 
+            EditCharacterClassesList.Rows.Clear();
+
             //Now put them into the list.
             //Need to be able to change (at least add) subclass.
             //Need to be able to change level.
@@ -81,6 +83,63 @@ namespace Simple_Dice_Roller
             //there will be an empty row to add new ones.
             //need a function to take info from that row and add it to the character.
             //put it in save character?
+        }
+
+        private void EditCharacterClassesList_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            //First we figure out which button was clicked.
+            //Column:
+            int colIndex = e.ColumnIndex;
+            string colName = EditCharacterClassesList.Columns[colIndex].Name;
+
+            //Row:
+            int rowNum = e.RowIndex;
+            string className;
+            string subclassName;
+
+            try
+            {
+                className = EditCharacterClassesList.Rows[rowNum].Cells[0].Value.ToString();
+                subclassName = EditCharacterClassesList.Rows[rowNum].Cells[1].Value.ToString();
+                //MessageBox.Show ("Found class ID " + className + " (" + subclassName + ")");
+            }
+            catch
+            {
+                className = "";
+                subclassName = "";
+                //pop up an error message?
+                //return?
+            }
+            className ??= "";
+
+            //Check if the button was clicked
+            if (colName == "ClassesTable_DeleteCol")
+            {
+                //We're supposed to delete this row.
+                //Find all instances of this class + subclass together on the character and remove those entries.
+                //There should only be one, but the list is short enough that we'll want to just check them all.
+                List<ClassLevel> classes = EditingCharacter.Classes;
+                for (int a = 0; a < classes.Count; a++)
+                {
+                    string thisclass = classes[a].Name;
+                    string thissubclass = classes[a].Subclass;
+                    //MessageBox.Show("Deleting row: going to process class " + a + " of " + classes.Count + "\r\nThis class is " + thisclass + " (" + thissubclass + ")");
+
+                    if (thisclass == className && thissubclass == subclassName)
+                    {
+                        //This is a match, delete it.
+                        EditingCharacter.Classes.RemoveAt(a);
+                        //MessageBox.Show("Deleting " + thisclass + " (" + thissubclass + ")");
+
+                        //to do: check if this is necessary.
+                        //Set a back 1 so we don't accidentally skip anything.
+                        a--;
+                    }
+                }
+
+                DrawClassList();
+            }
+            //else: the thing clicked was not a button; do nothing.
         }
 
         private double GetProfFromDropdown(ComboBox dropdown)
@@ -174,6 +233,9 @@ namespace Simple_Dice_Roller
             SetProfDropdown(EditingCharacter.GetSkillProf("Persuasion"), Input_Persuasion);
 
             Input_ProfBonusBonus.Text = EditingCharacter.BonusToProf.ToString();
+            //to do
+            //calculate proficiency bonus here and display it, including the prof bonus bonus.
+            //decide on label for it. "Proficiency Bonus" ?
 
             //Spell slots
             Input_StandardSlots1.Text = EditingCharacter.GetSpellSlotsForLevel(1, false, "standard").ToString();
@@ -391,5 +453,22 @@ namespace Simple_Dice_Roller
         {
 
         }
+
+        private void EditCharacterClassesList_ColumnAdded(object sender, DataGridViewColumnEventArgs e)
+        {
+
+        }
+
+        private void EditCharacterClassesList_ColumnRemoved(object sender, DataGridViewColumnEventArgs e)
+        {
+
+        }
+
+        private void EditCharacterClassesList_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+
     }
 }

@@ -147,6 +147,7 @@
             ClassesTable_HD = new DataGridViewTextBoxColumn();
             ClassesTable_DeleteCol = new DataGridViewButtonColumn();
             groupBox1 = new GroupBox();
+            Label_CalculatedProf = new Label();
             Wrapper_BasicAttributes.SuspendLayout();
             Wrapper_Stats.SuspendLayout();
             Wrapper_SaveProfs.SuspendLayout();
@@ -1221,12 +1222,17 @@
             // 
             EditCharacterClassesList.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             EditCharacterClassesList.Columns.AddRange(new DataGridViewColumn[] { ClassesTable_Name, ClassesTable_Subclass, ClassesTable_Level, ClassesTable_HD, ClassesTable_DeleteCol });
+            EditCharacterClassesList.EditMode = DataGridViewEditMode.EditOnEnter;
             EditCharacterClassesList.Location = new Point(6, 17);
             EditCharacterClassesList.Name = "EditCharacterClassesList";
             EditCharacterClassesList.RowHeadersWidth = 25;
             EditCharacterClassesList.RowTemplate.Height = 25;
             EditCharacterClassesList.Size = new Size(334, 194);
             EditCharacterClassesList.TabIndex = 25;
+            EditCharacterClassesList.CellContentClick += EditCharacterClassesList_CellContentClick;
+            EditCharacterClassesList.CellValueChanged += EditCharacterClassesList_CellValueChanged;
+            EditCharacterClassesList.ColumnAdded += EditCharacterClassesList_ColumnAdded;
+            EditCharacterClassesList.ColumnRemoved += EditCharacterClassesList_ColumnRemoved;
             // 
             // ClassesTable_Name
             // 
@@ -1267,11 +1273,21 @@
             groupBox1.TabStop = false;
             groupBox1.Text = "Classes";
             // 
+            // Label_CalculatedProf
+            // 
+            Label_CalculatedProf.AutoSize = true;
+            Label_CalculatedProf.Location = new Point(578, 55);
+            Label_CalculatedProf.Name = "Label_CalculatedProf";
+            Label_CalculatedProf.Size = new Size(167, 15);
+            Label_CalculatedProf.TabIndex = 30;
+            Label_CalculatedProf.Text = "Calculated Proficiency Bonus: ";
+            // 
             // EditCharacter
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(799, 701);
+            Controls.Add(Label_CalculatedProf);
             Controls.Add(groupBox1);
             Controls.Add(Wrapper_WarlockSlots);
             Controls.Add(Wrapper_StandardSlots);
@@ -1426,5 +1442,6 @@
         private DataGridViewTextBoxColumn ClassesTable_Level;
         private DataGridViewTextBoxColumn ClassesTable_HD;
         private DataGridViewButtonColumn ClassesTable_DeleteCol;
+        private Label Label_CalculatedProf;
     }
 }
