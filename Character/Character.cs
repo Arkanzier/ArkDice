@@ -1148,19 +1148,29 @@ namespace Character //change to ArkDice?
                 {
                     NumberHandling = JsonNumberHandling.AllowReadingFromString
                 };
-                var decoded = JsonSerializer.Deserialize<ClassLevelList>(changes["Classes"]);
 
-                if (decoded != null)
+                try
                 {
-                    //We have a list of zero or more ClassLevel objects, incorporate them into the character.
+                    var decoded = JsonSerializer.Deserialize<ClassLevelList>(changes["Classes"]);
 
-                    //Everything should be present, so we can just overwrite what's already there.
-                    Classes = new List<ClassLevel>();
-                    foreach ( ClassLevel level in decoded.Levels)
+                    if (decoded != null)
                     {
-                        Classes.Add(level);
+                        //We have a list of zero or more ClassLevel objects, incorporate them into the character.
+
+                        //Everything should be present, so we can just overwrite what's already there.
+                        Classes = new List<ClassLevel>();
+                        foreach (ClassLevel level in decoded.Levels)
+                        {
+                            Classes.Add(level);
+                        }
                     }
+                } catch (Exception ex)
+                {
+                    //Complain and don't do anything with the classes.
                 }
+                
+
+                
             }
 
             //...
