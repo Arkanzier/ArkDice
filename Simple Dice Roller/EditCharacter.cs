@@ -74,9 +74,9 @@ namespace Simple_Dice_Roller
                 string subclass = classes[a].Subclass;
                 int level = classes[a].Level;
                 int hd = classes[a].HDSize;
-                //also a delete button?
+                int currhd = classes[a].CurrentHD;
 
-                string[] row = { name, subclass, level.ToString(), "d" + hd.ToString(), "X" };
+                string[] row = { name, subclass, level.ToString(), "d" + hd.ToString(), currhd.ToString(), "X" };
                 EditCharacterClassesList.Rows.Add(row);
             }
 
@@ -381,15 +381,69 @@ namespace Simple_Dice_Roller
             changes["SpellsWarlockLvl4"] = Input_WarlockSlots4.Text;
             changes["SpellsWarlockLvl5"] = Input_WarlockSlots5.Text;
 
-            //Do some extra error checking?
+            //Class changes
+            //changes takes only strings, so we'll JSON encode what we pull out of here.
+            //This is super simple JSON, so we'll just build it as we go.
+            string classesJson = "";
+            for (int a = 0; a < EditCharacterClassesList.Rows.Count; a++)
+            {
+                //Make sure this won't process the empty row at the end that exists to let the user add new rows.
+                if (EditCharacterClassesList.Rows[a].Cells[0].Value == null)
+                {
+                    break;
+                    //to do: change to continue?
+                    //is it possible to have one of these null rows in the middle of actual data?
+                }
+
+                string? classname = EditCharacterClassesList.Rows[a].Cells["ClassesTable_Name"].Value.ToString();
+                if (classname == null)
+                {
+                    classname = "";
+                }
+                //MessageBox.Show("Found class name " + classname);
+                string? subclassname = EditCharacterClassesList.Rows[a].Cells["ClassesTable_Subclass"].Value.ToString();
+                string? classlevel = EditCharacterClassesList.Rows[a].Cells["ClassesTable_Level"].Value.ToString();
+                string? classhd = EditCharacterClassesList.Rows[a].Cells["ClassesTable_HD"].Value.ToString();
+                //We need to convert the HD size from 'd some number' to just 'some number'
+                if (classhd == null)
+                {
+                    classhd = "0";
+                } else if (classhd.StartsWith("d") || classhd.StartsWith("D"))
+                {
+                    classhd = classhd.Substring(1);
+                }
+                string? currenthd = EditCharacterClassesList.Rows[a].Cells["ClassesTable_CurrentHD"].Value.ToString();
+
+                //to do
+                //error checking on the values goes here
+                    //name and subclass can be left as-is
+                    //the other 3 need to be ints-as-strings
+
+                string json = "{\"Name\":\"" + classname + "\",\"Subclass\":\"" + subclassname + "\",\"Level\":" + classlevel + ",\"HDSize\":" + classhd + ",\"CurrentHD\":" + currenthd + "}";
+                //Remember to leave the ints without quotes, because it gets picky about that.
+
+                if (classesJson == "")
+                {
+                    //This is the first class we're adding.
+                    classesJson = json;
+                }
+                else
+                {
+                    //This is not the first class we're adding.
+                    classesJson += "," + json;
+                }
+            }
+            //Wrap it up so that it properly represents a ClassLevelList object.
+            classesJson = "{\"Levels\":[" + classesJson + "]}";
+            changes["Classes"] = classesJson;
+            MessageBox.Show("Using JSON " + classesJson);
+
+            //Do some extra error checking here?
 
             //Save the info
             EditingCharacter.IncorporateChanges(changes);
 
             //Trigger a save here
-            //need filepath
-            //how to best standardize / store filepath?
-            //store it in the character when opening the file?
             EditingCharacter.Save();
 
             return true;
@@ -424,6 +478,12 @@ namespace Simple_Dice_Roller
         #region Called Functions
         //Functions that get called via the form
 
+        //Closes this form when the Close button is clicked.
+        private void Button_Close_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
         //Called when the save button is clicked.
         private void Button_Save_Click(object sender, EventArgs e)
         {
@@ -431,8 +491,6 @@ namespace Simple_Dice_Roller
             //Close the form? Make that a separate button / add a close button?
             //"Save and Close" button?
         }
-
-        #endregion
 
         //Called when the form is closing for whatever reason.
         private void EditCharacter_FormClosing(object sender, FormClosingEventArgs e)
@@ -443,6 +501,8 @@ namespace Simple_Dice_Roller
                 ParentForm.ClosingEditingCharacter();
             }
         }
+
+        #endregion
 
         private void Wrapper_Stats_Enter(object sender, EventArgs e)
         {
@@ -468,7 +528,5 @@ namespace Simple_Dice_Roller
         {
 
         }
-
-
     }
 }

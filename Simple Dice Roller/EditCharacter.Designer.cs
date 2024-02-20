@@ -141,13 +141,15 @@
             Input_WarlockSlots3 = new TextBox();
             Label_WarlockSlots3 = new Label();
             EditCharacterClassesList = new DataGridView();
+            groupBox1 = new GroupBox();
+            Label_CalculatedProf = new Label();
+            Button_Close = new Button();
             ClassesTable_Name = new DataGridViewTextBoxColumn();
             ClassesTable_Subclass = new DataGridViewTextBoxColumn();
             ClassesTable_Level = new DataGridViewTextBoxColumn();
             ClassesTable_HD = new DataGridViewTextBoxColumn();
+            ClassesTable_CurrentHD = new DataGridViewTextBoxColumn();
             ClassesTable_DeleteCol = new DataGridViewButtonColumn();
-            groupBox1 = new GroupBox();
-            Label_CalculatedProf = new Label();
             Wrapper_BasicAttributes.SuspendLayout();
             Wrapper_Stats.SuspendLayout();
             Wrapper_SaveProfs.SuspendLayout();
@@ -256,7 +258,7 @@
             // 
             // Button_Save
             // 
-            Button_Save.Location = new Point(712, 666);
+            Button_Save.Location = new Point(712, 637);
             Button_Save.Name = "Button_Save";
             Button_Save.Size = new Size(75, 23);
             Button_Save.TabIndex = 13;
@@ -1221,7 +1223,7 @@
             // EditCharacterClassesList
             // 
             EditCharacterClassesList.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            EditCharacterClassesList.Columns.AddRange(new DataGridViewColumn[] { ClassesTable_Name, ClassesTable_Subclass, ClassesTable_Level, ClassesTable_HD, ClassesTable_DeleteCol });
+            EditCharacterClassesList.Columns.AddRange(new DataGridViewColumn[] { ClassesTable_Name, ClassesTable_Subclass, ClassesTable_Level, ClassesTable_HD, ClassesTable_CurrentHD, ClassesTable_DeleteCol });
             EditCharacterClassesList.EditMode = DataGridViewEditMode.EditOnEnter;
             EditCharacterClassesList.Location = new Point(6, 17);
             EditCharacterClassesList.Name = "EditCharacterClassesList";
@@ -1233,6 +1235,35 @@
             EditCharacterClassesList.CellValueChanged += EditCharacterClassesList_CellValueChanged;
             EditCharacterClassesList.ColumnAdded += EditCharacterClassesList_ColumnAdded;
             EditCharacterClassesList.ColumnRemoved += EditCharacterClassesList_ColumnRemoved;
+            // 
+            // groupBox1
+            // 
+            groupBox1.Controls.Add(EditCharacterClassesList);
+            groupBox1.Location = new Point(13, 98);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new Size(350, 217);
+            groupBox1.TabIndex = 29;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "Classes";
+            // 
+            // Label_CalculatedProf
+            // 
+            Label_CalculatedProf.AutoSize = true;
+            Label_CalculatedProf.Location = new Point(578, 55);
+            Label_CalculatedProf.Name = "Label_CalculatedProf";
+            Label_CalculatedProf.Size = new Size(167, 15);
+            Label_CalculatedProf.TabIndex = 30;
+            Label_CalculatedProf.Text = "Calculated Proficiency Bonus: ";
+            // 
+            // Button_Close
+            // 
+            Button_Close.Location = new Point(712, 666);
+            Button_Close.Name = "Button_Close";
+            Button_Close.Size = new Size(75, 23);
+            Button_Close.TabIndex = 31;
+            Button_Close.Text = "Close";
+            Button_Close.UseVisualStyleBackColor = true;
+            Button_Close.Click += Button_Close_Click;
             // 
             // ClassesTable_Name
             // 
@@ -1257,36 +1288,24 @@
             ClassesTable_HD.Name = "ClassesTable_HD";
             ClassesTable_HD.Width = 40;
             // 
+            // ClassesTable_CurrentHD
+            // 
+            ClassesTable_CurrentHD.HeaderText = "Current HD";
+            ClassesTable_CurrentHD.Name = "ClassesTable_CurrentHD";
+            ClassesTable_CurrentHD.Visible = false;
+            // 
             // ClassesTable_DeleteCol
             // 
             ClassesTable_DeleteCol.HeaderText = "";
             ClassesTable_DeleteCol.Name = "ClassesTable_DeleteCol";
             ClassesTable_DeleteCol.Width = 40;
             // 
-            // groupBox1
-            // 
-            groupBox1.Controls.Add(EditCharacterClassesList);
-            groupBox1.Location = new Point(13, 98);
-            groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(350, 217);
-            groupBox1.TabIndex = 29;
-            groupBox1.TabStop = false;
-            groupBox1.Text = "Classes";
-            // 
-            // Label_CalculatedProf
-            // 
-            Label_CalculatedProf.AutoSize = true;
-            Label_CalculatedProf.Location = new Point(578, 55);
-            Label_CalculatedProf.Name = "Label_CalculatedProf";
-            Label_CalculatedProf.Size = new Size(167, 15);
-            Label_CalculatedProf.TabIndex = 30;
-            Label_CalculatedProf.Text = "Calculated Proficiency Bonus: ";
-            // 
             // EditCharacter
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(799, 701);
+            Controls.Add(Button_Close);
             Controls.Add(Label_CalculatedProf);
             Controls.Add(groupBox1);
             Controls.Add(Wrapper_WarlockSlots);
@@ -1437,11 +1456,13 @@
         private Label Label_WarlockSlots3;
         private DataGridView EditCharacterClassesList;
         private GroupBox groupBox1;
+        private Label Label_CalculatedProf;
+        private Button Button_Close;
         private DataGridViewTextBoxColumn ClassesTable_Name;
         private DataGridViewTextBoxColumn ClassesTable_Subclass;
         private DataGridViewTextBoxColumn ClassesTable_Level;
         private DataGridViewTextBoxColumn ClassesTable_HD;
+        private DataGridViewTextBoxColumn ClassesTable_CurrentHD;
         private DataGridViewButtonColumn ClassesTable_DeleteCol;
-        private Label Label_CalculatedProf;
     }
 }

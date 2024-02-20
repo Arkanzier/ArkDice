@@ -6,7 +6,35 @@ using System.Threading.Tasks;
 
 namespace Character
 {
+    //A list of ClassLevel objects.
+    //This exists partially to allow automatic deserialization of lists of ClassLevels, and partially for a couple convenience functions.
+    #region ClassLevelList Class
+
+    public class ClassLevelList
+    {
+        public List<ClassLevel> Levels { get; set; }
+
+        public ClassLevelList()
+        {
+            Levels = new List<ClassLevel>();
+        }
+
+        public ClassLevelList(List<ClassLevel> levels)
+        {
+            Levels = levels;
+        }
+
+        public void Sort ()
+        {
+            Levels.Sort();
+        }
+    }
+
+    #endregion
+
     //A simple little struct so we can easily associate class + subclass + level as a single data point.
+    //It also handles HD while we're at it because that's convenient.
+    #region ClassLevel Class
 
     public class ClassLevel
     {
@@ -16,9 +44,6 @@ namespace Character
 
         public int HDSize { get; set; }
         public int CurrentHD { get; set; }
-
-        //hd size?
-        //current number of hd?
 
         public ClassLevel (string name = "", string subclass = "", int level = 0, int HDSize = -1, int currentHD = -1)
         {
@@ -46,5 +71,61 @@ namespace Character
                 this.CurrentHD = level;
             }
         }
+
+        //Used for sorting.
+        public int Compare (ClassLevel other)
+        {
+            //First we compare based on class name.
+            int comparison = String.Compare(this.Name, other.Name, StringComparison.OrdinalIgnoreCase);
+            if (comparison < 0)
+            {
+                return -1;
+            } else if (comparison > 0)
+            {
+                return 1;
+            }
+
+            //Now we need to break ties by subclass name.
+            comparison = String.Compare(this.Subclass, other.Subclass, StringComparison.OrdinalIgnoreCase);
+            if (comparison < 0)
+            {
+                return -1;
+            }
+            else if (comparison > 0)
+            {
+                return 1;
+            }
+
+            //I guess we'll compare levels, in case that matters.
+            if (this.Level < other.Level)
+            {
+                return -1;
+            }
+            else if (this.Level > other.Level)
+            {
+                return 1;
+            }
+
+            //They're identical in all ways we could reasonably justify sorting by.
+            return 0;
+        }
+
+        //Updates this object to match whatever is passed in.
+        //Leaves CurrentHD alone, except that it enforces a maximum for it of Level.
+        public void IncorporateChanges (ClassLevel newInfo)
+        {
+            this.Name = newInfo.Name;
+            this.Subclass = newInfo.Subclass;
+            this.Level = newInfo.Level;
+            this.HDSize = newInfo.HDSize;
+            this.CurrentHD = newInfo.CurrentHD;
+
+            if (CurrentHD > Level)
+            {
+                CurrentHD = Level;
+            }
+        }
     }
+
+    #endregion
 }

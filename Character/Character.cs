@@ -107,9 +107,9 @@ namespace Character //change to ArkDice?
         [JsonIgnore]
         private string FolderLocation;
 
-        //Constructor(s):
-        //-------- -------- -------- -------- -------- -------- -------- -------- 
 
+
+        #region Constructors
         //Creates a blank character.
         public Character()
         {
@@ -656,11 +656,10 @@ namespace Character //change to ArkDice?
             spellsLibrary = UpdateAllSpells(spellsLibrary);
         }
 
-        
+        #endregion
 
 
-        //Public functions:
-        //-------- -------- -------- -------- -------- -------- -------- -------- 
+        #region Public Functions: General
 
         //Add or remove HD to the specified class.
         public bool AddOrSubtractHDForClass (string className, int amount)
@@ -1142,6 +1141,27 @@ namespace Character //change to ArkDice?
                 }
             }
 
+            //Class Levels
+            if (changes.ContainsKey("Classes"))
+            {
+                var deserializerOptions = new JsonSerializerOptions
+                {
+                    NumberHandling = JsonNumberHandling.AllowReadingFromString
+                };
+                var decoded = JsonSerializer.Deserialize<ClassLevelList>(changes["Classes"]);
+
+                if (decoded != null)
+                {
+                    //We have a list of zero or more ClassLevel objects, incorporate them into the character.
+
+                    //Everything should be present, so we can just overwrite what's already there.
+                    Classes = new List<ClassLevel>();
+                    foreach ( ClassLevel level in decoded.Levels)
+                    {
+                        Classes.Add(level);
+                    }
+                }
+            }
 
             //...
 
@@ -1588,9 +1608,528 @@ namespace Character //change to ArkDice?
             return resp;
         }
 
+        #endregion
 
-        //Private functions:
-        //-------- -------- -------- -------- -------- -------- -------- -------- 
+
+        #region Public Functions: Getters and Setters for Stats
+
+        //to do: how many of these are actually needed?
+        //Getters for stats, to obfuscate the array that's actually used.
+        public int GetStrength()
+        {
+            return this.Stats[0];
+        }
+        public int GetStr()
+        {
+            return this.Stats[0];
+        }
+        public int GetStrMod()
+        {
+            return DiceFunctions.getModifierForStat(this.Stats[0]);
+        }
+        public int GetDexterity()
+        {
+            return this.Stats[1];
+        }
+        public int GetDex()
+        {
+            return this.Stats[1];
+        }
+        public int GetDexMod()
+        {
+            return DiceFunctions.getModifierForStat(this.Stats[1]);
+        }
+        public int GetConstitution()
+        {
+            return this.Stats[2];
+        }
+        public int GetCon()
+        {
+            return this.Stats[2];
+        }
+        public int GetConMod()
+        {
+            return DiceFunctions.getModifierForStat(this.Stats[2]);
+        }
+        public int GetIntelligence()
+        {
+            return this.Stats[3];
+        }
+        public int GetInt()
+        {
+            return this.Stats[3];
+        }
+        public int GetIntMod()
+        {
+            return DiceFunctions.getModifierForStat(this.Stats[3]);
+        }
+        public int GetWisdom()
+        {
+            return this.Stats[4];
+        }
+        public int GetWis()
+        {
+            return this.Stats[4];
+        }
+        public int GetWisMod()
+        {
+            return DiceFunctions.getModifierForStat(this.Stats[4]);
+        }
+        public int GetCharisma()
+        {
+            return this.Stats[5];
+        }
+        public int GetCha()
+        {
+            return this.Stats[5];
+        }
+        public int GetChaMod()
+        {
+            return DiceFunctions.getModifierForStat(this.Stats[5]);
+        }
+        public int[] GetStats()
+        {
+            return this.Stats;
+        }
+
+        //Setters for stats, to obfuscate the array that's actually used.
+        public void SetStr(int newVal)
+        {
+            Stats[0] = newVal;
+        }
+        public void SetDex(int newVal)
+        {
+            Stats[1] = newVal;
+        }
+        public void SetCon(int newVal)
+        {
+            Stats[2] = newVal;
+        }
+        public void SetInt(int newVal)
+        {
+            Stats[3] = newVal;
+        }
+        public void SetWis(int newVal)
+        {
+            Stats[4] = newVal;
+        }
+        public void SetCha(int newVal)
+        {
+            Stats[5] = newVal;
+        }
+
+        #endregion
+
+
+        #region Public Functions: Other Getters and Setters
+
+        //Adds the specified ability if the character doesn't have it, or updates the character's version of the ability if they do have it.
+        public void AddOrUpdateAbility(Ability ability, bool add = true, bool update = true)
+        {
+            int index = GetAbilityIndexByID(ability.ID);
+            if (index >= 0)
+            {
+                if (update)
+                {
+                    //This character has the ability, we want to update what's there.
+                    Abilities[index] = ability;
+                    //Run some logic to make sure the available uses are still within bounds?
+                }
+            }
+            else
+            {
+                if (add)
+                {
+                    //This character does not have the ability, add it.
+                    Abilities.Add(ability);
+                }
+            }
+
+            SortAbilities();
+        }
+
+        //Adds the specified spell if the character doesn't have it, or updates the character's version of the spell if they do have it.
+        public void AddOrUpdateSpell(Spell spell, bool add = true, bool update = true)
+        {
+            int index = GetSpellIndexByID(spell.ID);
+            if (index >= 0)
+            {
+                if (update)
+                {
+                    Spells[index] = spell;
+                }
+            }
+            else
+            {
+                if (add)
+                {
+                    Spells.Add(spell);
+                }
+            }
+
+            SortSpells();
+        }
+
+        //Indicates whether this character has a class with the provided name.
+        //Also checks the subclass if a name is provided.
+        public bool CharacterHasClassWithName (string className, string subclassName = "")
+        {
+            int index = GetClassIndexByName(className, subclassName);
+            if (index < 0)
+            {
+                return false;
+            } else
+            {
+                return true;
+            }
+        }
+
+        //Get whether or not the character is proficient in any given save.
+        //Returns the multiple of the character's prof bonus that gets used (0 for no prof, 1 for proficient, etc).
+        public double GetSaveProf(string save)
+        {
+            save = save.ToLower();
+            switch (save)
+            {
+                case "strength":
+                case "str": return GetSaveProf(0);
+                case "dexterity":
+                case "dex": return GetSaveProf(1);
+                case "constitution":
+                case "con": return GetSaveProf(2);
+                case "intelligence":
+                case "int": return GetSaveProf(3);
+                case "wisdom":
+                case "wis": return GetSaveProf(4);
+                case "charisma":
+                case "cha": return GetSaveProf(5);
+                default:
+                    //complain to a log file?
+                    return 0;
+            }
+        }
+        public double GetSaveProf(int save)
+        {
+            if (save < 0 || save > 5)
+            {
+                //complain in a log?
+                return 0;
+            }
+            else
+            {
+                return this.Saves[save];
+            }
+        }
+
+        //Get whether or not the character is proficient in any given skill.
+        //Returns the multiple of the character's prof bonus that gets used (0 for no prof, 1 for proficient, etc).
+        public double GetSkillProf(string skill)
+        {
+            if (Skills.ContainsKey(skill))
+            {
+                return Skills[skill];
+            }
+            else
+            {
+                //complain somewhere
+                return 0;
+            }
+        }
+
+        //Returns a list of all abilities, in the default order.
+        public List<Ability> GetAbilities()
+        {
+            //to do: perhaps switch this over to something that just outputs data needed to render the things for the abilities.
+            //then switch ability class over to internal only again.
+            return this.Abilities;
+        }
+
+        //Returns an Ability with the specified ID, if this character has one.
+        //Returns null if the character doesn't have a matching Ability.
+        public Ability GetAbilityByID(string abilityID)
+        {
+            for (int a = 0; a < this.Abilities.Count; a++)
+            {
+                if (Abilities[a].ID == abilityID)
+                {
+                    return Abilities[a];
+                }
+            }
+
+            //what to return when it's not found?
+            //change it to returning the ability by reference?
+            //return new Ability();
+            return null;
+        }
+
+        //Returns a list of recharge conditions for all of the character's abilities.
+        //Skips those that are short/long rest or with several flavors of "none."
+        public List<string> GetAbilityRechargeConditions()
+        {
+            List<string> temp = new List<string>();
+
+            for (int a = 0; a < Abilities.Count; a++)
+            {
+                string recharge = Abilities[a].RechargeCondition;
+                if (recharge.ToLower() == "long rest" || recharge.ToLower() == "short rest")
+                {
+                    //These are being hardcoded elsewhere
+                    continue;
+                }
+                else if (recharge.ToLower() == "false" || recharge.ToLower() == "none" || recharge == "")
+                {
+                    //This ability has no recharge condition, exclude it from the list.
+                    continue;
+                }
+
+                if (temp.Contains(recharge))
+                {
+                    continue;
+                }
+
+                temp.Add(recharge);
+            }
+
+            //To do: how to make sure this ignores capitalization?
+            temp.Sort();
+
+            //We want to hardcode long and short rests to the beginning of the list.
+            List<string> ret = new List<string>();
+            ret.Add("Long Rest");
+            ret.Add("Short Rest");
+            for (int a = 0; a < temp.Count; a++)
+            {
+                ret.Add(temp[a]);
+            }
+            return ret;
+        }
+
+        //Returns a list of the character's basic abilities.
+        public List<Ability> GetBasicAbilities()
+        {
+            return this.BasicAbilities;
+        }
+
+        //Calculates and returns the flat bonus the character gets on the specified roll.
+        public int GetBonusForRoll(string roll)
+        {
+            int ret = 0;
+
+            //If this is a skill, this will tell us it's stat.
+            //If this isn't a skill, this will send back empty string.
+            string stat = DiceFunctions.GetStatForRoll(roll);
+
+            //Add appropriate stat mod.
+            if (stat == "strength")
+            {
+                ret += GetStrMod();
+            }
+            else if (stat == "dexterity")
+            {
+                ret += GetDexMod();
+            }
+            else if (stat == "constitution")
+            {
+                //There are no Con skills, but we'll leave that in just in case of houserules.
+                ret += GetConMod();
+            }
+            else if (stat == "intelligence")
+            {
+                ret += GetIntMod();
+            }
+            else if (stat == "wisdom")
+            {
+                ret += GetWisMod();
+            }
+            else if (stat == "charisma")
+            {
+                ret += GetChaMod();
+            }
+            else
+            {
+                //Did someone forgot to add something to GetStatForRoll()?
+                //Don't add any stat.
+            }
+
+            //Add prof as appropriate.
+            double profMult = GetProfForRoll(roll);
+            ret += (int)Math.Floor((Prof + BonusToProf) * profMult);
+
+            //Misc bonuses not currently supported.
+
+            return ret;
+        }
+
+        //It does GetBonusForRoll() but converts the response to a string.
+        public string GetBonusForRollAsString(string roll)
+        {
+            int bonus = GetBonusForRoll(roll);
+
+            if (bonus < 0)
+            {
+                return bonus.ToString();
+            }
+            else
+            {
+                return "+" + bonus.ToString();
+            }
+        }
+
+        //Returns the class matching the specified name.
+        public ClassLevel GetClassByName (string className, string subclassName = "")
+        {
+            int index = GetClassIndexByName(className, subclassName);
+
+            if (index >= 0)
+            {
+                return Classes[index];
+            } else
+            {
+                //to do: what to send back?
+                //Just return a blank ClassLevel for now.
+                return new ClassLevel();
+            }
+        }
+
+        //Returns the index for any class matching the specified name.
+        //If subclassName is also specified, it will require that that matches as well.
+        //Returns -1 if there is no matching class.
+        public int GetClassIndexByName (string className, string subclassName = "")
+        {
+            for (int a = 0; a < Classes.Count; a++)
+            {
+                string thisClass = Classes[a].Name;
+                string thisSubclass = Classes[a].Subclass;
+
+                if (thisClass != className)
+                {
+                    //This isn't the one we're looking for, we can move on.
+                    continue;
+                }
+
+                if (subclassName != "" && subclassName != thisSubclass)
+                {
+                    //This isn't the one we're looking for, we can move on.
+                    continue;
+                }
+
+                //If we get this far, they match to the level of information we were given.
+                return a;
+            }
+
+            //If we get this far, the specified class doesn't exist in the list.
+            return -1;
+        }
+
+        //Calculates and returns the multiplier that should be used for the character's proficiency bonus on a roll.
+        //Non-proficiency returns 0, proficiency returns 1, and expertise returns 2.
+        //This is decimal instead of int because 0.5x proficiency might pop up in houserules.
+        public double GetProfForRoll(string roll)
+        {
+            string lower = roll.ToLower();
+
+            //Stats are always 0.
+
+            //Saves:
+            if (lower == "strsave")
+            {
+                return Saves[0];
+            }
+            else if (lower == "dexsave")
+            {
+                return Saves[1];
+            }
+            else if (lower == "consave" || lower == "concentration")
+            {
+                return Saves[2];
+            }
+            else if (lower == "intsave")
+            {
+                return Saves[3];
+            }
+            else if (lower == "wissave")
+            {
+                return Saves[4];
+            }
+            else if (lower == "chasave")
+            {
+                return Saves[5];
+            }
+            //Death saves are always 0.
+
+            //Skills:
+            if (Skills.TryGetValue(roll, out var skill))
+            {
+                return (int)skill;
+            }
+            //to do: consider replacing this with a for loop comparing ToLower() versions against each other.
+            //Is there a case insensitive version of TryGetValue()?
+
+            //Weapons go here.
+
+            //Armor goes here?
+
+            //Misc profs go here.
+            //Musical instruments, tools, etc.
+
+            //If we get this far, assume no proficiency.
+            return 0;
+        }
+
+        //Returns the specified spell, or null if the spell is not found.
+        public Spell GetSpellByID(string spellID)
+        {
+            for (int a = 0; a < this.Spells.Count; a++)
+            {
+                if (Spells[a].ID == spellID)
+                {
+                    return Spells[a];
+                }
+            }
+
+            //what to return when it's not found?
+            //return new Spell();
+            return null;
+        }
+
+        //Returns a list of all spells, in the default order.
+        public List<Spell> GetSpells()
+        {
+            return this.Spells;
+        }
+
+        //Returns the number of available spell slots of the specified level and type.
+        //fetchCurrent controls whether this returns the currently-available number of spell slots (true) or the maximum (false).
+        //type controls whether this returns all spell slots of the specified level ("") or just those of a particular type (ie: "warlock"). Case insensitive.
+        public int GetSpellSlotsForLevel(int level, bool fetchCurrent = true, string type = "")
+        {
+            int ret = 0;
+
+            //Maybe add standard spell slots.
+            if (type == "" || type.ToLower() == "standard")
+            {
+                if (level >= 1 && level <= 9)
+                {
+                    ret += (fetchCurrent) ? SpellSlotsCurrent[level] : SpellSlotsMax[level];
+                }
+            }
+
+            //Maybe add warlock spell slots.
+            if (type == "" || type.ToLower() == "warlock")
+            {
+                if (level >= 1 && level <= 5)
+                {
+                    ret += (fetchCurrent) ? SpellSlotsWarlockCurrent[level] : SpellSlotsWarlockMax[level];
+                }
+            }
+
+            return ret;
+        }
+
+        #endregion
+
+
+        #region Private Functions
         //Calculates the character's proficiency bonus and loads it into the prof variable.
         private void CalculateProf ()
         {
@@ -1678,6 +2217,12 @@ namespace Character //change to ArkDice?
             Abilities.Sort(CompareAbilities);
         }
 
+        //Sorts the list of classes into alphabetical order, with ties broken by subclass.
+        private void SortClasses ()
+        {
+            Classes.Sort();
+        }
+
         //Sorts the List of Spells into the default order, so we can just fetch it as is later.
         private void SortSpells()
         {
@@ -1696,6 +2241,7 @@ namespace Character //change to ArkDice?
             return one.Compare(two);
         }
 
+        //Spends one HD of the specified size, if possible, and does the appropriate healing.
         private bool SpendOneHDBySize (int size, bool ignoreCon = false)
         {
             for (int a = 0; a < Classes.Count; a++)
@@ -1768,449 +2314,7 @@ namespace Character //change to ArkDice?
             Passives = new List<string>();
         }
 
-        //Getters and Setters:
-        //-------- -------- -------- -------- -------- -------- -------- -------- 
-
-        #region Getters and Setters for Stats
-
-        //to do: how many of these are actually needed?
-        //Getters for stats, to obfuscate the array that's actually used.
-        public int GetStrength()
-        {
-            return this.Stats[0];
-        }
-        public int GetStr()
-        {
-            return this.Stats[0];
-        }
-        public int GetStrMod()
-        {
-            return DiceFunctions.getModifierForStat(this.Stats[0]);
-        }
-        public int GetDexterity()
-        {
-            return this.Stats[1];
-        }
-        public int GetDex()
-        {
-            return this.Stats[1];
-        }
-        public int GetDexMod()
-        {
-            return DiceFunctions.getModifierForStat(this.Stats[1]);
-        }
-        public int GetConstitution()
-        {
-            return this.Stats[2];
-        }
-        public int GetCon()
-        {
-            return this.Stats[2];
-        }
-        public int GetConMod()
-        {
-            return DiceFunctions.getModifierForStat(this.Stats[2]);
-        }
-        public int GetIntelligence()
-        {
-            return this.Stats[3];
-        }
-        public int GetInt()
-        {
-            return this.Stats[3];
-        }
-        public int GetIntMod()
-        {
-            return DiceFunctions.getModifierForStat(this.Stats[3]);
-        }
-        public int GetWisdom()
-        {
-            return this.Stats[4];
-        }
-        public int GetWis()
-        {
-            return this.Stats[4];
-        }
-        public int GetWisMod()
-        {
-            return DiceFunctions.getModifierForStat(this.Stats[4]);
-        }
-        public int GetCharisma()
-        {
-            return this.Stats[5];
-        }
-        public int GetCha()
-        {
-            return this.Stats[5];
-        }
-        public int GetChaMod()
-        {
-            return DiceFunctions.getModifierForStat(this.Stats[5]);
-        }
-        public int[] GetStats()
-        {
-            return this.Stats;
-        }
-
-        //Setters for stats, to obfuscate the array that's actually used.
-        public void SetStr (int newVal)
-        {
-            Stats[0] = newVal;
-        }
-        public void SetDex(int newVal)
-        {
-            Stats[1] = newVal;
-        }
-        public void SetCon(int newVal)
-        {
-            Stats[2] = newVal;
-        }
-        public void SetInt(int newVal)
-        {
-            Stats[3] = newVal;
-        }
-        public void SetWis(int newVal)
-        {
-            Stats[4] = newVal;
-        }
-        public void SetCha(int newVal)
-        {
-            Stats[5] = newVal;
-        }
-
         #endregion
 
-        //Adds the specified ability if the character doesn't have it, or updates the character's version of the ability if they do have it.
-        public void AddOrUpdateAbility(Ability ability, bool add = true, bool update = true)
-        {
-            int index = GetAbilityIndexByID(ability.ID);
-            if (index >= 0)
-            {
-                if (update)
-                {
-                    //This character has the ability, we want to update what's there.
-                    Abilities[index] = ability;
-                    //Run some logic to make sure the available uses are still within bounds?
-                }
-            }
-            else
-            {
-                if (add)
-                {
-                    //This character does not have the ability, add it.
-                    Abilities.Add(ability);
-                }
-            }
-
-            SortAbilities();
-        }
-
-        //Adds the specified spell if the character doesn't have it, or updates the character's version of the spell if they do have it.
-        public void AddOrUpdateSpell (Spell spell, bool add = true, bool update = true)
-        {
-            int index = GetSpellIndexByID(spell.ID);
-            if (index >= 0)
-            {
-                if (update)
-                {
-                    Spells[index] = spell;
-                }
-            }
-            else
-            {
-                if (add)
-                {
-                    Spells.Add(spell);
-                }
-            }
-
-            SortSpells();
-        }
-
-        //Get whether or not the character is proficient in any given save.
-        //Returns the multiple of the character's prof bonus that gets used (0 for no prof, 1 for proficient, etc).
-        public double GetSaveProf(string save)
-        {
-            save = save.ToLower();
-            switch (save)
-            {
-                case "strength":
-                case "str": return GetSaveProf(0);
-                case "dexterity":
-                case "dex": return GetSaveProf(1);
-                case "constitution":
-                case "con": return GetSaveProf(2);
-                case "intelligence":
-                case "int": return GetSaveProf(3);
-                case "wisdom":
-                case "wis": return GetSaveProf(4);
-                case "charisma":
-                case "cha": return GetSaveProf(5);
-                default:
-                    //complain to a log file?
-                    return 0;
-            }
-        }
-        public double GetSaveProf(int save)
-        {
-            if (save < 0 || save > 5)
-            {
-                //complain in a log?
-                return 0;
-            }
-            else
-            {
-                return this.Saves[save];
-            }
-        }
-
-        //Get whether or not the character is proficient in any given skill.
-        //Returns the multiple of the character's prof bonus that gets used (0 for no prof, 1 for proficient, etc).
-        public double GetSkillProf (string skill)
-        {
-            if (Skills.ContainsKey(skill))
-            {
-                return Skills[skill];
-            } else
-            {
-                //complain somewhere
-                return 0;
-            }
-        }
-
-        //Returns a list of all abilities, in the default order.
-        public List<Ability> GetAbilities ()
-        {
-            //to do: perhaps switch this over to something that just outputs data needed to render the things for the abilities.
-            //then switch ability class over to internal only again.
-            return this.Abilities;
-        }
-
-        //Returns an Ability with the specified ID, if this character has one.
-        //Returns null if the character doesn't have a matching Ability.
-        public Ability GetAbilityByID (string abilityID)
-        {
-            for (int a = 0; a <  this.Abilities.Count; a++)
-            {
-                if (Abilities[a].ID == abilityID)
-                {
-                    return Abilities[a];
-                }
-            }
-
-            //what to return when it's not found?
-            //change it to returning the ability by reference?
-            //return new Ability();
-            return null;
-        }
-
-        //
-        public List<string> GetAbilityRechargeConditions ()
-        {
-            List<string> temp = new List<string> ();
-
-            for (int a = 0; a < Abilities.Count; a++)
-            {
-                string recharge = Abilities[a].RechargeCondition;
-                if (recharge.ToLower() == "long rest" || recharge.ToLower() == "short rest")
-                {
-                    //These are being hardcoded elsewhere
-                    continue;
-                } else if (recharge.ToLower() == "false" || recharge.ToLower() == "none" || recharge == "")
-                {
-                    //This ability has no recharge condition, exclude it from the list.
-                    continue;
-                }
-
-                if (temp.Contains(recharge)) {
-                    continue;
-                }
-
-                temp.Add (recharge);
-            }
-
-            //To do: how to make sure this ignores capitalization?
-            temp.Sort();
-
-            //We want to hardcode long and short rests to the beginning of the list.
-            List<string> ret = new List<string>();
-            ret.Add("Long Rest");
-            ret.Add("Short Rest");
-            for (int a = 0; a < temp.Count; a++)
-            {
-                ret.Add(temp[a]);
-            }
-            return ret;
-        }
-
-        public List<Ability> GetBasicAbilities ()
-        {
-            return this.BasicAbilities;
-        }
-
-        //Calculates and returns the flat bonus the character gets on the specified roll.
-        public int GetBonusForRoll (string roll)
-        {
-            int ret = 0;
-
-            //If this is a skill, this will tell us it's stat.
-            //If this isn't a skill, this will send back empty string.
-            string stat = DiceFunctions.GetStatForRoll(roll);
-
-            //Add appropriate stat mod.
-            if (stat == "strength")
-            {
-                ret += GetStrMod();
-            }
-            else if (stat == "dexterity")
-            {
-                ret += GetDexMod();
-            }
-            else if (stat == "constitution")
-            {
-                //There are no Con skills, but we'll leave that in just in case of houserules.
-                ret += GetConMod();
-            }
-            else if (stat == "intelligence")
-            {
-                ret += GetIntMod();
-            }
-            else if (stat == "wisdom")
-            {
-                ret += GetWisMod();
-            }
-            else if (stat == "charisma")
-            {
-                ret += GetChaMod();
-            } else
-            {
-                //Did someone forgot to add something to GetStatForRoll()?
-                //Don't add any stat.
-            }
-
-            //Add prof as appropriate.
-            double profMult = GetProfForRoll(roll);
-            ret += (int)Math.Floor((Prof + BonusToProf) * profMult);
-
-            //Misc bonuses not currently supported.
-
-            return ret;
-        }
-
-        public string GetBonusForRollAsString (string roll)
-        {
-            int bonus = GetBonusForRoll(roll);
-
-            if (bonus < 0)
-            {
-                return bonus.ToString();
-            } else
-            {
-                return "+" + bonus.ToString();
-            }
-        }
-
-        //Calculates and returns the multiplier that should be used for the character's proficiency bonus on a roll.
-        //Non-proficiency returns 0, proficiency returns 1, and expertise returns 2.
-        //This is decimal instead of int because 0.5x proficiency might pop up in houserules.
-        public double GetProfForRoll (string roll)
-        {
-            string lower = roll.ToLower();
-
-            //Stats are always 0.
-
-            //Saves:
-            if (lower == "strsave")
-            {
-                return Saves[0];
-            }
-            else if (lower == "dexsave")
-            {
-                return Saves[1];
-            }
-            else if (lower == "consave" || lower == "concentration")
-            {
-                return Saves[2];
-            }
-            else if (lower == "intsave")
-            {
-                return Saves[3];
-            }
-            else if (lower == "wissave")
-            {
-                return Saves[4];
-            } else if (lower == "chasave")
-            {
-                return Saves[5];
-            }
-            //Death saves are always 0.
-
-            //Skills:
-            if (Skills.TryGetValue(roll, out var skill))
-            {
-                return ( int) skill;
-            }
-            //to do: consider replacing this with a for loop comparing ToLower() versions against each other.
-                //Is there a case insensitive version of TryGetValue()?
-
-            //Weapons go here.
-
-            //Armor goes here?
-
-            //Misc profs go here.
-                //Musical instruments, tools, etc.
-
-            //If we get this far, assume no proficiency.
-            return 0;
-        }
-
-        //Returns the specified spell, or null if the spell is not found.
-        public Spell GetSpellByID(string spellID)
-        {
-            for (int a = 0; a < this.Spells.Count; a++)
-            {
-                if (Spells[a].ID == spellID)
-                {
-                    return Spells[a];
-                }
-            }
-
-            //what to return when it's not found?
-            //return new Spell();
-            return null;
-        }
-
-        //Returns a list of all spells, in the default order.
-        public List<Spell> GetSpells()
-        {
-            return this.Spells;
-        }
-
-        //Returns the number of available spell slots of the specified level and type.
-        //fetchCurrent controls whether this returns the currently-available number of spell slots (true) or the maximum (false).
-        //type controls whether this returns all spell slots of the specified level ("") or just those of a particular type (ie: "warlock"). Case insensitive.
-        public int GetSpellSlotsForLevel(int level, bool fetchCurrent = true, string type = "")
-        {
-            int ret = 0;
-
-            //Maybe add standard spell slots.
-            if (type == "" || type.ToLower() == "standard") {
-                if (level >= 1 && level <= 9)
-                {
-                    ret += (fetchCurrent) ? SpellSlotsCurrent[level] : SpellSlotsMax[level];
-                }
-            }
-
-            //Maybe add warlock spell slots.
-            if (type == "" || type.ToLower() == "warlock")
-            {
-                if (level >= 1 && level <= 5)
-                {
-                    ret += (fetchCurrent) ? SpellSlotsWarlockCurrent[level] : SpellSlotsWarlockMax[level];
-                }
-            }
-
-            return ret;
-        }
     }
 }
