@@ -15,18 +15,24 @@ namespace Character
 {
     public class Ability
     {
+        //Behind the scenes identifier.
         public string ID { get; set; }
+
+        //Name that's displayed to the user.
         public string Name { get; set; }
 
+        //What gets done when this is triggered.
         public string Action { get; set; }
+        
+        //The dice / whatever that gets rolled when this is triggered.
         public DiceCollection Dice { get; set; }
 
         //Number of currently available uses / charges / whatever.
         public int Uses{ get; set; }
-            //if max uses < 0, unlimited uses?
-                //require that current uses = 0?
+
         //Maximum number of uses / charges / whatever.
         public int MaxUses { get; set; }
+
         //How the uses change with each activation.
         public int UsesChange { get; set; }
 
@@ -40,59 +46,20 @@ namespace Character
 
         //The condition for when this ability recharges it's uses.
         public string RechargeCondition{ get; set; }
+
         //How many uses this ability recharges each time it does so.
         //Generally expected to be a dice string.
             //Can also be "all" to recharge fully.
             //Can also be "false" or "none" to not recharge automatically.
         public string RechargeAmount { get; set; }
+
+        //The text displayed to the user to explain what this ability does.
         public string Text{ get; set; }
 
         //Used to group abilities together when displayed.
         //Lower-numbered tiers will be displayed first.
         public int DisplayTier { get; set; }
 
-        //consider adding displayTier or something similar.
-            //Decide how I want sorting to work.
-                //Ideally allow the user to sort things by name and probably a few other things.
-
-
-        //eventually expand this to include a parsed set of data.
-        //keep it for now as a backup or something.
-
-        //I need this to hold a list of 0 or more dice strings.
-            //Represent them as DiceCollections.
-            //For each one, I need a list of 0 or more things to do based on the outcome of the first.
-            //Maybe simplify this and go with a single string set of controls.
-                //That might be too simple to be convenient.
-        //I need some sort of instruction for what to do with each dice string.
-            //Maybe just roll them and log the results.
-            //Maybe roll them and add the total to the character's HP or something.
-            //Keep the ability to have counters/whatever.
-
-        //To hold:
-        //a list(?) of 0 or more actions
-            //action:
-                //0 or more dice strings, probably translated to a DiceCollection.
-                //for each of those dice strings, 0-1 (or 0+ ?) things to do with the result.
-        //Basic things to be able to represent:
-            //Here's a dice string, roll it and add the total to one of the character's stats.
-            //Here's a dice string and a list of things to do based on the total, roll it and do them.
-                //ie: an attack (attack roll + damage), indicate when a crit was rolled and do more damage as appropriate.
-                    //if d20 is nat 1: print "natural 1" or whatever and stop.
-                    //if d20 is nat 2-19: also roll damage (dice string #2 presumably) and print it.
-                    //if d20 is nat 20: print "crit" or whatever and roll crit damage (dice string #3 presumably) and print it.
-        //Maybe move that business about different damage types from DiceCollection to here?
-            //I kind of like the ability to bake that right in to the DiceCollection.
-        //Maybe swap the ability to hold multiple dice strings and call others based on the result of the first one should be replaced with the ability to point to another ability by ID and trigger that based on the result of the roll of the only dice string in here.
-            //that would require hooking back into the list of abilities somehow, which i don't like.
-
-        //conditions ideas: mostly about string representation of things
-            //total x+ refers to all totals >= x
-            //total x- refers to all totals <= x
-            //total x-y refers to all totals >=x and <= y
-            //nat whatever behaves like total whatever
-            //do condition(s) : action(s)
-                //i need a way to indicate when an action is always to be done. Condition = true? yes? always? 1? do?
 
         //Constructor(s):
         //-------- -------- -------- -------- -------- -------- -------- -------- 
@@ -230,28 +197,16 @@ namespace Character
         //Functions relating to triggering the ability:
         //-------- -------- -------- -------- -------- -------- -------- -------- 
         //Triggers this ability.
+        /*
+            Possible actions:
+                false - do nothing
+                roll - roll some dice (as appropriate) and put a thing in the log.
+                counter - adds the result of the roll to the remaining uses.
+                heal - heals the current character based on the roll.
+                temphp - gives the current character temp HP based on the roll.
+        */
         public DiceResponse Use (Dictionary<string, double> stats)
         {
-            //actions:
-            //roll - put the total in the log
-            //heal - increase current hp, to a max of max hp
-            //temphp - set temp hp to the roll, unless it's already higher
-            //counter - count up/down
-            //add a variable to store a counter, so I don't have to use current uses?
-            //potentially add one for recharging/whatever - increase/decrease current uses by the number rolled.
-            //do i need a special case for when there's no action?
-
-            //to do: add an option for putting in a log message with the die roll, but nothing else.
-
-            //to do: put in some way to do 'one of these plus also decrement uses.'
-            //just put in a 'UsesChange' attribute or somesuch?
-            //ignore this / set it to 0 when the action is counter
-            //How feasible would it be to allow multiple different types of options operating off the same pool of uses / charges / whatever?
-            //Would it be easier to link multiple abilities to the same pool, or to have multiple entries for the same ability?
-            //If shared pools, I could just have names for some and stick a List of them on the character.
-
-            //string logString = name+": ";
-
             //First we'll mess with the remaining uses.
             //Let's store how many we use in case that's relevant at some point.
             int usesUsed;
@@ -267,8 +222,8 @@ namespace Character
                 {
                     //There aren't enough uses left to use this ability.
                     return new DiceResponse(false, "Not enough uses for " + Name);
-                    usesUsed = Uses;
-                    Uses = 0;
+                    //usesUsed = Uses;
+                    //Uses = 0;
                 } else
                 {
                     Uses += UsesChange;
@@ -293,8 +248,6 @@ namespace Character
                 //There's nothing to do, therefore we're already done.
                 //We'll send back a log message saying the ability was used.
 
-                //logString += "used";
-                //return new DiceResponse(true, logString);
                 return new DiceResponse(true, Name + ": " + " used");
             }
 
@@ -307,7 +260,6 @@ namespace Character
                     break;
                 case "counter":
                     //We add the result of the roll to the remaining uses.
-                    //to do: consider splitting counters off to another variable, and adding "recharge" or something as an action.
                     Uses += resp.Total;
                     if (Uses > MaxUses)
                     {
@@ -328,74 +280,19 @@ namespace Character
                     {
                         resp.Changes["CurrentHP"] = (stats["CurrentHP"] + resp.Total).ToString();
                     }
-                    //to do: should changes actually be string,int?
-                        //will i ever actually change a non-int variable with this?
-                        //abilities can change themselves now, so nbd there.
-                    //to do: trigger a reload after changes are made.
-                        //or maybe set up some way to indicate that that's necessary.
-                            //another bool in DiceResponse?
                     break;
                 case "temphp":
                     resp.Changes["TempHP"] = resp.Total.ToString();
-                    //to do: check if there's already more
                     break;
                 default:
                     //There's apparently nothing to do, so we're done.
                     return new DiceResponse(true);
             }
 
-            //resp.description = name + "     " + resp.description;
-
             return resp;
-
-
-            //DiceResponse respaaa = rollDice();
-            //switch (this.action)
-            //{
-            //    case "roll":
-            //        return justRoll();
-            //    case "counter":
-            //        //write a function for this
-            //            //include the new total in the description?
-            //        DiceResponse resp = justRoll();
-            //        if (resp.success == true)
-            //        {
-            //            uses += resp.total;
-            //        }
-            //        else
-            //        {
-            //            //Do nothing?
-            //        }
-            //        return resp;
-            //        
-            //    case "heal":
-            //        return heal();
-            //    default:
-            //        //complain to a log file or something
-            //        return new DiceResponse (false, "Unsupported action: " + action);
-            //}
         }
 
-        //For when this ability triggers a simple roll with no additional effects.
-        //private DiceResponse justRoll ()
-        //{
-        //    foreach (DiceCollection d in this.dice)
-        //    {
-        //        DiceResponse resp = d.roll();
-        //        if (resp.success == false)
-        //        {
-        //            //something
-        //        }
-        //        //total += d.getTotal();
-        //        total += resp.total;
-        //        //description+= d.getDescription();
-        //        description += resp.description;
-        //    }
-        //
-        //    return new DiceResponse (true, total, description);
-        //    //idea: change the returned boolean in these from success/failure to indicating whether or not there is a description to display.
-        //}
-
+        //Triggers the appropriate dice roll(s) for an ability activating.
         private DiceResponse RollDice(Dictionary<string, double> stats)
         {
             Total = 0;
@@ -405,7 +302,7 @@ namespace Character
                 DiceResponse resp = Dice.Roll(stats);
                 if (resp.Success == false)
                 {
-                    //to do: decide what I want to do here.
+                    //Complain to a log file?
                     Description += "error rolling dice";
                 }
                 else
@@ -414,26 +311,6 @@ namespace Character
                     Description += resp.Description;
                 }
 
-            return new DiceResponse(true, Total, Description);
-        }
-
-        private DiceResponse Heal ()
-        {
-            //Name and ID must be changes for this to work.
-            //changes = new Character("changes", "changes");
-            Changes = new Dictionary<string, string> ();
-            int totalHealed = 0;
-
-                DiceResponse resp = Dice.Roll();
-                Total += resp.Total;
-                Description += resp.Description;
-
-                totalHealed += Total;
-
-            Changes["CurrentHP"] = totalHealed.ToString();
-
-            //return new DiceResponse(true, total, description, changes);
-            //still deciding how to handle changes in DiceResponse, add this when I have that nailed down.
             return new DiceResponse(true, Total, Description);
         }
 
@@ -750,7 +627,6 @@ namespace Character
         }
         
         //Recharges the ability.
-        //to do: switch return type to void, since this always returns true?
         public void Recharge()
         {
             if (RechargeAmount.ToLower() == "all")
@@ -810,7 +686,6 @@ namespace Character
         //-------- -------- -------- -------- -------- -------- -------- -------- 
         public string getDiceString()
         {
-            //We're going to temporarily just list the first dice string.
             return Dice.GetDiceString();
         }
 
