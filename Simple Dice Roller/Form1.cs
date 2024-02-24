@@ -10,22 +10,13 @@ using System.Text.Json;
 
 namespace Simple_Dice_Roller
 {
-    //to do:
-    //put in ui stuff for clicking buttons representing standard die sizes to add them to a pool / handful / whatever, then click a button to roll them.
-    //for convenience, have some way to easily select recently-rolled pools.
-    //behind the scenes: just add stuff to one of these.
-    //eventually put in some sort of die/dice class so i can define custom dice (ie: Edge of the Empire / Age of Rebellion / Force and Destiny dice).
-    //or make it an attribute of the DicePile class.
-
 
     public partial class Form1 : Form
     {
         //Attributes:
         //-------- -------- -------- -------- -------- -------- -------- -------- 
+        //A log of recent actions, displayed to the user.
         internal List<string> LogMessages;
-        //sooner or later, swap this to displaying on a DataGridView
-        //Columns: name -> total -> description
-        //maybe timestamp too?
 
         //Hold the character that's loaded.
         internal Character.Character LoadedCharacter;
@@ -60,7 +51,6 @@ namespace Simple_Dice_Roller
         //-------- -------- -------- -------- -------- -------- -------- -------- 
         public Form1()
         {
-            //Used to display messages to the user near the bottom of the page.
             LogMessages = new List<string>();
 
             InitializeComponent();
@@ -69,69 +59,18 @@ namespace Simple_Dice_Roller
 
             //Directory that this stuff runs out of:
             //C:\Users\david\source\repos\ArkDice\Simple Dice Roller\bin\Debug\net6.0-windows
-
-            //to do:
-            //load this from a file or something.
-            //make this a global variable?
             Folderpath = "C:\\Users\\david\\Programs\\Simple Dice Roller\\";
 
 
-            //Switching this stuff to it's own function
+            //Currently set to load the default character I'm using for testing.
             LoadCharacter("Tiriel");
-            /*
-            //A collection of spell information so we can load them by ID.
-            SpellsLibrary = new Dictionary<string, Spell>();
-            AbilitiesLibrary = new Dictionary<string, Ability>();
-
-            LoadSpellsLibrary(Folderpath);
-            LoadAbilitiesLibrary(Folderpath);
-
-            //function to parse the json and load the spells.
-            //idea: change this setup to there being one file per spell, and then load that file on demand.
-            //is that going to be worth the performance hit for loading a bunch of files at once?
-
-            AbilitiesAreaDetails = new Dictionary<string, Panel>();
-            SpellsAreaDetails = new Dictionary<string, Panel>();
-
-            //Currently selected dice for the dice roller.
-            CurrentDice = new DiceCollection();
-
-            //Stores the last-rolled collection of dice from the dice roller.
-            LastDice = new DiceCollection();
-
-            //Stores the currently loaded character.
-            //Character.Character currentCharacter = new Character.Character(contents);
-            Character.Character currentCharacter = new Character.Character("Tiriel", Folderpath, ref AbilitiesLibrary, ref SpellsLibrary);
-            LoadedCharacter = currentCharacter;
-            //MessageBox.Show(currentCharacter.ToString());
-            DisplayCharacter(currentCharacter);
-
-            DrawRecharges();
-            */
         }
+
 
         //Misc functions
         //-------- -------- -------- -------- -------- -------- -------- -------- 
-        //Display the log messages in the log messages area.
-        private void DisplayMessages()
-        {
-            string text = "";
-
-            foreach (string message in LogMessages)
-            {
-                if (text != "")
-                {
-                    text += "\r\n";
-                }
-                text += message;
-            }
-
-            outputDescription.Text = text;
-        }
-
-        //Looks up the index for the AbilitiesArea row with a particular ID.
+        //Looks up the index for the AbilitiesArea or SpellsArea row with a particular ID.
         //Returns the row's index if found, or -1 if not.
-        //to do: make it take in some indicator of which grid it should reference.
         private int GetIndexForRow(string gridName, string id)
         {
             DataGridView grid;
@@ -154,10 +93,9 @@ namespace Simple_Dice_Roller
 
             //Look up the index of the id column
             int colIndex = grid.Columns[idColIndex].Index;
-            //MessageBox.Show("Column index is " + colIndex);
             if (colIndex < 0)
             {
-                //complain
+                //Complain to a log file.
                 return -1;
             }
 
@@ -171,6 +109,353 @@ namespace Simple_Dice_Roller
 
             return -1;
         }
+
+        //Loads a specified character.
+        private void LoadCharacter(string characterName)
+        {
+            //Load the libraries every time in case something has changed while we were doing stuff.
+            SpellsLibrary = new Dictionary<string, Spell>();
+            AbilitiesLibrary = new Dictionary<string, Ability>();
+
+            LoadSpellsLibrary(Folderpath);
+            LoadAbilitiesLibrary(Folderpath);
+
+            //Detail views for the lists of abilities and spells.
+            AbilitiesAreaDetails = new Dictionary<string, Panel>();
+            SpellsAreaDetails = new Dictionary<string, Panel>();
+
+            //Currently selected dice for the dice roller.
+            CurrentDice = new DiceCollection();
+
+            //Stores the last-rolled collection of dice from the dice roller.
+            LastDice = new DiceCollection();
+
+            //Stores the currently loaded character.
+            Character.Character currentCharacter = new Character.Character(characterName, Folderpath, ref AbilitiesLibrary, ref SpellsLibrary);
+            LoadedCharacter = currentCharacter;
+            DisplayCharacter(currentCharacter);
+
+            DrawRecharges();
+        }
+
+        //Sets the size and location of the detail panels in the Abilities and Spells lists.
+        private void SetAndPositionDetailPanel(string gridName, string id)
+        {
+            Panel? panel;
+            int expandAmount;
+            DataGridView grid;
+            int minHeight;
+            if (gridName == "Abilities")
+            {
+                if (AbilitiesAreaDetails.ContainsKey(id))
+                {
+                    panel = AbilitiesAreaDetails[id];
+                }
+                else
+                {
+                    panel = null;
+                }
+                expandAmount = MinAbilityDetailHeight;
+                grid = AbilitiesArea;
+                minHeight = MinAbilityDetailHeight;
+            }
+            else if (gridName == "Spells")
+            {
+                if (SpellsAreaDetails.ContainsKey(id))
+                {
+                    panel = SpellsAreaDetails[id];
+                }
+                else
+                {
+                    panel = null;
+                }
+                expandAmount = MinSpellDetailHeight;
+                grid = SpellsArea;
+                minHeight = MinSpellDetailHeight;
+            }
+            else
+            {
+                //Whatever this is it's not supported.
+                return;
+            }
+
+            int rowIndex = GetIndexForRow(gridName, id);
+
+            int baseRowHeight = grid.Rows[rowIndex].GetPreferredHeight(rowIndex, DataGridViewAutoSizeRowMode.AllCellsExceptHeader, true);
+            //MessageBox.Show("This row reports that it would like to have a height of " + baseRowHeight);
+            //to do: get this working
+            baseRowHeight = 25;
+
+            if (panel == null)
+            {
+                //Set the row's height to standard.
+                grid.Rows[rowIndex].Height = baseRowHeight;
+                //MessageBox.Show("Just set row height to " + baseRowHeight);
+
+                //Remove the padding from the button columns.
+                if (gridName == "Abilities")
+                {
+                    grid.Rows[rowIndex].Cells["Abilities_UseButtonCol"].Style.Padding = new Padding(0);
+                    grid.Rows[rowIndex].Cells["Abilities_Plus1Col"].Style.Padding = new Padding(0);
+                    grid.Rows[rowIndex].Cells["Abilities_Minus1Col"].Style.Padding = new Padding(0);
+                }
+                else if (gridName == "Spells")
+                {
+                    grid.Rows[rowIndex].Cells["Spells_CastCol"].Style.Padding = new Padding(0);
+                    grid.Rows[rowIndex].Cells["Spells_UpcastCol"].Style.Padding = new Padding(0);
+                }
+
+                return;
+            }
+
+            //We want to figure out how tall stuff wants to be.
+            //Note: labels seem to default to being 15px tall.
+            int panelHeight = panel.GetPreferredSize(new Size(100, expandAmount)).Height;
+            if (panelHeight < minHeight)
+            {
+                panelHeight = minHeight;
+            }
+
+            int rowHeight = baseRowHeight + panelHeight;
+
+            //Now we set the row height so we can get proper location information for the panel.
+            grid.Rows[rowIndex].Height = rowHeight;
+
+            //Set some padding to keep the buttons looking normal.
+            if (gridName == "Abilities")
+            {
+                grid.Rows[rowIndex].Cells["Abilities_UseButtonCol"].Style.Padding = new Padding(0, 0, 0, panelHeight);
+                grid.Rows[rowIndex].Cells["Abilities_Plus1Col"].Style.Padding = new Padding(0, 0, 0, panelHeight);
+                grid.Rows[rowIndex].Cells["Abilities_Minus1Col"].Style.Padding = new Padding(0, 0, 0, panelHeight);
+            }
+            else if (gridName == "Spells")
+            {
+                grid.Rows[rowIndex].Cells["Spells_CastCol"].Style.Padding = new Padding(0, 0, 0, panelHeight);
+                grid.Rows[rowIndex].Cells["Spells_UpcastCol"].Style.Padding = new Padding(0, 0, 0, panelHeight);
+            }
+
+            //Get the location and dimensions to set this.
+            int top = grid.Rows[rowIndex].AccessibilityObject.Bounds.Top;
+            int left = grid.Rows[rowIndex].AccessibilityObject.Bounds.Left;
+            int bottom = grid.Rows[rowIndex].AccessibilityObject.Bounds.Bottom;
+            int right = grid.Rows[rowIndex].AccessibilityObject.Bounds.Right;
+
+            //We need to position things in relation to the grid, not the program.
+            int gridTop = grid.AccessibilityObject.Bounds.Top;
+            int gridLeft = grid.AccessibilityObject.Bounds.Left;
+
+            //Don't show panels if there's nothing to actually show.
+            //We'll be told top/bottom and left/right coordinates that exactly match the top left of the visible part of the grid.
+            if (gridTop == top && gridTop == bottom && gridLeft == left && gridLeft == right)
+            {
+                panel.Visible = false;
+                return;
+            }
+            else
+            {
+                panel.Visible = true;
+            }
+
+            top -= gridTop;
+            left -= gridLeft;
+
+            //We want to leave 1 row worth of space above the panel.
+            top += baseRowHeight;
+
+            if (top > bottom)
+            {
+                //This row is too short for this.
+                //complain to a log?
+                return;
+            }
+
+            int width = right - left;
+
+            //MessageBox.Show("Going to set this panel to " + left + ", " + top + " and " + width + " x " + panelHeight);
+            Rectangle rect = new Rectangle(left, top, width, panelHeight);
+
+            //Now set the panel's size and location.
+            panel.Bounds = rect;
+            panel.BringToFront();
+        }
+
+        //The business end of a button used for testing things.
+        private void TestButton_Click(object sender, EventArgs e)
+        {
+            while (LogMessages.Count > 0)
+            {
+                LogMessages.RemoveAt(LogMessages.Count - 1);
+            }
+
+            DisplayMessages();
+
+
+
+            //Test populating a ListView and compare it to a DataGridView
+
+            TestListView.Items.Clear();
+
+            for (int a = 0; a < 50; a++)
+            {
+                string[] temp = { "item" + a, "something" };
+                TestListView.Items.Add(new ListViewItem(temp));
+            }
+
+
+
+            //testing listviews
+            /*
+            ListViewTest.Columns.Add("Col1", 100, HorizontalAlignment.Left);
+            ListViewTest.Columns.Add("Col2", 50, HorizontalAlignment.Left);
+            ListViewTest.Columns.Add("Col3ccccc", 200, HorizontalAlignment.Left);
+
+            string[] temp = { "row 1", "second box", "aaa" };
+            ListViewTest.Items.Add(new ListViewItem(temp));
+
+            ListViewItem templvi = new ListViewItem("row 2");
+            templvi.SubItems.Add("#2");
+            templvi.SubItems.Add("Programmatically added");
+            ListViewTest.Items.Add(templvi);
+
+            temp = new[] { "row 3", "333", "trace" };
+            ListViewTest.Items.Add(new ListViewItem(temp));
+
+            temp = new[] { "row 4", "this row has only 2 columns" };
+            ListViewItem lvi = new ListViewItem(temp);
+            ListViewTest.Items.Add(lvi);
+            ListViewTest.Items[3].SubItems[1].Text = "#1";
+            //this is, in fact, the proper way to access a cell and change it's text.
+
+            //ListViewTest.Items[3].ListView.Columns[2].Dispose();
+            //This gets rid of the column for all rows.
+
+            //ListViewTest.Items.Add(new ListViewItem(new ListView()));
+
+            //ListViewTest.Groups.Add(new ListViewGroup("group goes here"));
+            //ListViewTest.Groups.Add(new ListViewGroup("this is a second group"));
+            */
+        }
+
+        //Displays or hides the detail view for any given row in AbilitiesArea.
+        private void ToggleGridExpand(string gridName, int rowNum)
+        {
+            DataGridView grid;
+            Dictionary<string, Panel> details;
+            string idCol;
+            if (gridName == "Abilities")
+            {
+                grid = AbilitiesArea;
+                details = AbilitiesAreaDetails;
+                idCol = "Abilities_IDCol";
+            }
+            else if (gridName == "Spells")
+            {
+                grid = SpellsArea;
+                details = SpellsAreaDetails;
+                idCol = "Spells_IDCol";
+            }
+            else
+            {
+                //Complain to a log file?
+                return;
+            }
+
+            string? id = grid.Rows[rowNum].Cells[idCol].Value.ToString();
+            if (id == null)
+            {
+                //Complain to a log file.
+                MessageBox.Show("Error: could not find id for row.");
+                return;
+            }
+
+            if (details.ContainsKey(id))
+            {
+                //Remove this panel from the list.
+                details[id].Dispose();
+                details.Remove(id);
+            }
+            else
+            {
+                //Expand the row and display the details view.
+
+                if (id == null)
+                {
+                    //Complain to a log file.
+                    MessageBox.Show("Error: could not find id for row");
+                    return;
+                }
+
+                //Create an appropriate panel and add it to the list.
+                Panel newPanel = new Panel();
+                if (gridName == "Abilities")
+                {
+                    CreateAbilityDetailPanel(newPanel, grid.Rows[rowNum]);
+                }
+                else if (gridName == "Spells")
+                {
+                    CreateSpellDetailPanel(newPanel, grid.Rows[rowNum]);
+                }
+                grid.Controls.Add(newPanel);
+                details[id] = newPanel;
+            }
+
+            //Make sure everything is sized and positioned properly.
+            SetAndPositionDetailPanel(gridName, id);
+
+            if (gridName == "Abilities")
+            {
+                UpdateAbilitiesAreaDetails();
+            }
+            else if (gridName == "Spells")
+            {
+                UpdateSpellsAreaDetails();
+            }
+        }
+
+
+        //-------- -------- -------- -------- -------- -------- -------- -------- 
+
+        //Functions relating to the message log.
+        #region Log Messages
+
+        //Display the log messages in the log messages area.
+        private void DisplayMessages()
+        {
+            string text = "";
+
+            foreach (string message in LogMessages)
+            {
+                if (text != "")
+                {
+                    text += "\r\n";
+                }
+                text += message;
+            }
+
+            outputDescription.Text = text;
+        }
+
+        //Add a message to the log area, plus some related logic.
+        private void LogMessage(string message)
+        {
+            LogMessages.Insert(0, message);
+
+            //We'll limit the log to the most recent 20 rows for readability.
+            //This will also prevent ballooning memory usage if the program is used very heavily.
+            while (LogMessages.Count > 20)
+            {
+                LogMessages.RemoveAt(LogMessages.Count - 1);
+            }
+
+            DisplayMessages();
+        }
+
+        #endregion
+
+        //-------- -------- -------- -------- -------- -------- -------- -------- 
+
+        //Functions that relate to loading and saving the abilities and spells libraries.
+        #region Library Functions
 
         //Loads a collection of abilities into a library that can be referenced later to quickly load abilities without having to type them or whatever.
         private bool LoadAbilitiesLibrary(string folderpath)
@@ -211,36 +496,6 @@ namespace Simple_Dice_Roller
             return false;
         }
 
-        //Loads a specified character.
-        private void LoadCharacter(string characterName)
-        {
-            //MessageBox.Show("Loading character: " + characterName);
-
-            //Load the libraries every time in case something has changed while we were doing stuff.
-            SpellsLibrary = new Dictionary<string, Spell>();
-            AbilitiesLibrary = new Dictionary<string, Ability>();
-
-            LoadSpellsLibrary(Folderpath);
-            LoadAbilitiesLibrary(Folderpath);
-
-            //Detail views for the lists of abilities and spells.
-            AbilitiesAreaDetails = new Dictionary<string, Panel>();
-            SpellsAreaDetails = new Dictionary<string, Panel>();
-
-            //Currently selected dice for the dice roller.
-            CurrentDice = new DiceCollection();
-
-            //Stores the last-rolled collection of dice from the dice roller.
-            LastDice = new DiceCollection();
-
-            //Stores the currently loaded character.
-            Character.Character currentCharacter = new Character.Character(characterName, Folderpath, ref AbilitiesLibrary, ref SpellsLibrary);
-            LoadedCharacter = currentCharacter;
-            DisplayCharacter(currentCharacter);
-
-            DrawRecharges();
-        }
-
         //Loads a collection of spells into a library that can be referenced later to quickly load spells without having to type them or whatever.
         private bool LoadSpellsLibrary(string folderpath)
         {
@@ -278,21 +533,6 @@ namespace Simple_Dice_Roller
             }
 
             return false;
-        }
-
-        //Add a message to the log area, plus some related logic.
-        private void LogMessage(string message)
-        {
-            LogMessages.Insert(0, message);
-
-            //We'll limit the log to the most recent 20 rows for readability.
-            //This will also prevent ballooning memory usage if the program is used very heavily.
-            while (LogMessages.Count > 20)
-            {
-                LogMessages.RemoveAt(LogMessages.Count - 1);
-            }
-
-            DisplayMessages();
         }
 
         //Writes the contents of the abilities library to disk.
@@ -379,302 +619,11 @@ namespace Simple_Dice_Roller
             }
         }
 
-        //Sets the size and location of the detail panels in the Abilities and Spells lists.
-        private void SetAndPositionDetailPanel(string gridName, string id)
-        {
-            Panel? panel;
-            int expandAmount;
-            DataGridView grid;
-            int minHeight;
-            if (gridName == "Abilities")
-            {
-                if (AbilitiesAreaDetails.ContainsKey(id))
-                {
-                    panel = AbilitiesAreaDetails[id];
-                }
-                else
-                {
-                    panel = null;
-                }
-                expandAmount = MinAbilityDetailHeight;
-                grid = AbilitiesArea;
-                minHeight = MinAbilityDetailHeight;
-            }
-            else if (gridName == "Spells")
-            {
-                if (SpellsAreaDetails.ContainsKey(id))
-                {
-                    panel = SpellsAreaDetails[id];
-                }
-                else
-                {
-                    panel = null;
-                }
-                expandAmount = MinSpellDetailHeight;
-                grid = SpellsArea;
-                minHeight = MinSpellDetailHeight;
-            }
-            else
-            {
-                //Whatever this is it's not supported.
-                return;
-            }
-
-            int rowIndex = GetIndexForRow(gridName, id);
-
-            int baseRowHeight = grid.Rows[rowIndex].GetPreferredHeight(rowIndex, DataGridViewAutoSizeRowMode.AllCellsExceptHeader, true);
-            //MessageBox.Show("This row reports that it would like to have a height of " + baseRowHeight);
-            //to do: get this working
-            baseRowHeight = 25;
-
-            if (panel == null)
-            {
-                //Set the row's height to standard.
-                grid.Rows[rowIndex].Height = baseRowHeight;
-                //MessageBox.Show("Just set row height to " + baseRowHeight);
-
-                //Remove the padding from the button columns.
-                if (gridName == "Abilities")
-                {
-                    grid.Rows[rowIndex].Cells["Abilities_UseButtonCol"].Style.Padding = new Padding(0);
-                    grid.Rows[rowIndex].Cells["Abilities_Plus1Col"].Style.Padding = new Padding(0);
-                    grid.Rows[rowIndex].Cells["Abilities_Minus1Col"].Style.Padding = new Padding(0);
-                }
-                else if (gridName == "Spells")
-                {
-                    grid.Rows[rowIndex].Cells["Spells_CastCol"].Style.Padding = new Padding(0);
-                    grid.Rows[rowIndex].Cells["Spells_UpcastCol"].Style.Padding = new Padding(0);
-                }
-
-                return;
-            }
-
-            //We want to figure out how tall stuff wants to be.
-            //Note: labels seem to default to being 15px tall.
-            int panelHeight = panel.GetPreferredSize(new Size(100, expandAmount)).Height;
-            //MessageBox.Show("Might set panel height to " + panelHeight);
-            if (panelHeight < minHeight)
-            {
-                panelHeight = minHeight;
-                //MessageBox.Show("Panel height is too small, setting it to the minimum height of " + minHeight);
-            }
-
-            int rowHeight = baseRowHeight + panelHeight;
-
-            //Now we set the row height so we can get proper location information for the panel.
-            grid.Rows[rowIndex].Height = rowHeight;
-
-            //Set some padding to keep the buttons looking normal.
-            if (gridName == "Abilities")
-            {
-                grid.Rows[rowIndex].Cells["Abilities_UseButtonCol"].Style.Padding = new Padding(0, 0, 0, panelHeight);
-                grid.Rows[rowIndex].Cells["Abilities_Plus1Col"].Style.Padding = new Padding(0, 0, 0, panelHeight);
-                grid.Rows[rowIndex].Cells["Abilities_Minus1Col"].Style.Padding = new Padding(0, 0, 0, panelHeight);
-            }
-            else if (gridName == "Spells")
-            {
-                grid.Rows[rowIndex].Cells["Spells_CastCol"].Style.Padding = new Padding(0, 0, 0, panelHeight);
-                grid.Rows[rowIndex].Cells["Spells_UpcastCol"].Style.Padding = new Padding(0, 0, 0, panelHeight);
-            }
-
-            //Get the location and dimensions to set this.
-            int top = grid.Rows[rowIndex].AccessibilityObject.Bounds.Top;
-            int left = grid.Rows[rowIndex].AccessibilityObject.Bounds.Left;
-            int bottom = grid.Rows[rowIndex].AccessibilityObject.Bounds.Bottom;
-            int right = grid.Rows[rowIndex].AccessibilityObject.Bounds.Right;
-            //to do: change the bottom right corner to that of the last cell, not the row itself.
-
-            //We need to position things in relation to the grid, not the program.
-            int gridTop = grid.AccessibilityObject.Bounds.Top;
-            int gridLeft = grid.AccessibilityObject.Bounds.Left;
-
-            //Don't show panels if there's nothing to actually show.
-            //We'll be told top/bottom and left/right coordinates that exactly match the top left of the visible part of the grid.
-            if (gridTop == top && gridTop == bottom && gridLeft == left && gridLeft == right)
-            {
-                panel.Visible = false;
-                return;
-            }
-            else
-            {
-                panel.Visible = true;
-            }
-
-            top -= gridTop;
-            left -= gridLeft;
-
-            //We want to leave 1 row worth of space above the panel.
-            top += baseRowHeight;
-
-            if (top > bottom)
-            {
-                //This row is too short for this.
-                //complain?
-                return;
-                //to do: change to just hiding this one and moving on?
-            }
-
-            int width = right - left;
-
-            //MessageBox.Show("Going to set this panel to " + left + ", " + top + " and " + width + " x " + panelHeight);
-            Rectangle rect = new Rectangle(left, top, width, panelHeight);
-
-            //Now set the panel's size and location.
-            panel.Bounds = rect;
-            //panel.Visible = true;
-            panel.BringToFront();
-        }
-
-        //The business end of a button used for testing things.
-        private void TestButton_Click(object sender, EventArgs e)
-        {
-            while (LogMessages.Count > 0)
-            {
-                LogMessages.RemoveAt(LogMessages.Count - 1);
-            }
-
-            DisplayMessages();
-
-
-
-            //Test populating a ListView and compare it to a DataGridView
-
-            TestListView.Items.Clear();
-
-            for (int a = 0; a < 50; a++)
-            {
-                string[] temp = { "item" + a, "something" };
-                TestListView.Items.Add(new ListViewItem(temp));
-            }
-
-            //was here
-            //need to test making one row bigger, or something along those lines, for the detail views.
-
-
-
-            //testing listviews
-            /*
-            ListViewTest.Columns.Add("Col1", 100, HorizontalAlignment.Left);
-            ListViewTest.Columns.Add("Col2", 50, HorizontalAlignment.Left);
-            ListViewTest.Columns.Add("Col3ccccc", 200, HorizontalAlignment.Left);
-
-            string[] temp = { "row 1", "second box", "aaa" };
-            ListViewTest.Items.Add(new ListViewItem(temp));
-
-            ListViewItem templvi = new ListViewItem("row 2");
-            templvi.SubItems.Add("#2");
-            templvi.SubItems.Add("Programmatically added");
-            ListViewTest.Items.Add(templvi);
-
-            temp = new[] { "row 3", "333", "trace" };
-            ListViewTest.Items.Add(new ListViewItem(temp));
-
-            temp = new[] { "row 4", "this row has only 2 columns" };
-            ListViewItem lvi = new ListViewItem(temp);
-            ListViewTest.Items.Add(lvi);
-            ListViewTest.Items[3].SubItems[1].Text = "#1";
-            //this is, in fact, the proper way to access a cell and change it's text.
-
-            //ListViewTest.Items[3].ListView.Columns[2].Dispose();
-            //This gets rid of the column for all rows.
-
-            //ListViewTest.Items.Add(new ListViewItem(new ListView()));
-
-            //ListViewTest.Groups.Add(new ListViewGroup("group goes here"));
-            //ListViewTest.Groups.Add(new ListViewGroup("this is a second group"));
-            */
-        }
-
-        //Displays or hides the detail view for any given row in AbilitiesArea.
-        private void ToggleGridExpand(string gridName, int rowNum)
-        {
-            DataGridView grid;
-            Dictionary<string, Panel> details;
-            string idCol;
-            if (gridName == "Abilities")
-            {
-                grid = AbilitiesArea;
-                details = AbilitiesAreaDetails;
-                idCol = "Abilities_IDCol";
-            }
-            else if (gridName == "Spells")
-            {
-                grid = SpellsArea;
-                details = SpellsAreaDetails;
-                idCol = "Spells_IDCol";
-            }
-            else
-            {
-                //Complain to a log file?
-                return;
-            }
-
-            string? id = grid.Rows[rowNum].Cells[idCol].Value.ToString();
-            if (id == null)
-            {
-                //complain
-                MessageBox.Show("Error: could not find id for row.");
-                return;
-            }
-
-            //Expand the row.
-            if (details.ContainsKey(id))
-            //if (grid.Rows[rowNum].Height > expandAmount)
-            {
-                //Remove this panel from the list.
-                details[id].Dispose();
-                details.Remove(id);
-
-                //Shrink the row back to normal.
-                //grid.Rows[rowNum].Height = grid.Rows[rowNum].GetPreferredHeight(rowNum, DataGridViewAutoSizeRowMode.AllCellsExceptHeader, true);
-            }
-            else
-            {
-                //Expand the row and display the details view.
-
-                if (id == null /*|| text == null*/)
-                {
-                    //Log something?
-                    MessageBox.Show("Error: could not find id for row");
-                    return;
-                }
-
-                //MessageBox.Show("Expanding row " + id);
-
-                //Expand the row.
-                //grid.Rows[rowNum].Height = grid.Rows[rowNum].Height + expandAmount;
-
-                //Create an appropriate panel and add it to the list.
-                //to do: set up a function for when the panel is clicked: treat that like clicking the row again.
-                Panel newPanel = new Panel();
-                if (gridName == "Abilities")
-                {
-                    CreateAbilityDetailPanel(newPanel, grid.Rows[rowNum]);
-                }
-                else if (gridName == "Spells")
-                {
-                    CreateSpellDetailPanel(newPanel, grid.Rows[rowNum]);
-                }
-                grid.Controls.Add(newPanel);
-                details[id] = newPanel;
-            }
-
-            //Make sure everything is sized and positioned properly.
-            SetAndPositionDetailPanel(gridName, id);
-
-            if (gridName == "Abilities")
-            {
-                UpdateAbilitiesAreaDetails();
-            }
-            else if (gridName == "Spells")
-            {
-                UpdateSpellsAreaDetails();
-            }
-        }
-
+        #endregion
 
         //-------- -------- -------- -------- -------- -------- -------- -------- 
 
+        //Functions that relate to the forms for editing abilities/characters/spells.
         #region Editing Forms
 
         //Opens a new window for editing abilities.
@@ -689,24 +638,22 @@ namespace Simple_Dice_Roller
             {
                 EditAbilities editing = new EditAbilities(this);
                 editing.Show();
-                //editing.ParentForm = this;
 
                 EditAbilitiesForm = editing;
             }
         }
+
         //Opens a new window for editing the current character.
         private void BeginEditingCharacter()
         {
             string id = LoadedCharacter.ID;
             if (id == "")
             {
-                //what to do here?
-                //just pop up a blank one?
+                //Complain to a log file.
                 MessageBox.Show("Error: could not identify loaded character.");
             }
             else
             {
-                //EditCharacter editing = new EditCharacter(id);
                 EditCharacter editing = new EditCharacter(LoadedCharacter);
                 editing.ParentForm = this;
                 editing.Show();
@@ -727,7 +674,6 @@ namespace Simple_Dice_Roller
             else
             {
                 EditSpells editing = new EditSpells(this);
-                //editing.Parent = this;
                 editing.Show();
 
                 EditSpellsForm = editing;
@@ -737,43 +683,37 @@ namespace Simple_Dice_Roller
         //The onclick event for the edit abilities button. Pops up a new window where spells can be edited and assigned.
         private void Button_EditAbilities_Click(object sender, EventArgs e)
         {
-            if (EditAbilitiesForm == null)
-            {
-                BeginEditingAbilities();
-                //Close the other popups?
-            }
-            else
-            {
-                BeginEditingAbilities();
-            }
+            //Close any other popups, so the user can only have one open at a time.
+            CloseEditingAbilities();
+            CloseEditingCharacter();
+            CloseEditingSpells();
+
+            //Now open the thing.
+            BeginEditingAbilities();
         }
 
         //The onclick event for the edit character button. Pops up a new window where various character attributes can be changed.
         private void Button_EditChar_Click(object sender, EventArgs e)
         {
-            if (EditSpellsForm == null)
-            {
-                BeginEditingCharacter();
-                //Close the other popups?
-            }
-            else
-            {
-                BeginEditingCharacter();
-            }
+            //Close any other popups, so the user can only have one open at a time.
+            CloseEditingAbilities();
+            CloseEditingCharacter();
+            CloseEditingSpells();
+
+            //Now open the thing.
+            BeginEditingCharacter();
         }
 
         //The onclick event for the edit spells button. Pops up a new window where spells can be edited and assigned.
         private void Button_EditSpells_Click(object sender, EventArgs e)
         {
-            if (EditSpellsForm == null)
-            {
-                BeginEditingSpells();
-                //Close the other popups?
-            }
-            else
-            {
-                BeginEditingSpells();
-            }
+            //Close any other popups, so the user can only have one open at a time.
+            CloseEditingAbilities();
+            CloseEditingCharacter();
+            CloseEditingSpells();
+
+            //Now open the thing.
+            BeginEditingSpells();
         }
 
         //Closes the new form used for editing abilities.
@@ -783,7 +723,6 @@ namespace Simple_Dice_Roller
             {
                 EditAbilitiesForm.Close();
                 EditAbilitiesForm = null;
-                //bring this form to the top?
             }
         }
 
@@ -794,7 +733,6 @@ namespace Simple_Dice_Roller
             {
                 EditCharacterForm.Close();
                 EditCharacterForm = null;
-                //bring this form to the top?
             }
         }
 
@@ -804,7 +742,6 @@ namespace Simple_Dice_Roller
             if (EditSpellsForm != null)
             {
                 EditSpellsForm.Close();
-                //bring this form to the top?
                 EditSpellsForm = null;
             }
         }
@@ -887,8 +824,6 @@ namespace Simple_Dice_Roller
             //Save the changes to the abilities library to disk.
             SaveAbilitiesLibrary();
 
-            //Also save the character? Maybe not.
-
             //Update the list of abilities, in case something relevant changed.
             DisplayAbilities(LoadedCharacter);
         }
@@ -914,8 +849,6 @@ namespace Simple_Dice_Roller
             //Save the changes to the spells library to disk.
             SaveSpellsLibrary();
 
-            //Also save the character? Maybe not.
-
             //Update the list of spells, in case something relevant changed.
             DisplaySpells(LoadedCharacter);
         }
@@ -924,24 +857,16 @@ namespace Simple_Dice_Roller
 
         //-------- -------- -------- -------- -------- -------- -------- -------- 
 
+        //Functions that relate to the dice roller tab.
         #region Dice Tab
 
         //The function that adds or removes dice
         private void AddDice(object sender, EventArgs e)
         {
-            //Things we might get:
-            //Add / remove 1 die of a particular size.
-            //Add / remove multiple dice of a particular size?
-            //Add / remove 1 die of advantage or disadvantage in a particular size.
-            //Subtract a die from the result?
             //Format:
-            //Starts with basic command. Tells this what to do with the rest of it.
-            //add - adds the specified dice to the pile
-            //remove - removes the specified dice from the pile
-            //set? - sets the pile to what's in the dice string
-            //Then adv/dis modifier, if applicable
-            //Ends with dice string
-            //positive / no symbol to make them regular dice, negative to make them negative.
+            //Starts with basic command - add / remove / set?
+            //Then optional adv / dis modifier.
+            //Ends with dice string.
 
 
 
@@ -957,15 +882,9 @@ namespace Simple_Dice_Roller
                 //Complain to a log file?
                 return;
             }
-            //MessageBox.Show(tag);
-            //comes through as string, set the buttons up with dice strings in the standard format in their Tag attribute
             tag = tag.Trim();
 
             //Parse the relevant bits out of the string.
-            //What we're looking for:
-            //Starts with a command, probably add or subtract but might be set.
-            //May contain adv or dis next, but not necessarily.
-            //Then there will be either dX or X
             string regex = "^([a-zA-Z]+)\\s*(adv|dis|)\\s*(d?)(\\d+)$";
             //Match matches = Regex.Match(tag, regex, RegexOptions.IgnoreCase);
             Match matches = Regex.Match(tag, regex, RegexOptions.IgnoreCase);
@@ -987,22 +906,16 @@ namespace Simple_Dice_Roller
                 if (advdis == "adv")
                 {
                     advdisint = 1;
-                    //MessageBox.Show("Doing advantage");
                 }
                 else if (advdis == "dis")
                 {
                     advdisint = -1;
-                    //MessageBox.Show("Doing disadvantage");
-                }
-                else
-                {
-                    //MessageBox.Show("Doing regular dice");
                 }
 
                 bool subtract = false;
                 if (command == "add")
                 {
-                    //Great
+                    //Nothing to do here.
                 }
                 else if (command == "subtract")
                 {
@@ -1020,7 +933,8 @@ namespace Simple_Dice_Roller
 
                 bool temp = CurrentDice.AddOneDie(dieSize, subtract, advdisint, flatBonus);
 
-                //error checking?
+                //to do: add some error checking here
+
                 if (!temp)
                 {
                     MessageBox.Show("Adding die failed.");
@@ -1057,11 +971,7 @@ namespace Simple_Dice_Roller
             DiceCollection dice = new DiceCollection(diceString);
             outputDescription.Text = dice.GetDescription();
             DiceResponse resp = dice.Roll();
-            //dice.roll();
-            //outputTotal.Text = "The total is " + dice.getTotal();
-            //outputTotal.Text = "Rolled " + dice.getTotal();
             outputTotal.Text = "Rolled " + resp.Total;
-            //logMessage (dice.getDescription());
             LogMessage(resp.Description);
 
             UpdateLastDice(diceString);
@@ -1118,6 +1028,9 @@ namespace Simple_Dice_Roller
 
         //-------- -------- -------- -------- -------- -------- -------- -------- 
 
+        //Functions that relate to the character tab.
+
+        //The main body of the character tab.
         #region Character Tab: General
 
         //The onclick even for the save button. Saves the character.
@@ -1215,8 +1128,6 @@ namespace Simple_Dice_Roller
                 string[] allOfRow = { (a + 1).ToString(), id, name, text, "Use" };
                 BasicAbilitiesArea.Rows.Add(allOfRow);
             }
-
-            //...
         }
 
         //Heal the active character.
@@ -1260,9 +1171,7 @@ namespace Simple_Dice_Roller
                 //Complain to a log file?
                 return;
             }
-            //MessageBox.Show("Rolling dice based off tag " + tag);
 
-            //comes through as string, set the buttons up with dice strings in the standard format in their Tag attribute
             tag = tag.Trim();
 
             //Parse the relevant bits out of the string.
@@ -1281,7 +1190,6 @@ namespace Simple_Dice_Roller
             {
                 string command = matches.Groups[1].Value;
                 string diceString = matches.Groups[2].Value;
-                //MessageBox.Show("Found command " + command + " and dice string " + diceString);
 
                 command = command.Trim();
                 command = command.ToLower();
@@ -1294,11 +1202,6 @@ namespace Simple_Dice_Roller
                     outputTotal.Text = "Rolled " + resp.Total;
                     LogMessage(resp.Description);
 
-                    //rolls for d20+0 seem to be 1-19, investigate
-                    //make sure there's stuff to support 'prof bonus if proficient' type commands in dice strings
-                    //whatever + profifprof(thing) + whatever ?
-                    //thing would then be the name of a skill, or a stat + 'save' ie 'strsave', or a weapon name, or whatever
-
                     UpdateDiceArrayDisplay();
                 }
                 else
@@ -1309,6 +1212,7 @@ namespace Simple_Dice_Roller
             }
             else
             {
+                //Complain to a log file?
                 MessageBox.Show("Could not parse command.");
             }
         }
@@ -1332,12 +1236,8 @@ namespace Simple_Dice_Roller
                 //Complain to a log file?
                 return;
             }
-            //MessageBox.Show(tag);
-            //comes through as string, set the buttons up with dice strings in the standard format in their Tag attribute
             tag = tag.Trim();
             bool onlyIncrease = (tag == "give") ? true : false;
-            //to do: flip this around?
-
 
             //Then get the number from the text box.
             String temp = Textbox_TempHP.Text;
@@ -1414,8 +1314,8 @@ namespace Simple_Dice_Roller
 
         #endregion
 
+        //Functions for the list of classes on the character tab.
         #region Character Tab: Classes Area
-        //This region covers the list of classes on the character tab.
 
         //Handles the onclick code for the classes list DataGridView.
         private void ClassesArea_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -1433,7 +1333,6 @@ namespace Simple_Dice_Roller
             {
                 className = ClassesArea.Rows[rowNum].Cells[0].Value.ToString();
                 subclassName = ClassesArea.Rows[rowNum].Cells[1].Value.ToString();
-                //MessageBox.Show ("Found class ID " + className + " (" + subclassName + ")");
             }
             catch
             {
@@ -1441,19 +1340,10 @@ namespace Simple_Dice_Roller
                 subclassName = "";
             }
             className ??= "";
-            //MessageBox.Show("Button clicked is " + colName + " column for class " + className + " (" + subclassName + ")");
 
             if (colName == "SpendHDButton")
             {
                 DiceResponse resp = LoadedCharacter.SpendHDByClass(className, 1, false);
-                if (resp.Success)
-                {
-                    //MessageBox.Show("HD response:" + resp.Total);
-                }
-                else
-                {
-                    //MessageBox.Show("HD spending failed.");
-                }
 
                 LogMessage(resp.Description);
 
@@ -1469,11 +1359,8 @@ namespace Simple_Dice_Roller
                 LoadedCharacter.AddOrSubtractHDForClass(className, -1);
             }
 
-            //update the display.
+            //Update the display.
             DisplayClassList(LoadedCharacter);
-
-            //it's doing 3 healing every time
-            //it's not decrementing the hd
         }
 
         //Displays the currently loaded character's classes in the form.
@@ -1486,7 +1373,6 @@ namespace Simple_Dice_Roller
                 ClassLevel thisClass = character.Classes[a];
 
                 string name = thisClass.Name;
-                //MessageBox.Show("Processing class " + name);
                 string subclass = thisClass.Subclass;
                 int level = thisClass.Level;
                 string levelString = level.ToString();
@@ -1502,8 +1388,12 @@ namespace Simple_Dice_Roller
 
         #endregion
 
+        //Functions relating to the section of the character tab with various conditions for recharging abilities.
         #region Character Tab: Recharge Area
 
+        //Draws the list of options.
+        //This will always have "Long Rest" and "Short Rest"
+        //This may have more, depending on which abilities are present.
         private void DrawRecharges()
         {
             RechargesArea.Rows.Clear();
@@ -1534,8 +1424,6 @@ namespace Simple_Dice_Roller
                 return;
             }
 
-            //MessageBox.Show("Button clicked is " + colName + " column for class " + className + " (" + subclassName + ")");
-
             if (colName == "Recharge_Button")
             {
                 LoadedCharacter.RechargeAbilities(rechargeCondition);
@@ -1551,13 +1439,12 @@ namespace Simple_Dice_Roller
 
         //-------- -------- -------- -------- -------- -------- -------- -------- 
 
+        //Functions that relate to the abilities tab.
         #region Abilities Tab
 
         //Handlers for the buttons in the abilities list.
         private void AbilitiesArea_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            //Do we need to manually do something to make the row selected?
-
             int colIndex = e.ColumnIndex;
             if (colIndex < 0)
             {
@@ -1566,14 +1453,10 @@ namespace Simple_Dice_Roller
             }
             string colName = AbilitiesArea.Columns[colIndex].Name;
 
-            //MessageBox.Show("Button clicked: col is " + colName);
-
             int rowNum = e.RowIndex;
             if (rowNum < 0)
             {
                 //This is mainly triggered by someone clicking on one of the column headers, which registers as row -1.
-
-                //Complain to a log file?
                 return;
             }
             string? abilityID = AbilitiesArea.Rows[rowNum].Cells[1].Value.ToString();
@@ -1583,50 +1466,18 @@ namespace Simple_Dice_Roller
                 return;
             }
 
-            //MessageBox.Show("Button clicked: col is " + abilityID);
-
-            //to do: consider doing this by the column index instead.
             if (colName == "Abilities_UseButtonCol")
             {
                 DiceResponse resp = LoadedCharacter.UseAbility(abilityID);
                 LogMessage(resp.Description);
-                //MessageBox.Show(resp.description);
-                //to do: check if description is actually present.
-                //maybe change the class and it's getters so it'll do something special if I call getDescription() when there isn't a description?
-                //with monotype variables I don't think that's going to do a lot, so maybe not.
-                if (resp.Success)
-                {
-                    //MessageBox.Show("Ability used: total is " + resp.total + " and string is " + resp.description);
-                }
-                else
-                {
-                    //MessageBox.Show("Failed to use ability");
-                }
-
             }
             else if (colName == "Abilities_Plus1Col")
             {
                 bool resp = LoadedCharacter.ChangeAbilityUses(abilityID, 1);
-                if (resp)
-                {
-                    //MessageBox.Show("Successfully added 1 use to " + abilityID);
-                }
-                else
-                {
-                    //MessageBox.Show("Failed to add 1 use to " + abilityID);
-                }
             }
             else if (colName == "Abilities_Minus1Col")
             {
                 bool resp = LoadedCharacter.ChangeAbilityUses(abilityID, -1);
-                if (resp)
-                {
-                    //MessageBox.Show("Successfully subtracted 1 use from " + abilityID);
-                }
-                else
-                {
-                    //MessageBox.Show("Failed to subtract 1 use from " + abilityID);
-                }
             }
             else
             {
@@ -1638,12 +1489,6 @@ namespace Simple_Dice_Roller
             int scrollloc = AbilitiesArea.FirstDisplayedScrollingRowIndex;
 
             //Update everything in case stuff changed.
-            //to do:
-            //redo any sorting or whatever that was done, after running these.
-            //sorting
-            //row selection
-            //row height changing
-            //Move DisplayAbility or whatever outside of DisplayCharacter, and just call them all separately?
             DisplayCharacter(LoadedCharacter);
             DisplayClassList(LoadedCharacter);
             UpdateHealthDisplay();
@@ -1655,18 +1500,12 @@ namespace Simple_Dice_Roller
         //Used to trigger the expansion / contraction of rows for the details views.
         private void AbilitiesArea_CellMouseUp(object sender, DataGridViewCellMouseEventArgs e)
         {
-            //If the user clicks and drags, this triggers on the one where they let go.
-            //Leave that alone?
-            //Also watch where they start clicking and require that they be the same row?
-            //Make this do nothing if the user moves the mouse more than x px while the button is down?
-
             //Check if this row is currently selected.
             int rowNum = e.RowIndex;
             if (rowNum < 0)
             {
                 return;
             }
-            //MessageBox.Show("Clicked on row " + rowNum);
 
             //Exclude the 3 button columns.
             int colIndex = e.ColumnIndex;
@@ -1694,7 +1533,7 @@ namespace Simple_Dice_Roller
             }
         }
 
-        //
+        //to do: remove?
         private void AbilitiesArea_Click(object sender, EventArgs e)
         {
             //Not currently used, EventArgs doesn't include the info we need from DataGridViewCellEventArgs.
@@ -1738,11 +1577,6 @@ namespace Simple_Dice_Roller
             string sortdir = AbilitiesArea.SortOrder.ToString();
             //Will be "Ascending" or "Descending"
 
-            //MessageBox.Show("Sorting by column " + sortcol + " in direction " + sortdir);
-
-            //to do: is reversing the direction supposed to be handled here, or is it done automatically?
-            //that answer will change how we need to sort stuff re: display tiers.
-
             bool sortReverse = (sortdir == "Ascending") ? false : true;
 
             if (colName == "Abilities_NameCol")
@@ -1780,11 +1614,10 @@ namespace Simple_Dice_Roller
         {
             Label newLabel = new Label();
             newLabel.Text = row.Cells["Abilities_TextCol"].Value.ToString();
-            //grid.Rows[rowNum].Cells["Abilities_TextCol"].Value.ToString();
             newLabel.Left = 6;
             newLabel.Top = 6;
 
-            //set height and width to the panel's height and width -12 each
+            //Set height and width to the panel's height and width -12 each
             newLabel.Width = AbilitiesArea.Rows[0].AccessibilityObject.Bounds.Width - 12;
             //newLabel.Height = 88; //hardcoded 100px height - 12px for margins = 88px
             //Figure out how tall the text area wants to be, then add 12px for a margin.
@@ -1809,21 +1642,9 @@ namespace Simple_Dice_Roller
                 string usesString = thisAbility.getUsesString();
                 string usesChange = thisAbility.UsesChange.ToString();
 
-                //string[] allOfRow = { (a + 1).ToString(), id, name, text, recharge, dice, usesString, "Use", "+1", "-1" };
-                //AbilitiesArea.Rows.Add(allOfRow);
-
                 AbilitiesArea.Rows.Insert(a, a + 1, id, name, text, recharge, dice, usesString, usesChange, "Use", "+1", "-1");
 
                 //Clicks handled by AbilitiesArea_CellContentClick()
-
-                //To do:
-                //Consider making the default sort order column hidden.
-                //How will the user indicate they want the grid sorted by it, then?
-                //Actually hook up the abilities.
-                //Add an invisible column for the ID and do it by that?
-                //Eventually: hide the text column and make it appear when the user clicks the row.
-                //And disappear when they click another row.
-                //Make sure the user can scroll horizontally when relevant.
             }
             UpdateAbilitiesAreaDetails();
         }
@@ -1837,7 +1658,6 @@ namespace Simple_Dice_Roller
                 return;
             }
 
-            //MessageBox.Show("UpdateAbilitiesAreaDetails()");
             foreach (var thingy in AbilitiesAreaDetails)
             {
                 string id = thingy.Key;
@@ -1849,6 +1669,9 @@ namespace Simple_Dice_Roller
 
         //-------- -------- -------- -------- -------- -------- -------- -------- 
 
+        //Functions that relate to the spells tab.
+
+        //The spell slots display.
         #region Magic Tab: Spell Slots
 
         //Displays the list of the character's spell slots in the magic tab.
@@ -1887,8 +1710,6 @@ namespace Simple_Dice_Roller
             }
             string colName = SpellSlotsList.Columns[colIndex].Name;
 
-            //MessageBox.Show("Button clicked: col is " + colName);
-
             int rowNum = e.RowIndex;
 
             //Figure out which type of spell slot we're looking at.\
@@ -1905,8 +1726,6 @@ namespace Simple_Dice_Roller
                 MessageBox.Show("Error: unable to identify spell slot level or type.");
                 return;
             }
-
-            //MessageBox.Show("Looking at spell slots of level " + levelString + " and type " + type);
 
             //Convert the level we got from a string to an int.
             int tempint;
@@ -1936,7 +1755,7 @@ namespace Simple_Dice_Roller
         }
 
         //Replenishes 1 spell slot for the specified level and type.
-        //type can be "standard" or "warlock"
+        //Type can be "standard" or "warlock"
         private void ReplenishSpellSlot(int level, string type)
         {
             type = type.ToLower();
@@ -1945,7 +1764,7 @@ namespace Simple_Dice_Roller
             if (!resp)
             {
                 //We were unable to add this spell slot. Are there any to replenish here?
-                //do we want to do anything here?
+                //We'll consider the matter resolved and not do anything.
             }
 
             //Update the list.
@@ -1961,7 +1780,7 @@ namespace Simple_Dice_Roller
             if (!resp)
             {
                 //We were unable to add this spell slot. Are there any to replenish here?
-                //do we want to do anything here?
+                //We'll consider the matter resolved and not do anything.
             }
 
             //Update the list.
@@ -1970,6 +1789,7 @@ namespace Simple_Dice_Roller
 
         #endregion
 
+        //The list of available spells.
         #region Magic Tab: Spells List
 
         //Populate the details panel for the spells list when it appears.
@@ -1986,7 +1806,7 @@ namespace Simple_Dice_Roller
             descriptionLabel.Left = 6;
             descriptionLabel.Top = 21;  //place it 1 row down
 
-            //set height and width to the panel's height and width -12 each
+            //Set height and width to the panel's height and width -12 each
             descriptionLabel.Width = SpellsArea.Rows[0].AccessibilityObject.Bounds.Width - 12;
             descriptionLabel.Height = 88; //hardcoded 100px height - 12px for margins = 88px
 
@@ -2014,7 +1834,7 @@ namespace Simple_Dice_Roller
                 bool material = thisSpell.Material;
                 string materialString = (material == true) ? "X" : "";
                 //material + expensivematerial as single entry?
-                //write a function for this
+                //write a function for this?
                 string action = thisSpell.Action;
                 string description = thisSpell.Description;
                 string upcastingBenefit = thisSpell.UpcastingBenefit;
@@ -2086,13 +1906,12 @@ namespace Simple_Dice_Roller
             {
                 return;
             }
-            //MessageBox.Show("Clicked on row " + rowNum);
 
             //Exclude the 3 button columns.
             int colIndex = e.ColumnIndex;
             if (colIndex < 0)
             {
-                //how to handle this?
+                //This should just be because the user clicked on the header row, so we can ignore it.
                 return;
             }
             string colName = SpellsArea.Columns[colIndex].Name;
@@ -2130,14 +1949,10 @@ namespace Simple_Dice_Roller
             }
             string colName = SpellsArea.Columns[colIndex].Name;
 
-            //MessageBox.Show("Button clicked: col is " + colName);
-
             int rowNum = e.RowIndex;
             if (rowNum < 0)
             {
                 //This is mainly triggered by someone clicking on one of the column headers, which registers as row -1.
-
-                //Complain to a log file?
                 return;
             }
             string? spellID = SpellsArea.Rows[rowNum].Cells["Spells_IDCol"].Value.ToString();
@@ -2150,9 +1965,6 @@ namespace Simple_Dice_Roller
             //We'll want the name for when we put a message in the log.
             string? spellName = SpellsArea.Rows[rowNum].Cells["Spells_NameCol"].Value.ToString();
 
-            //MessageBox.Show("Button clicked: col is " + abilityID);
-
-            //to do: consider doing this by the column index instead.
             if (colName == "Spells_CastCol")
             {
                 //Attempt to cast the spell.
@@ -2168,8 +1980,8 @@ namespace Simple_Dice_Roller
             }
             else if (colName == "Spells_UpcastCol")
             {
-                //trigger a popup with buttons for each possible upcast level.
-                //also the description of what's gained by upcasting.
+                //Trigger a popup with buttons for each possible upcast level.
+                //Also the description of what's gained by upcasting.
                 CreateUpcastPanel(spellID);
             }
             else
@@ -2182,25 +1994,25 @@ namespace Simple_Dice_Roller
             int scrollloc = SpellsArea.FirstDisplayedScrollingRowIndex;
 
             DisplayAbilities(LoadedCharacter);
-            //DisplayCharacter(LoadedCharacter);
-            //DisplayClassList(LoadedCharacter);
-            //UpdateHealthDisplay();
             DisplaySpellSlots();
 
             //Now scroll back to that same spot.
             SpellsArea.FirstDisplayedScrollingRowIndex = scrollloc;
         }
 
+        //to do: remove?
         private void SpellsArea_Click(object sender, EventArgs e)
         {
             //Not currently used, EventArgs doesn't include the info we need from DataGridViewCellEventArgs.
         }
 
+        //Manages updating things as appropriate when the user scrolls the list.
         private void SpellsArea_Scroll(object sender, ScrollEventArgs e)
         {
             UpdateSpellsAreaDetails();
         }
 
+        //Function to compare two rows within the spells list, for use in sorting by the various columns.
         private void SpellsArea_SortCompare(object sender, DataGridViewSortCompareEventArgs e)
         {
             int colIndex = e.Column.Index;
@@ -2226,9 +2038,6 @@ namespace Simple_Dice_Roller
                 //Complain to a log file
                 return;
             }
-
-            //to do: is reversing the direction supposed to be handled here, or is it done automatically?
-            //that answer will change how we need to sort stuff re: display tiers.
 
             if (colName == "Spells_NameCol")
             {
@@ -2296,6 +2105,7 @@ namespace Simple_Dice_Roller
             }
         }
 
+        //Called when the program finishes sorting the spells list. Triggers everything necessary at that time.
         private void SpellsArea_Sorted(object sender, EventArgs e)
         {
             UpdateSpellsAreaDetails();
@@ -2310,7 +2120,6 @@ namespace Simple_Dice_Roller
                 return;
             }
 
-            //MessageBox.Show("UpdateAbilitiesAreaDetails()");
             foreach (var thingy in SpellsAreaDetails)
             {
                 string id = thingy.Key;
@@ -2322,6 +2131,8 @@ namespace Simple_Dice_Roller
 
         #endregion
 
+        //Functions for creating and managing the little panel that pops up when someone clicks the upcast button on one of the spells.
+        //coming soon
         #region Magic Tab: Upcast Panel
 
         private void CloseUpcastPanel()
