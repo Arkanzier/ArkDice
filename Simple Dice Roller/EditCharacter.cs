@@ -400,7 +400,6 @@ namespace Simple_Dice_Roller
                 {
                     classname = "";
                 }
-                //MessageBox.Show("Found class name " + classname);
                 string? subclassname = EditCharacterClassesList.Rows[a].Cells["ClassesTable_Subclass"].Value.ToString();
                 string? classlevel = EditCharacterClassesList.Rows[a].Cells["ClassesTable_Level"].Value.ToString();
                 string? classhd = EditCharacterClassesList.Rows[a].Cells["ClassesTable_HD"].Value.ToString();
@@ -436,7 +435,6 @@ namespace Simple_Dice_Roller
             //Wrap it up so that it properly represents a ClassLevelList object.
             classesJson = "{\"Levels\":[" + classesJson + "]}";
             changes["Classes"] = classesJson;
-            MessageBox.Show("Using JSON " + classesJson);
 
             //Do some extra error checking here?
 
@@ -444,7 +442,8 @@ namespace Simple_Dice_Roller
             EditingCharacter.IncorporateChanges(changes);
 
             //Trigger a save here
-            EditingCharacter.Save();
+            //EditingCharacter.Save();
+            //We don't want to save until the user hits the save button in the main program.
 
             return true;
         }
