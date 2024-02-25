@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Character
 {
     //A list of ClassLevel objects.
-    //This exists partially to allow automatic deserialization of lists of ClassLevels, and partially for a couple convenience functions.
+    //This exists mostly to allow automatic deserialization of lists of ClassLevels, and partially for a couple convenience functions.
     #region ClassLevelList Class
 
     public class ClassLevelList
