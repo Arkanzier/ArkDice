@@ -8,11 +8,11 @@ using System.Text.Json.Serialization;
 using System.Xml.Schema;
 using ArkDice;
 
-namespace Character //change to ArkDice?
+namespace Character
 {
     public class Character
     {
-        //Basic info
+        //Basic character info
         public string ID { get; set; }
         public string Name { get; set; }
         public string Race { get; set; }
@@ -24,9 +24,6 @@ namespace Character //change to ArkDice?
 
         //Class related info
         public List<ClassLevel> Classes { get; set; }
-        //to do: consider setting something up to support gestalt rules.
-        //just set up a multiplier for levels or 'class levels per character level' type thing?
-        //the character's level equals total class level divided by that number
 
         //Added to the prof bonus calculated based on level. Can be negative.
         public int BonusToProf { get; set; }
@@ -37,23 +34,8 @@ namespace Character //change to ArkDice?
         //Stats and related info
         //Starts at 0 and proceeds in the order Str, Dex, Con, Int, Wis, Cha.
         public int[] Stats { get; set; }
-        //convert these over to loose ints/bools?
-        //there are only 6 of each, and it would cut down a little on the work involved.
 
         public double[] Saves { get; set; }
-        //to do: rename to saves?
-
-        //how to handle weapon and armor profs?
-        //armor can probably just be 3 bools/decimals
-        //weapons can almost just be a couple bools/floats, but we might need to address each weapon individually
-        //do something with hardcoded categories?
-        //write a function or two to convert between weapon categories and specific weapons?
-        //how to handle language profs?
-        //just make them bools, or build in houserules for learning them fractionally?
-        //need something for tool profs
-        //just put in an 'other' since there are so many types of tools?
-        //this would just be an array of strings, in that case.
-        //lump tools and languages together, since they're just going to be lists anyway?
 
         //Skill proficiencies
         public Dictionary<string, double> Skills { get; set; }
@@ -182,7 +164,6 @@ namespace Character //change to ArkDice?
         }
 
         //Loads the character from a file containing JSON.
-        //public Character (string charID, Dictionary<string, Spell> library, string folderpath = "")
         public Character (string charID, string folderpath = "")
             : this()
         {
@@ -208,9 +189,6 @@ namespace Character //change to ArkDice?
 
             FolderLocation = folderpath;
 
-            //to do: look into making this work with deserialize.
-            //will i have to make a struct with the same attributes and then write a function to copy stuff from there to here?
-
             var deserializerOptions = new JsonSerializerOptions
             {
                 NumberHandling = JsonNumberHandling.AllowReadingFromString
@@ -219,433 +197,11 @@ namespace Character //change to ArkDice?
 
             if (copy != null)
             {
-                //to do: make this a function?
-                //overload IncorporateChanges();
-
-                ID = copy.ID;
-                Name = copy.Name;
-                Race = copy.Race;
-                Subrace = copy.Subrace;
-                MaxHP = copy.MaxHP;
-                CurrentHP = copy.CurrentHP;
-                TempHP = copy.TempHP;
-
-                Classes = copy.Classes;
-
-                BonusToProf = copy.BonusToProf;
-                Prof = copy.Prof;
-                Stats = copy.Stats;
-                Saves = copy.Saves;
-                Skills = copy.Skills;
-
-                Abilities = copy.Abilities;
-                BasicAbilities = copy.BasicAbilities;
-                Passives = copy.Passives;
-
-                SpellSlotsCurrent = copy.SpellSlotsCurrent;
-                SpellSlotsMax = copy.SpellSlotsMax;
-                SpellSlotsWarlockCurrent = copy.SpellSlotsWarlockCurrent;
-                SpellSlotsWarlockMax = copy.SpellSlotsWarlockMax;
-                Spells = copy.Spells;
-
-
-                SortAbilities();
-                SortSpells();
-
-                return;
+                IncorporateChanges(copy);
             }
-
-            //Old method: manual parsing of the JSON.
-            /*
-            //Pull info from the JSON.
-            try
-            {
-                JsonDocument doc = JsonDocument.Parse(json);
-                JsonElement root = doc.RootElement;
-
-                JsonElement temp = new JsonElement();
-                int tempint = 0;
-
-                //Basic attributes
-                if (root.TryGetProperty("ID", out temp))
-                {
-                    ID = temp.ToString();
-                }
-                if (root.TryGetProperty("Name", out temp))
-                {
-                    Name = temp.ToString();
-                }
-                if (root.TryGetProperty("Race", out temp))
-                {
-                    Race = temp.ToString();
-                }
-                if (root.TryGetProperty("Subrace", out temp))
-                {
-                    Subrace = temp.ToString();
-                }
-                if (root.TryGetProperty("MaxHP", out temp))
-                {
-                    if (Int32.TryParse(temp.ToString(), out tempint))
-                    {
-                        MaxHP = tempint;
-                    }
-                }
-                if (root.TryGetProperty("CurrentHP", out temp))
-                {
-                    if (Int32.TryParse(temp.ToString(), out tempint))
-                    {
-                        CurrentHP = tempint;
-                    }
-                }
-                if (root.TryGetProperty("TempHP", out temp))
-                {
-                    if (Int32.TryParse(temp.ToString(), out tempint))
-                    {
-                        TempHP = tempint;
-                    }
-                }
-                if (root.TryGetProperty("BonusToProf", out temp))
-                {
-                    //not currently in the file
-                    if (Int32.TryParse(temp.ToString(), out tempint))
-                    {
-                        BonusToProf = tempint;
-                    }
-                }
-
-                //Classes and levels
-                if (root.TryGetProperty("Classes", out temp))
-                {
-                    Classes = new List<ClassLevel>();
-                    JsonElement temp2 = new JsonElement();
-
-                    for (int a = 0; a < temp.GetArrayLength(); a++)
-                    {
-                        JsonElement thisclass = temp[a];
-                        ClassLevel newclass = new ClassLevel();
-
-                        newclass.Name = "";
-                        if (thisclass.TryGetProperty("Name", out temp2))
-                        {
-                            newclass.Name = temp2.ToString();
-                        }
-                        else
-                        {
-                            //complain to a log file?
-                            continue;
-                        }
-                        newclass.Subclass = "";
-                        if (thisclass.TryGetProperty("Subclass", out temp2))
-                        {
-                            newclass.Subclass = temp2.ToString();
-                        }
-                        //Subclass is not required, so we don't quit when it's not present.
-                        newclass.Level = 0;
-                        if (thisclass.TryGetProperty("Level", out temp2))
-                        {
-                            if (Int32.TryParse(temp2.ToString(), out tempint))
-                            {
-                                newclass.Level = tempint;
-                            }
-                        }
-                        else
-                        {
-                            //complain to a log file?
-                            continue;
-                        }
-                        newclass.HDSize = 0;
-                        if (thisclass.TryGetProperty("HDSize", out temp2))
-                        {
-                            if (Int32.TryParse(temp2.ToString(), out tempint))
-                            {
-                                newclass.HDSize = tempint;
-                            }
-                        }
-                        newclass.CurrentHD = 0;
-                        if (thisclass.TryGetProperty("CurrentHD", out temp2))
-                        {
-                            if (Int32.TryParse(temp2.ToString(), out tempint))
-                            {
-                                newclass.CurrentHD = tempint;
-                            }
-                        }
-
-                        Classes.Add(newclass);
-                    }
-                }
-
-                //Stats
-                //to do: this is now a purely numeric array, adjust this to compensate
-                if (root.TryGetProperty("Stats", out temp))
-                {
-                    //We don't technically need to do this here, but it won't hurt.
-                    Stats = new int[6];
-                    //JsonElement temp2 = new JsonElement();
-
-                    //to do: check if array length is 6 and complain otherwise?
-                    for (int a = 0; a < temp.GetArrayLength() && a < 6; a++)
-                    {
-                        JsonElement thisstat = temp[a];
-
-                        if (thisstat.TryGetInt32(out tempint))
-                        {
-                            Stats[a] = tempint;
-                        }
-                        else
-                        {
-                            Stats[a] = 0;
-                            //complain to a log?
-                        }
-                    }
-                }
-
-                //Saves
-                if (root.TryGetProperty("Saves", out temp))
-                {
-                    //We don't technically need to do this here, but it won't hurt.
-                    Saves = new double[6];
-                    //JsonElement temp2 = new JsonElement();
-
-                    //to do: check if array length is 6 and complain otherwise?
-                    for (int a = 0; a < temp.GetArrayLength() && a < 6; a++)
-                    {
-                        JsonElement thissave = temp[a];
-
-                        if (thissave.TryGetInt32(out tempint))
-                        {
-                            Saves[a] = tempint;
-                        }
-                        else
-                        {
-                            Saves[a] = 0;
-                            //complain to a log?
-                        }
-                    }
-                }
-
-                //Skills
-                //to do: set up a way to automatically get these indices.
-                //just do a foreach through the existing dictionary, since they should all be in there now?
-                if (root.TryGetProperty("Skills", out temp))
-                {
-                    Skills = new Dictionary<string, double>();
-                    JsonElement temp2 = new JsonElement();
-
-                    Skills["Athletics"] = 0;
-                    if (temp.TryGetProperty("Athletics", out temp2))
-                    {
-                        if (temp2.TryGetInt32(out tempint))
-                        {
-                            Skills["Athletics"] = tempint;
-                        }
-                    }
-                    Skills["Acrobatics"] = 0;
-                    if (temp.TryGetProperty("Acrobatics", out temp2))
-                    {
-                        if (temp2.TryGetInt32(out tempint))
-                        {
-                            Skills["Acrobatics"] = tempint;
-                        }
-                        else
-                        {
-                            Skills["Acrobatics"] = 0;
-                        }
-                    }
-                    Skills["Sleight of Hand"] = 0;
-                    if (temp.TryGetProperty("Sleight of Hand", out temp2))
-                    {
-                        if (temp2.TryGetInt32(out tempint))
-                        {
-                            Skills["Sleight of Hand"] = tempint;
-                        }
-                    }
-                    Skills["Stealth"] = 0;
-                    if (temp.TryGetProperty("Stealth", out temp2))
-                    {
-                        if (temp2.TryGetInt32(out tempint))
-                        {
-                            Skills["Stealth"] = tempint;
-                        }
-                    }
-                    Skills["Arcana"] = 0;
-                    if (temp.TryGetProperty("Arcana", out temp2))
-                    {
-                        if (temp2.TryGetInt32(out tempint))
-                        {
-                            Skills["Arcana"] = tempint;
-                        }
-                    }
-                    Skills["History"] = 0;
-                    if (temp.TryGetProperty("History", out temp2))
-                    {
-                        if (temp2.TryGetInt32(out tempint))
-                        {
-                            Skills["History"] = tempint;
-                        }
-                    }
-                    Skills["Investigation"] = 0;
-                    if (temp.TryGetProperty("Investigation", out temp2))
-                    {
-                        if (temp2.TryGetInt32(out tempint))
-                        {
-                            Skills["Investigation"] = tempint;
-                        }
-                    }
-                    Skills["Nature"] = 0;
-                    if (temp.TryGetProperty("Nature", out temp2))
-                    {
-                        if (temp2.TryGetInt32(out tempint))
-                        {
-                            Skills["Nature"] = tempint;
-                        }
-                    }
-                    Skills["Religion"] = 0;
-                    if (temp.TryGetProperty("Religion", out temp2))
-                    {
-                        if (temp2.TryGetInt32(out tempint))
-                        {
-                            Skills["Religion"] = tempint;
-                        }
-                    }
-                    Skills["Animal Handling"] = 0;
-                    if (temp.TryGetProperty("Animal Handling", out temp2))
-                    {
-                        if (temp2.TryGetInt32(out tempint))
-                        {
-                            Skills["Animal Handling"] = tempint;
-                        }
-                    }
-                    Skills["Insight"] = 0;
-                    if (temp.TryGetProperty("Insight", out temp2))
-                    {
-                        if (temp2.TryGetInt32(out tempint))
-                        {
-                            Skills["Insight"] = tempint;
-                        }
-                    }
-                    Skills["Medicine"] = 0;
-                    if (temp.TryGetProperty("Medicine", out temp2))
-                    {
-                        if (temp2.TryGetInt32(out tempint))
-                        {
-                            Skills["Medicine"] = tempint;
-                        }
-                    }
-                    Skills["Perception"] = 0;
-                    if (temp.TryGetProperty("Perception", out temp2))
-                    {
-                        if (temp2.TryGetInt32(out tempint))
-                        {
-                            Skills["Perception"] = tempint;
-                        }
-                    }
-                    Skills["Survival"] = 0;
-                    if (temp.TryGetProperty("Survival", out temp2))
-                    {
-                        if (temp2.TryGetInt32(out tempint))
-                        {
-                            Skills["Survival"] = tempint;
-                        }
-                    }
-                    Skills["Deception"] = 0;
-                    if (temp.TryGetProperty("Deception", out temp2))
-                    {
-                        if (temp2.TryGetInt32(out tempint))
-                        {
-                            Skills["Deception"] = tempint;
-                        }
-                    }
-                    Skills["Intimidation"] = 0;
-                    if (temp.TryGetProperty("Intimidation", out temp2))
-                    {
-                        if (temp2.TryGetInt32(out tempint))
-                        {
-                            Skills["Intimidation"] = tempint;
-                        }
-                    }
-                    Skills["Performance"] = 0;
-                    if (temp.TryGetProperty("Performance", out temp2))
-                    {
-                        if (temp2.TryGetInt32(out tempint))
-                        {
-                            Skills["Performance"] = tempint;
-                        }
-                    }
-                    Skills["Persuasion"] = 0;
-                    if (temp.TryGetProperty("Persuasion", out temp2))
-                    {
-                        if (temp2.TryGetInt32(out tempint))
-                        {
-                            Skills["Persuasion"] = tempint;
-                        }
-                    }
-                }
-
-                //Abilities
-                if (root.TryGetProperty("Abilities", out temp))
-                {
-                    //Contains an array of objects.
-                    //Pass each object to the Ability class' constructor.
-
-                    Abilities = new List<Ability>();
-
-                    for (int a = 0; a < temp.GetArrayLength(); a++)
-                    {
-                        Ability thisAbility = new Ability(temp[a].ToString());
-                        Abilities.Add(thisAbility);
-                    }
-                }
-
-                //basic abilities goes here
-
-                //passives goes here
-
-                //Spells
-                if (root.TryGetProperty ("Spells", out temp))
-                {
-                    Spells = new List<Spell>();
-
-                    for (int a = 0; a < temp.GetArrayLength(); a++)
-                    {
-                        //Spell thisSpell = new Spell(temp[a].ToString());
-                        Spell thisSpell = new Spell(temp[a]);
-
-                        //We might need to load the spell from the library.
-                        if (!thisSpell.IsLoaded() && thisSpell.ID != "")
-                        {
-                            //We got an ID but that's it. Let's try to load it by ID.
-                            if (library.ContainsKey(thisSpell.ID))
-                            {
-                                thisSpell.Copy(library[thisSpell.ID]);
-                                Spells.Add(thisSpell);
-                            } else if (thisSpell.LoadFromFile(folderpath))
-                            {
-                                //We were able to load it from a file.
-                                Spells.Add(thisSpell);
-                            }
-                        } else
-                        {
-                            Spells.Add(thisSpell);
-                        }
-                    }
-                }
-
-            }
-            catch
-            {
-                //complain to a log file?
-                //Name = "Error";
-                return;
-            }
-
-            CalculateProf();
-            SortAbilities();
-            SortSpells();
-            */
         }
 
         //Loads the character from a JSON file, then compares the character's spells and abilities against the provided libraries looking for updates.
-        //to do: make this ask for permission before adding stuff to the library, updating local copies, etc.
         public Character (string charID, string folderpath, ref Dictionary<string, Ability> abilitiesLibrary, ref Dictionary<string, Spell> spellsLibrary)
             : this (charID, folderpath)
         {
@@ -1027,10 +583,41 @@ namespace Character //change to ArkDice?
         }
 
         //Takes in some changes and applies them to the character.
+        public bool IncorporateChanges (Character copy)
+        {
+            ID = copy.ID;
+            Name = copy.Name;
+            Race = copy.Race;
+            Subrace = copy.Subrace;
+            MaxHP = copy.MaxHP;
+            CurrentHP = copy.CurrentHP;
+            TempHP = copy.TempHP;
+
+            Classes = copy.Classes;
+
+            BonusToProf = copy.BonusToProf;
+            Prof = copy.Prof;
+            Stats = copy.Stats;
+            Saves = copy.Saves;
+            Skills = copy.Skills;
+
+            Abilities = copy.Abilities;
+            BasicAbilities = copy.BasicAbilities;
+            Passives = copy.Passives;
+
+            SpellSlotsCurrent = copy.SpellSlotsCurrent;
+            SpellSlotsMax = copy.SpellSlotsMax;
+            SpellSlotsWarlockCurrent = copy.SpellSlotsWarlockCurrent;
+            SpellSlotsWarlockMax = copy.SpellSlotsWarlockMax;
+            Spells = copy.Spells;
+
+            SortAbilities();
+            SortSpells();
+
+            return true;
+        }
         public bool IncorporateChanges(Dictionary<string, string> changes)
         {
-            //to do: consider having this return false when it can't parse something.
-
             //If there is an index in the dictionary, assume that's meant to be a change and set the corresponding attribute here to that value.
             //We will need to do some sanity checking, though (ie: current HP cannot be more than max HP).
 
@@ -1193,17 +780,16 @@ namespace Character //change to ArkDice?
         }
 
         //Replenishes abilities and, on a long rest, also replenishes HD.
-        //to do: find a better name for this?
         public bool RechargeAbilities (string condition)
         {
             condition = condition.ToLower();
             if (condition == "short rest")
             {
-                //do short rest stuff
+                //Do short rest stuff.
             }
             else if (condition == "long rest")
             {
-                //do short + long rest stuff
+                //Do short + long rest stuff.
                 RegainHD("half");
             }
 
@@ -1263,7 +849,6 @@ namespace Character //change to ArkDice?
                         {
                             if (Classes[a].HDSize == size)
                             {
-                                int toAdd;
                                 int missingHere = Classes[a].Level - Classes[a].CurrentHD;
                                 if (missingHere >= toRegain)
                                 {
@@ -1279,11 +864,14 @@ namespace Character //change to ArkDice?
                         }
                     }
                 }
-
-
-                //need a decently fast way to skip to the largest hd sizes
-                //write a function to get the max hd of each size, like the one that gets current hd?
-                    //or modify that one with another mode.
+            } else if (amount == "all")
+            {
+                //Regain all available HD.
+                //We don't need to do any fancy math for this one, just set everything to the maximum.
+                for (int a = 0; a < Classes.Count; a++)
+                {
+                    Classes[a].CurrentHD = Classes[a].Level;
+                }
             }
 
             return true;
@@ -1328,10 +916,7 @@ namespace Character //change to ArkDice?
         {
             string backupFolder = FolderLocation + "Characters\\Backups\\";
             string filepath = FolderLocation + "Characters\\" + ID + ".char";
-            //string backupFilepath = FolderLocation + "Characters\\Backups" + ID + ".char";
             string backupFilepath = backupFolder + ID + "_" + DateTime.Now.ToString("yyyy-MM-dd_hh-mm-ss") + ".char";
-
-            //to do eventually: change this over to saving the last X copies, and not all?
 
             if (System.IO.File.Exists(filepath))
             {
@@ -1396,8 +981,6 @@ namespace Character //change to ArkDice?
         }
 
         //Spends one or more HD of the specified size.
-        //to do: consider putting in an option to spend the largest size repeatedly until HP is full.
-        //maybe make that a different function
         public bool SpendHDBySize(int size, int quantity = 1)
         {
             //Make sure there are enough HD of the specified size before we start spending them.
@@ -1517,7 +1100,7 @@ namespace Character //change to ArkDice?
                 if (id == "")
                 {
                     //This shouldn't happen, but we'll check for it just in case.
-                    //complain?
+                    //complain to a log file?
                     continue;
                 }
 
@@ -1566,7 +1149,7 @@ namespace Character //change to ArkDice?
                 if (id == "")
                 {
                     //This shouldn't happen, but we'll check for it just in case.
-                    //complain?
+                    //complain to a log file?
                     continue;
                 }
 
@@ -1623,7 +1206,6 @@ namespace Character //change to ArkDice?
 
         #region Public Functions: Getters and Setters for Stats
 
-        //to do: how many of these are actually needed?
         //Getters for stats, to obfuscate the array that's actually used.
         public int GetStrength()
         {
@@ -1841,7 +1423,7 @@ namespace Character //change to ArkDice?
             }
             else
             {
-                //complain somewhere
+                //complain to a log file.
                 return 0;
             }
         }
@@ -1849,8 +1431,6 @@ namespace Character //change to ArkDice?
         //Returns a list of all abilities, in the default order.
         public List<Ability> GetAbilities()
         {
-            //to do: perhaps switch this over to something that just outputs data needed to render the things for the abilities.
-            //then switch ability class over to internal only again.
             return this.Abilities;
         }
 
@@ -1866,9 +1446,6 @@ namespace Character //change to ArkDice?
                 }
             }
 
-            //what to return when it's not found?
-            //change it to returning the ability by reference?
-            //return new Ability();
             return null;
         }
 
@@ -1900,7 +1477,6 @@ namespace Character //change to ArkDice?
                 temp.Add(recharge);
             }
 
-            //To do: how to make sure this ignores capitalization?
             temp.Sort();
 
             //We want to hardcode long and short rests to the beginning of the list.
@@ -1957,7 +1533,7 @@ namespace Character //change to ArkDice?
             }
             else
             {
-                //Did someone forgot to add something to GetStatForRoll()?
+                //Did someone forget to add something to GetStatForRoll()?
                 //Don't add any stat.
             }
 
@@ -2072,8 +1648,6 @@ namespace Character //change to ArkDice?
             {
                 return (int)skill;
             }
-            //to do: consider replacing this with a for loop comparing ToLower() versions against each other.
-            //Is there a case insensitive version of TryGetValue()?
 
             //Weapons go here.
 
