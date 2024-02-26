@@ -20,12 +20,6 @@ namespace ArkDice
         //If we need to make any changes to the Character instance that triggered the dice rolls, put them here.
         public Dictionary<string, string> Changes { get; set; }
 
-        //Indicates nat 1/20, if present.
-
-        //Array of rolls, in case they're relevant?
-
-        //...
-
 
         //Constructor(s):
         //-------- -------- -------- -------- -------- -------- -------- -------- 
