@@ -73,8 +73,6 @@
         }
 
         //Takes in the name of a skill and spits out the name of the stat typically associated to it.
-        //to do: load this from a file
-        //to do: create a version that returns an int?
         public static string getStatForSkill(string skill)
         {
             skill = skill.ToLower();
