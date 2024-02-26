@@ -50,8 +50,6 @@ namespace Simple_Dice_Roller
 
             AbilitiesLibrary = ParentOfThisForm.AbilitiesLibrary;
 
-            //MessageBox.Show("Loaded character " + EditingCharacter.Name);
-
             DrawAbilitiesLibrary();
             DrawAssignedAbilitiesList();
         }
@@ -63,19 +61,15 @@ namespace Simple_Dice_Roller
             Input_Name.Text = ability.Name;
             Input_ID.Text = ability.ID;
 
-            //to do: get rid of uses and let that be managed within the program proper?
             Input_Uses.Text = ability.Uses.ToString();
             Input_MaxUses.Text = ability.MaxUses.ToString();
             Input_UsesChange.Text = ability.UsesChange.ToString();
             Input_RechargeCondition.Text = ability.RechargeCondition;
             Input_RechargeAmount.Text = ability.RechargeAmount.ToString();
-            //
 
-            //to do: change to selecting supported actions off a dropdown.
             Input_Action.Text = ability.Action;
             Input_Dice.Text = ability.Dice.GetDiceString();
             Input_DisplayTier.Text = ability.DisplayTier.ToString();
-            //
 
             Input_Text.Text = ability.Text;
         }
@@ -85,10 +79,6 @@ namespace Simple_Dice_Roller
         {
             DrawingLists = true;
             AbilitiesLibraryList.Rows.Clear();
-
-            //hide rows here that exist in the other list?
-            //will need a quick way to check if an ability is in the other list.
-            //store it as a dictionary too?
 
             int a = 0;
             foreach (var keyValuePair in AbilitiesLibrary.OrderBy(x => x.Key))
@@ -166,12 +156,6 @@ namespace Simple_Dice_Roller
             return ret;
         }
 
-        //
-        private void SelectAbility ()
-        {
-            //to do
-        }
-
 
         #region Functions triggered by the form
 
@@ -181,7 +165,6 @@ namespace Simple_Dice_Roller
             if (DrawingLists == true)
             {
                 //This was only triggered as a result of redrawing the grid, we don't want to respond to it.
-                //MessageBox.Show("Skipping ability loading");
                 return;
             }
 
@@ -192,17 +175,11 @@ namespace Simple_Dice_Roller
                 //The selection was just cleared, there is no ability selected.
                 //We can mimic this by passing a blank ability to the appropriate places.
                 selectedAbility = new Ability();
-                //MessageBox.Show("Going to blank out the displays");
             }
             else
             {
                 //Get the ability's info.
-                //int rowindex = AbilitiesLibraryList.SelectedRows[0].Index;
                 string id = "";
-                //if (AbilitiesLibraryList.Columns.Contains ("Library_IDCol"))
-                //{
-                //    id = AbilitiesLibraryList.SelectedRows[0].Cells["Library_IDCol"].Value.ToString();
-                //}
                 try
                 {
                     id = AbilitiesLibraryList.SelectedRows[0].Cells["Library_IDCol"].Value.ToString();
@@ -232,13 +209,12 @@ namespace Simple_Dice_Roller
                         DrawingLists = true;
                         AssignedAbilitiesList.Rows[assignedIndex].Selected = true;
                         DrawingLists = false;
-                        //to do: how do i move the little triangle?
                     }
                     else
                     {
                         //There is no matching ability, clear the selection.
                         DrawingLists = true;
-                        //unselect the selected row
+                        //Unselect the selected row?
                         AssignedAbilitiesList.ClearSelection();
                         DrawingLists = false;
                     }
@@ -254,7 +230,6 @@ namespace Simple_Dice_Roller
             if (DrawingLists == true)
             {
                 //This was only triggered as a result of redrawing the grid, we don't want to respond to it.
-                //MessageBox.Show("Skipping ability loading");
                 return;
             }
 
@@ -284,9 +259,6 @@ namespace Simple_Dice_Roller
                 }
                 else
                 {
-                    //to do: needs error protection.
-                    //if the ability isn't in the library, this will cause problems.
-                    //library cannot load after being saved. figure out why
                     if (id != null && AbilitiesLibrary.ContainsKey(id))
                     {
                         selectedAbility = AbilitiesLibrary[id];
@@ -327,8 +299,8 @@ namespace Simple_Dice_Roller
                 id = AbilitiesLibraryList.SelectedRows[0].Cells["Library_IDCol"].Value.ToString();
             } catch
             {
-                //complain?
-                //This shouldn't happen.
+                //complain to a log file?
+                //This shouldn't be possible.
             }
             
 
@@ -359,7 +331,7 @@ namespace Simple_Dice_Roller
             catch
             {
                 //complain?
-                //This shouldn't happen.
+                //This shouldn't be possible.
                 MessageBox.Show("Error: couldn't retrieve ability ID.");
             }
 
@@ -398,7 +370,7 @@ namespace Simple_Dice_Roller
             catch
             {
                 //complain?
-                //This shouldn't happen.
+                //This shouldn't be possible.
                 MessageBox.Show("Error: couldn't retrieve ability ID.");
             }
 
@@ -423,7 +395,6 @@ namespace Simple_Dice_Roller
                 //complain?
                 return;
             }
-            //more?
 
             if (AbilitiesLibrary.ContainsKey(ability.ID))
             {
@@ -431,7 +402,6 @@ namespace Simple_Dice_Roller
                 var confirmation = MessageBox.Show("You are about to overwrite an existing ability, do you want to continue?", "Confirm Delete!!", MessageBoxButtons.YesNo);
                 if (confirmation == DialogResult.Yes)
                 {
-                    //AbilitiesLibrary.Add(ability.ID, ability);
                     //Overwrite the ability.
                     AbilitiesLibrary[ability.ID] = ability;
                 }
