@@ -6,7 +6,6 @@ using static System.Formats.Asn1.AsnWriter;
 using System.Text.Json;
 using System.Collections;
 using System.Text.Json.Serialization;
-//using System.Windows.Forms;
 
 namespace ArkDice
 {
@@ -22,11 +21,8 @@ namespace ArkDice
         [JsonIgnore]
         public string Description { get; set; }
 
-        //To add eventually:
-        //Functions for adding/removing dice matching certain descriptions without outside functions needing to interact with the list.
-        //Just specify a dice string or provide a DicePile or whatever and this will search it's own list to modify, add, or remove a DicePile as needed.
 
-        //Constructor(s)
+        //Constructors
         [JsonConstructor]
         public DiceCollection()
         {
@@ -56,22 +52,14 @@ namespace ArkDice
         //-------- -------- -------- -------- -------- -------- -------- -------- 
 
         //Adds or removes one die at a time from this.
-        //Note that this just looks for dice of the same size, it doesn't only affect piles with the same amount of advantage or disadvantage.
         //Arguments:
-            //numDice: the number of dice to add / remove. Make this negative to remove.
             //dieSize: the size of the dice to add / remove.
+            //subtract: if true, this will remove dice instead of adding them.
             //advdis: controls whether this adds regular dice, advantage dice, or disadvantage dice.
                 //<0: disadvantage
                 //0: regular
                 //>0: advantage
-            //groupSizes: if true, all dice of the same size will be grouped together, regardless of advantage/disadvantage status.
-                //If false, dice will only be added to / removed from piles of the same die size with the same level of advantage / disadvantage.
-
-        //do i want to support things like (4d6 adv1) + (2d6 dis2) ?
-            //let's leave that for the text part only, for now.
-
-        //procedure:
-            //to add / remove regular dice, just click the appropriate +/- buttons
+            //flatBonus: indicates that this is to add/remove a flat bonus instead of a die.
         public bool AddOneDie (int dieSize, bool subtract = false, int advdis = 0, bool flatBonus = false)
         {
             for (int a = 0; a < Dice.Count; a++)
@@ -85,7 +73,7 @@ namespace ArkDice
 
                     Dice[a].FlatBonus += dieSize;
 
-                    //error checking?
+                    //error checking goes here
 
                     //Check if this bonus is now 0. If so, get rid of it.
                     if (Dice[a].FlatBonus == 0)
@@ -110,17 +98,9 @@ namespace ArkDice
                     {
                         //We might be removing dice that get added to the total.
                         //We might be removing dice that get subtracted from the total.
+                        //Either way, we want to make the number smaller.
                         numToAdd = -1;
                     }
-
-                    //int numToAdd = (subtract) ? -1 : 1;
-                    //to do:
-                    //if the multipliers are both negative, add instead
-
-                    //logic:
-                    //if adding and the multiplier is positive, add
-                    //if subtracting and the multiplier is negative, add
-                    //otherwise, subtract
 
                     if (advdis == 0)
                     {
@@ -160,76 +140,11 @@ namespace ArkDice
                 bonus = dieSize;
                 dieSize = 0;
             }
-                //to do
 
             DicePile newPile = new DicePile(dieSize, numDice, bonus, "", numAdv, numDis, multiplier);
             Dice.Add(newPile);
 
             return true;
-        }
-
-        //Adds to an existing DicePile.
-        public bool AddDie (int dieSize, int numDice = 1)
-            //to do: rename to reflect it's ability to reduce/remove dice as well?
-            //to do: add the ability to increase stuff with adv/dis, as part of the dice roller portion of the program.
-            //add 2 extra options for specifying adv/dis, and this will add the dice if they match?
-                //default them to 0 each, which will make it go with the current behavior.
-        {
-            if (dieSize < 1)
-            {
-                return false;
-            }
-
-            for (int a = 0; a < Dice.Count(); a++)
-            {
-                int size = Dice[a].DieSize;
-                int adv = Dice[a].NumAdv;
-                int dis = Dice[a].NumDis;
-                if (adv > 0 || dis > 0)
-                {
-                    //Adding dice to piles with advantage and/or disadvantage throws off the math, so we're not going to do it.
-                    continue;
-                }
-
-                if (size == dieSize)
-                {
-                    int newNum = Dice[a].NumDice + numDice;
-                    if (newNum <= 0)
-                    {
-                        //We're going to remove this entry.
-                        Dice.RemoveAt(a);
-                        return true;
-                    }
-                    else
-                    {
-                        //We're going to increase/reduce this entry without removing it.
-                        Dice[a].NumDice =newNum;
-                        return true;
-                    }
-                }
-            }
-
-            if (numDice <= 0)
-            {
-                //We were told to remove dice that don't seem to be present.
-                return false;
-            }
-
-            //If we get this far, we can assume that we didn't find a matching DicePile.
-            //We'll need to add one.
-            DicePile newPile = new DicePile (dieSize, numDice);
-            Dice.Add(newPile);
-
-            return true;
-        }
-
-        public DiceCollection GetCopy()
-        {
-            DiceCollection ret = new DiceCollection(this.GetDiceString());
-
-            //I could do this by getDiceString(), though I'd like something more direct.
-
-            return ret;
         }
 
         //Retrieves the description from a previously-done roll.
@@ -483,24 +398,13 @@ namespace ArkDice
             return ret;
         }
 
-        //Underlying function: translates one chunk of a dice string into a DicePile instance.
+        //Underlying function: translates one chunk of a dice string (ie: "+XdY") into a DicePile instance.
         private DicePile ParseDicePile (string dicePile)
         {
             DicePile ret = new DicePile(0);
 
             string temp = dicePile.Trim();
 
-            //Each chunk of string that we get here:
-                //Should be one piece (one +/- or implied +)
-                //Should translate into one DicePile object.
-
-            //string regex = "^(-|\\+|)\\s*(?:([0-9]*)d([0-9]+)|([0-9]+))$";
-                //Matches:
-                    //0: full match (ignore this)
-                    //1: + or -
-                    //2: number of dice
-                    //3: die size
-                    //4: bonus
             //Expected format:
                 //+, -, or nothing (implied +)
                 //1 of:
@@ -512,27 +416,13 @@ namespace ArkDice
 
             //Don't bother to validate correctness in the regex level, we'll check it in the code later.
             string plusSection = "(\\+|-|)";
-            //string numbersSection = "(?:([0-9]*)d([0-9]+)|([0-9]+))?";
-            //string numbersSection = "(?:([0-9]*)d([0-9]+))|([0-9]+)?";
-            ////string wordsSection = "(?:\\s*([a-zA-Z0-9]+))*";
-            //string wordsSection = "(?:\\s*(adv[0-9]*)|(dis[0-9]*)|([a-zA-Z0-9]+))*";
-            ////string wordsSection = "(?:\\s*((?:adv|dis)[0-9]*))*";
             string diceSection = "(?:([0-9]*)d([0-9]+))";
             string flatBonusSection = "([0-9]+)";
             string dynamicBonusSection = "([a-zA-Z0-9]+\\s*(?:\\s*\\([a-zA-Z0-9]+\\)\\s*)?)";
             string advDisSection = "(?:(adv[0-9]*)?\\s*(dis[0-9]*)?|(dis[0-9]*)?\\s*(adv[0-9]*)?)";
             string ifSection = "(\\(\\s*if:[^\\(\\)]+\\))*";
-                //expected format: (if: scope operator targetNumber diceString)
-                //can have any number of if sections specified
-                    //can this pull out multiples of the same thing? I doubt it.
-                        //set the regex for * of them in a capture group, then split them later.
-                //for doing stuff with the total: have room for some (iftotal: .*) at the end
-                    //only support stuff with the total for this one.
-            //Section for descriptor / damage type / whatever when I add it.
-            //string regex = "^" + plusSection + "\\s*(?:" + numbersSection + "|" + wordsSection + ")$";
+
             string regex = "^" + plusSection + "\\s*(?:" + diceSection + "|" + flatBonusSection + "|" + dynamicBonusSection + ")\\s*" + advDisSection + "\\s*" + ifSection + "$";
-                //to do: consider pulling the numbers out of the adv/dis stuff in here.
-                    //it would be yet another capture group, but otherwise would be fine.
             //Matches:
                 //0: full match
                 //1: + or - or nothing
@@ -545,13 +435,11 @@ namespace ArkDice
                 //8: disadvantage
                 //9: advantage
                 //10: if clauses (grouped)
-                //Note: if the full thing is "False", that's valid.
-                    //Just leave the list of DicePiles empty?
-                    //check if the string is false and exit out early so we don't need to run extra computing running the regex for an already-known result.
             Match matches = Regex.Match (temp, regex, RegexOptions.IgnoreCase);
             if (!matches.Success)
             {
-                //quit or something
+                //Complain to a log file.
+                return ret;
             }
 
             //Minus sign, if present.
@@ -666,11 +554,6 @@ namespace ArkDice
             {
                 List<DiceCondition> conditions = ParseDiceCondition(matches.Groups[10].Value);
                 ret.Conditions = conditions;
-            }
-            else
-            {
-                //do we need to explicitly set conditions to empty list?
-                //I don't think so, but make sure.
             }
 
             return ret;
