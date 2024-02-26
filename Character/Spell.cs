@@ -18,11 +18,6 @@ namespace Character
         public string School { get; set; }
         //Whether the spell is prepared/known or not.
         public bool Prepared { get; set; }
-        //add known flag?
-            //on character, known = known
-            //on character, prepared = prepared
-            //on character, neither known nor prepared = in spellbook or whatever.
-            //let people prepare spells they know, if they really want?
 
         //Components
         //-------- -------- -------- -------- -------- -------- -------- -------- 
@@ -34,8 +29,6 @@ namespace Character
         public bool Material { get; set; }
         //Whether the spell has an expensive material component.
         public string ExpensiveMaterial { get; set; }
-        //to do: consider changing to MaterialDetail
-            //stores the details of the material component line, whether they're expensive material components or just an explanation of the cheap ones.
 
         //Basic Information
         //-------- -------- -------- -------- -------- -------- -------- -------- 
@@ -60,13 +53,6 @@ namespace Character
         public string Book { get; set; }
         //Which page number of the book, if appropriate. 0 for none.
         public int Page { get; set; }
-
-        //to add:
-        //something to store dice collections + descriptors for them.
-            //ie: for Fireball, store 8d6 with the descriptor "Fire damage"
-        //Something for whether or not it can be ritual cast
-        //Something for whether it can ONLY be ritual cast, for this character?
-            //Or add something to the character class for that?
 
 
         //Constructors
@@ -145,11 +131,9 @@ namespace Character
             this.LoadFromFile(folderpath);
         }
 
-        //remove this?
         public Spell(string id, string name, int level, bool vocal, bool somatic, bool material, string action, string description, string upcastingBenefit, string range, int duration, bool concentration = false, string book = "", int page = 0)
             : this()
         {
-            //to do: decide how many of these i want to make optional
             this.ID = id;
             this.Name = name;
             this.Level = level;
@@ -197,24 +181,11 @@ namespace Character
             //If this is equal to the other one, including with tiebreakers, returns 0.
             //Ties are broken by Level, then Name.
         //Note: for the boolean columns, false will be considered to be less than true.
-        //to do: consider deciding on a set order for common types of actions, and just to string comparison for everything else?
-            //bonus action -> action -> 1 minute -> etc -> reaction?
-                //this but with reaction up front?
-        //to do: mess with the range sorting
-            //pull out the range, if it's in the format '\dft'
-            //treat range of "Touch" as 5ft
-            //treat range of "Self" as 0ft
-            //Ignore stuff after that? ie "Self (5ft radius)" ?
-            //Then sort numerically.
-        //to do: add the reversal stuff back in from the ability sorting, so that lower level spells always appear higher up?
         public int Compare(Spell other, string column = "level")
         {
             column = column.ToLower();
             int comparison;
 
-            //If we made it this far, these two abilities are the same display tier.
-            //We're going to have to actually compare them now.
-            //Note that the reverse argument is no longer relevant here.
             switch (column)
             {
                 case "":
@@ -335,9 +306,7 @@ namespace Character
                         break;
                     }
                 case "materialcolumn":
-                    //composite option, same as the material column in the grid
-                    //how to handle this? Just a string comparison?
-                        //false < non-expensive < expensive?
+                    //to do: just sort alphabetically?
                     break;
                 case "action":
                     comparison = String.Compare(this.Action, other.Action, StringComparison.OrdinalIgnoreCase);
@@ -518,9 +487,6 @@ namespace Character
             {
                 return false;
             }
-
-            //to do: add more checks?
-            //add a bool to track this instead of looking at data fields?
 
             //If we get here, it's probably been loaded.
             return true;
