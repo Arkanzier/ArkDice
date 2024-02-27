@@ -53,7 +53,7 @@ namespace Simple_Dice_Roller
             LoadCharacter();
         }
 
-        #region renameme
+        #region Main Functions
 
         private void DrawClassList()
         {
@@ -63,11 +63,6 @@ namespace Simple_Dice_Roller
             EditCharacterClassesList.Rows.Clear();
 
             //Now put them into the list.
-            //Need to be able to change (at least add) subclass.
-            //Need to be able to change level.
-            //Allow changing name and HD, since the others can be changed?
-            //Need to be able to delete entries.
-            //Something more elegant than just clearing out all the fields?
             for (int a = 0; a < classes.Count; a++)
             {
                 string name = classes[a].Name;
@@ -79,10 +74,6 @@ namespace Simple_Dice_Roller
                 string[] row = { name, subclass, level.ToString(), "d" + hd.ToString(), currhd.ToString(), "X" };
                 EditCharacterClassesList.Rows.Add(row);
             }
-
-            //there will be an empty row to add new ones.
-            //need a function to take info from that row and add it to the character.
-            //put it in save character?
         }
 
         private void EditCharacterClassesList_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -101,12 +92,12 @@ namespace Simple_Dice_Roller
             {
                 className = EditCharacterClassesList.Rows[rowNum].Cells[0].Value.ToString();
                 subclassName = EditCharacterClassesList.Rows[rowNum].Cells[1].Value.ToString();
-                //MessageBox.Show ("Found class ID " + className + " (" + subclassName + ")");
             }
             catch
             {
                 className = "";
                 subclassName = "";
+                //complain to a log file
                 //pop up an error message?
                 //return?
             }
@@ -117,21 +108,18 @@ namespace Simple_Dice_Roller
             {
                 //We're supposed to delete this row.
                 //Find all instances of this class + subclass together on the character and remove those entries.
-                //There should only be one, but the list is short enough that we'll want to just check them all.
+                //There should only be one, but the list should be short enough that we'll want to just check them all.
                 List<ClassLevel> classes = EditingCharacter.Classes;
                 for (int a = 0; a < classes.Count; a++)
                 {
                     string thisclass = classes[a].Name;
                     string thissubclass = classes[a].Subclass;
-                    //MessageBox.Show("Deleting row: going to process class " + a + " of " + classes.Count + "\r\nThis class is " + thisclass + " (" + thissubclass + ")");
 
                     if (thisclass == className && thissubclass == subclassName)
                     {
                         //This is a match, delete it.
                         EditingCharacter.Classes.RemoveAt(a);
-                        //MessageBox.Show("Deleting " + thisclass + " (" + thissubclass + ")");
 
-                        //to do: check if this is necessary.
                         //Set a back 1 so we don't accidentally skip anything.
                         a--;
                     }
@@ -154,7 +142,7 @@ namespace Simple_Dice_Roller
                 }
             }
 
-            //complain?
+            //complain to a log file?
             return 0;
         }
 
@@ -233,9 +221,6 @@ namespace Simple_Dice_Roller
             SetProfDropdown(EditingCharacter.GetSkillProf("Persuasion"), Input_Persuasion);
 
             Input_ProfBonusBonus.Text = EditingCharacter.BonusToProf.ToString();
-            //to do
-            //calculate proficiency bonus here and display it, including the prof bonus bonus.
-            //decide on label for it. "Proficiency Bonus" ?
 
             //Spell slots
             Input_StandardSlots1.Text = EditingCharacter.GetSpellSlotsForLevel(1, false, "standard").ToString();
@@ -255,15 +240,6 @@ namespace Simple_Dice_Roller
 
             //Classes and class levels.
             DrawClassList();
-
-            //Make sure nothing is in focus.
-            ActiveControl = null;
-            //doesn't work
-
-
-            //Load the appropriate file.
-            //Error checking?
-            //Dump the info into the text boxes / etc
         }
 
         //Saves the character.
@@ -413,7 +389,6 @@ namespace Simple_Dice_Roller
                 }
                 string? currenthd = EditCharacterClassesList.Rows[a].Cells["ClassesTable_CurrentHD"].Value.ToString();
 
-                //to do
                 //error checking on the values goes here
                     //name and subclass can be left as-is
                     //the other 3 need to be ints-as-strings
@@ -440,10 +415,6 @@ namespace Simple_Dice_Roller
 
             //Save the info
             EditingCharacter.IncorporateChanges(changes);
-
-            //Trigger a save here
-            //EditingCharacter.Save();
-            //We don't want to save until the user hits the save button in the main program.
 
             return true;
         }
@@ -487,14 +458,11 @@ namespace Simple_Dice_Roller
         private void Button_Save_Click(object sender, EventArgs e)
         {
             bool resp = SaveCharacter();
-            //Close the form? Make that a separate button / add a close button?
-            //"Save and Close" button?
         }
 
         //Called when the form is closing for whatever reason.
         private void EditCharacter_FormClosing(object sender, FormClosingEventArgs e)
         {
-            //need to hook into the calling form and call ClosingEditingCharacter();
             if (ParentForm != null)
             {
                 ParentForm.ClosingEditingCharacter();

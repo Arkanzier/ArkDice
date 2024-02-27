@@ -45,8 +45,6 @@ namespace Simple_Dice_Roller
 
             SpellsLibrary = ParentOfThisForm.SpellsLibrary;
 
-            //MessageBox.Show("Loaded character " + EditingCharacter.Name);
-
             DrawSpellsLibraryList();
             DrawAssignedSpellsList();
 
@@ -180,10 +178,6 @@ namespace Simple_Dice_Roller
         {
             DrawingLists = true;
             SpellsLibraryList.Rows.Clear();
-
-            //hide rows here that exist in the other list?
-            //will need a quick way to check if a spell is in the other list.
-            //store it as a dictionary too?
 
             int a = 0;
             foreach (var keyValuePair in SpellsLibrary.OrderBy(x => x.Key))
@@ -522,7 +516,6 @@ namespace Simple_Dice_Roller
                 var confirmation = MessageBox.Show("You are about to overwrite an existing ability, do you want to continue?", "Confirm Delete!!", MessageBoxButtons.YesNo);
                 if (confirmation == DialogResult.Yes)
                 {
-                    //AbilitiesLibrary.Add(ability.ID, ability);
                     //Overwrite the ability.
                     SpellsLibrary[spell.ID] = spell;
                 }
