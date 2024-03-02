@@ -57,12 +57,10 @@ namespace Character
             }
             else
             {
-                //look it up by class name
-                //to do
                 this.HDSize = 0;
             }
 
-            if (currentHD > 0)
+            if (currentHD >= 0)
             {
                 this.CurrentHD = currentHD;
             } else
@@ -123,6 +121,18 @@ namespace Character
             if (CurrentHD > Level)
             {
                 CurrentHD = Level;
+            }
+        }
+
+        //Checks if two instances of this class represent the same class+subclass.
+        public bool IsSameClass (ClassLevel other)
+        {
+            if (other.Name == this.Name && other.Subclass == this.Subclass)
+            {
+                return true;
+            } else
+            {
+                return false;
             }
         }
     }

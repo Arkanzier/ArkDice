@@ -1298,6 +1298,9 @@
             // 
             ClassesTable_DeleteCol.HeaderText = "";
             ClassesTable_DeleteCol.Name = "ClassesTable_DeleteCol";
+            ClassesTable_DeleteCol.Text = "X";
+            ClassesTable_DeleteCol.ToolTipText = "Delete this class";
+            ClassesTable_DeleteCol.UseColumnTextForButtonValue = true;
             ClassesTable_DeleteCol.Width = 40;
             // 
             // EditCharacter

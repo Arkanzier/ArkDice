@@ -71,63 +71,9 @@ namespace Simple_Dice_Roller
                 int hd = classes[a].HDSize;
                 int currhd = classes[a].CurrentHD;
 
-                string[] row = { name, subclass, level.ToString(), "d" + hd.ToString(), currhd.ToString(), "X" };
+                string[] row = { name, subclass, level.ToString(), "d" + hd.ToString(), currhd.ToString() };
                 EditCharacterClassesList.Rows.Add(row);
             }
-        }
-
-        private void EditCharacterClassesList_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-            //First we figure out which button was clicked.
-            //Column:
-            int colIndex = e.ColumnIndex;
-            string colName = EditCharacterClassesList.Columns[colIndex].Name;
-
-            //Row:
-            int rowNum = e.RowIndex;
-            string className;
-            string subclassName;
-
-            try
-            {
-                className = EditCharacterClassesList.Rows[rowNum].Cells[0].Value.ToString();
-                subclassName = EditCharacterClassesList.Rows[rowNum].Cells[1].Value.ToString();
-            }
-            catch
-            {
-                className = "";
-                subclassName = "";
-                //complain to a log file
-                //pop up an error message?
-                //return?
-            }
-            className ??= "";
-
-            //Check if the button was clicked
-            if (colName == "ClassesTable_DeleteCol")
-            {
-                //We're supposed to delete this row.
-                //Find all instances of this class + subclass together on the character and remove those entries.
-                //There should only be one, but the list should be short enough that we'll want to just check them all.
-                List<ClassLevel> classes = EditingCharacter.Classes;
-                for (int a = 0; a < classes.Count; a++)
-                {
-                    string thisclass = classes[a].Name;
-                    string thissubclass = classes[a].Subclass;
-
-                    if (thisclass == className && thissubclass == subclassName)
-                    {
-                        //This is a match, delete it.
-                        EditingCharacter.Classes.RemoveAt(a);
-
-                        //Set a back 1 so we don't accidentally skip anything.
-                        a--;
-                    }
-                }
-
-                DrawClassList();
-            }
-            //else: the thing clicked was not a button; do nothing.
         }
 
         private double GetProfFromDropdown(ComboBox dropdown)
@@ -358,40 +304,149 @@ namespace Simple_Dice_Roller
             changes["SpellsWarlockLvl5"] = Input_WarlockSlots5.Text;
 
             //Class changes
-            //changes takes only strings, so we'll JSON encode what we pull out of here.
+            //The changes variable takes only strings, so we'll JSON encode what we pull out of here.
             //This is super simple JSON, so we'll just build it as we go.
             string classesJson = "";
+            List<ClassLevel> classesFound = new List<ClassLevel>();
             for (int a = 0; a < EditCharacterClassesList.Rows.Count; a++)
             {
                 //Make sure this won't process the empty row at the end that exists to let the user add new rows.
-                if (EditCharacterClassesList.Rows[a].Cells[0].Value == null)
+                if (EditCharacterClassesList.Rows[a].Cells["ClassesTable_Name"].Value == null)
                 {
-                    break;
-                    //to do: change to continue?
-                    //is it possible to have one of these null rows in the middle of actual data?
+                    //This row is blank, so we won't process it.
+                    //We continue, rather than break, because this might be a blank row the user left in the middle of the list.
+                    //They SHOULD use the X button to remove the row entirely, but you can't count on them doing any given thing.
+                    continue;
                 }
 
-                string? classname = EditCharacterClassesList.Rows[a].Cells["ClassesTable_Name"].Value.ToString();
-                if (classname == null)
+                //We want to make sure we're dealing with actual strings here, since apparently this stuff sends back null when a cell is empty.
+                //We'll convert those nulls to empty strings or zeroes, as appropriate.
+                string classname = "";
+                object tempvalue = EditCharacterClassesList.Rows[a].Cells["ClassesTable_Name"].Value;
+                if (tempvalue != null && tempvalue.ToString() != null)
                 {
-                    classname = "";
+                    classname = tempvalue.ToString();
                 }
-                string? subclassname = EditCharacterClassesList.Rows[a].Cells["ClassesTable_Subclass"].Value.ToString();
-                string? classlevel = EditCharacterClassesList.Rows[a].Cells["ClassesTable_Level"].Value.ToString();
-                string? classhd = EditCharacterClassesList.Rows[a].Cells["ClassesTable_HD"].Value.ToString();
+
+                string? subclassname = "";
+                tempvalue = EditCharacterClassesList.Rows[a].Cells["ClassesTable_Subclass"].Value;
+                if (tempvalue != null)
+                {
+                    subclassname = tempvalue.ToString();
+                }
+
+                string? classlevel = "0";
+                tempvalue = EditCharacterClassesList.Rows[a].Cells["ClassesTable_Level"].Value;
+                if (tempvalue != null)
+                {
+                    classlevel = tempvalue.ToString();
+                }
+
+                string? classhd = "1";
+                tempvalue = EditCharacterClassesList.Rows[a].Cells["ClassesTable_HD"].Value;
+                if (tempvalue != null)
+                {
+                    classhd = tempvalue.ToString();
+                }
+
+                string? currenthd = "0";
+                tempvalue = EditCharacterClassesList.Rows[a].Cells["ClassesTable_CurrentHD"].Value;
+                if (tempvalue != null)
+                {
+                    currenthd = tempvalue.ToString();
+                }
+
                 //We need to convert the HD size from 'd some number' to just 'some number'
-                if (classhd == null)
+                if (classhd == null || classhd == "")
                 {
                     classhd = "0";
-                } else if (classhd.StartsWith("d") || classhd.StartsWith("D"))
+                }
+                else if (classhd.StartsWith("d") || classhd.StartsWith("D"))
                 {
                     classhd = classhd.Substring(1);
                 }
-                string? currenthd = EditCharacterClassesList.Rows[a].Cells["ClassesTable_CurrentHD"].Value.ToString();
 
-                //error checking on the values goes here
-                    //name and subclass can be left as-is
-                    //the other 3 need to be ints-as-strings
+                //We'll make sure none of the strings are null here to shut up the compiler.
+
+
+
+                //Make sure everything we expect is present and in the right format.
+                //We'll split these all out into separate conditions so we can log the exact problem.
+                int levelint;
+                int numhdint;
+                int hdsizeint;
+
+                //There must be a name, but we don't really care what it is.
+                if (classname == "")
+                {
+                    MessageBox.Show("Error: each class must have a name.");
+                    return false;
+                }
+
+                //The subclass name is optional, since some classes don't get them until level 3.
+
+                //There must be a level, and it must be an int > 0.
+                if (classlevel == "")
+                {
+                    MessageBox.Show("Error: each class must have a level.");
+                    return false;
+                }
+                else if (classlevel == "0")
+                {
+                    MessageBox.Show("Error: class levels must be whole numbers greater than 0.");
+                    return false;
+                }
+                else if (!int.TryParse(classlevel, out levelint))
+                {
+                    MessageBox.Show("Error: class levels must be whole numbers greater than 0.");
+                    return false;
+                }
+
+                //There must be an HD size and at this point it must be an int > 0.
+                if (classhd == "")
+                {
+                    MessageBox.Show("Error: each class must have an HD size.");
+                    return false;
+                }
+                else if (classhd == "0")
+                {
+                    MessageBox.Show("Error: HD sizes must be whole numbers greater than 0.");
+                    return false;
+                }
+                else if (!int.TryParse(classhd, out hdsizeint))
+                {
+                    MessageBox.Show("Error: HD sizes must be whole numbers greater than 0.");
+                    return false;
+                }
+
+                //The user doesn't have access to the current HD column, so we'll just make it default to something reasonable-enough.
+                if (!int.TryParse(currenthd, out numhdint))
+                {
+                    //The user doesn't have access to the current HD column, so we won't complain at them if something is wrong.
+                    currenthd = "0";
+                }
+
+                //Now we check to see if this class + subclass combo already exists in the list.
+                //We'll use some ClassLevel objects so that we can use their built in functions to check for sufficient levels of identicalness instead of having to re-code it here.
+
+                //to do: need to convert the ints-as-strings to ints
+                //do that here or in a new constructor?
+                //set up the earlier stuff so we convert them once, check if they come out all right, and save the values to use here?
+                //i like that plan, do that. It's just 3 conversions, but it's also just 3 ints.
+                ClassLevel thisclasslevel = new ClassLevel(classname, subclassname, levelint, hdsizeint, numhdint);
+                //ClassLevel thisclasslevel = new ClassLevel(classname, subclassname);
+                for (int b = 0; b < classesFound.Count; b++)
+                {
+                    if (thisclasslevel.IsSameClass(classesFound[b]))
+                    {
+                        //They're identical, we'll complain and quit.
+                        MessageBox.Show("Error: two identical classes found.");
+                        return false;
+                    }
+
+                    classesFound.Add(thisclasslevel);
+                }
+
 
                 string json = "{\"Name\":\"" + classname + "\",\"Subclass\":\"" + subclassname + "\",\"Level\":" + classlevel + ",\"HDSize\":" + classhd + ",\"CurrentHD\":" + currenthd + "}";
                 //Remember to leave the ints without quotes, because it gets picky about that.
@@ -467,6 +522,41 @@ namespace Simple_Dice_Roller
             {
                 ParentForm.ClosingEditingCharacter();
             }
+        }
+
+        //Handles people clicking on the rows.
+        private void EditCharacterClassesList_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            //First we figure out what was clicked.
+            //Column:
+            int colIndex = e.ColumnIndex;
+            string colName = EditCharacterClassesList.Columns[colIndex].Name;
+
+            //Row:
+            int rowNum = e.RowIndex;
+
+            //We'll do a quick exit if this wasn't a click on the one button we care about.
+            if (colName != "ClassesTable_DeleteCol")
+            {
+                return;
+            }
+
+            //Now we know the remove button was clicked, so we're looking to remove a row.
+
+            //First we'll check if that row actually exists, since there is a blank row at the bottom that the user could have clicked.
+            //We want to block clicks on index (Count - 1) because the blank row is included in Count.
+            if (rowNum >= EditCharacterClassesList.Rows.Count - 1)
+            {
+                //This is the blank row at the bottom, so there's nothing for us to do.
+                return;
+            }
+
+            //The row exists, so now we remove it.
+            //We'll only remove the displayed row, not the corresponding row in the current character's class list.
+            //The code that saves any changes will handle updating the character for us.
+            EditCharacterClassesList.Rows.RemoveAt(rowNum);
+
+            return;
         }
 
         #endregion
