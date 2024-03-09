@@ -237,6 +237,10 @@
             Spells_BookCol = new DataGridViewTextBoxColumn();
             Spells_PageCol = new DataGridViewTextBoxColumn();
             label7 = new Label();
+            SettingsTab = new TabPage();
+            Settings_SaveButton = new Button();
+            Settings_SaveLocation = new TextBox();
+            Label_SaveLocation = new Label();
             TestingTab = new TabPage();
             TestListView = new ListView();
             TestListName = new ColumnHeader();
@@ -246,7 +250,9 @@
             Button_EditChar = new Button();
             Button_EditAbilities = new Button();
             Button_EditSpells = new Button();
-            SettingsTab = new TabPage();
+            Label_LoadCharacter = new Label();
+            Dropdown_CharactersList = new ComboBox();
+            Button_LoadCharacter = new Button();
             MainTabArea.SuspendLayout();
             DiceTab.SuspendLayout();
             CharacterTab.SuspendLayout();
@@ -258,6 +264,7 @@
             MagicTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)SpellSlotsList).BeginInit();
             ((System.ComponentModel.ISupportInitialize)SpellsArea).BeginInit();
+            SettingsTab.SuspendLayout();
             TestingTab.SuspendLayout();
             SuspendLayout();
             // 
@@ -2463,6 +2470,47 @@
             label7.TabIndex = 0;
             label7.Text = "Save DC";
             // 
+            // SettingsTab
+            // 
+            SettingsTab.Controls.Add(Button_LoadCharacter);
+            SettingsTab.Controls.Add(Dropdown_CharactersList);
+            SettingsTab.Controls.Add(Label_LoadCharacter);
+            SettingsTab.Controls.Add(Settings_SaveButton);
+            SettingsTab.Controls.Add(Settings_SaveLocation);
+            SettingsTab.Controls.Add(Label_SaveLocation);
+            SettingsTab.Location = new Point(4, 24);
+            SettingsTab.Name = "SettingsTab";
+            SettingsTab.Size = new Size(772, 532);
+            SettingsTab.TabIndex = 5;
+            SettingsTab.Text = "Settings";
+            SettingsTab.UseVisualStyleBackColor = true;
+            // 
+            // Settings_SaveButton
+            // 
+            Settings_SaveButton.Location = new Point(694, 506);
+            Settings_SaveButton.Name = "Settings_SaveButton";
+            Settings_SaveButton.Size = new Size(75, 23);
+            Settings_SaveButton.TabIndex = 2;
+            Settings_SaveButton.Text = "Save";
+            Settings_SaveButton.UseVisualStyleBackColor = true;
+            Settings_SaveButton.Click += Settings_SaveButton_Click;
+            // 
+            // Settings_SaveLocation
+            // 
+            Settings_SaveLocation.Location = new Point(150, 3);
+            Settings_SaveLocation.Name = "Settings_SaveLocation";
+            Settings_SaveLocation.Size = new Size(473, 23);
+            Settings_SaveLocation.TabIndex = 1;
+            // 
+            // Label_SaveLocation
+            // 
+            Label_SaveLocation.AutoSize = true;
+            Label_SaveLocation.Location = new Point(3, 6);
+            Label_SaveLocation.Name = "Label_SaveLocation";
+            Label_SaveLocation.Size = new Size(80, 15);
+            Label_SaveLocation.TabIndex = 0;
+            Label_SaveLocation.Text = "Save Location";
+            // 
             // TestingTab
             // 
             TestingTab.Controls.Add(TestListView);
@@ -2544,14 +2592,31 @@
             Button_EditSpells.UseVisualStyleBackColor = true;
             Button_EditSpells.Click += Button_EditSpells_Click;
             // 
-            // SettingsTab
+            // Label_LoadCharacter
             // 
-            SettingsTab.Location = new Point(4, 24);
-            SettingsTab.Name = "SettingsTab";
-            SettingsTab.Size = new Size(772, 532);
-            SettingsTab.TabIndex = 5;
-            SettingsTab.Text = "Settings";
-            SettingsTab.UseVisualStyleBackColor = true;
+            Label_LoadCharacter.AutoSize = true;
+            Label_LoadCharacter.Location = new Point(3, 510);
+            Label_LoadCharacter.Name = "Label_LoadCharacter";
+            Label_LoadCharacter.Size = new Size(87, 15);
+            Label_LoadCharacter.TabIndex = 3;
+            Label_LoadCharacter.Text = "Load Character";
+            // 
+            // Dropdown_CharactersList
+            // 
+            Dropdown_CharactersList.FormattingEnabled = true;
+            Dropdown_CharactersList.Location = new Point(150, 506);
+            Dropdown_CharactersList.Name = "Dropdown_CharactersList";
+            Dropdown_CharactersList.Size = new Size(200, 23);
+            Dropdown_CharactersList.TabIndex = 4;
+            // 
+            // Button_LoadCharacter
+            // 
+            Button_LoadCharacter.Location = new Point(356, 506);
+            Button_LoadCharacter.Name = "Button_LoadCharacter";
+            Button_LoadCharacter.Size = new Size(75, 23);
+            Button_LoadCharacter.TabIndex = 5;
+            Button_LoadCharacter.Text = "Load";
+            Button_LoadCharacter.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -2580,6 +2645,8 @@
             MagicTab.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)SpellSlotsList).EndInit();
             ((System.ComponentModel.ISupportInitialize)SpellsArea).EndInit();
+            SettingsTab.ResumeLayout(false);
+            SettingsTab.PerformLayout();
             TestingTab.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
@@ -2804,5 +2871,11 @@
         private Label DiceRollerD8Label;
         private Label DiceRollerD6Label;
         private TabPage SettingsTab;
+        private TextBox Settings_SaveLocation;
+        private Label Label_SaveLocation;
+        private Button Settings_SaveButton;
+        private Label Label_LoadCharacter;
+        private ComboBox Dropdown_CharactersList;
+        private Button Button_LoadCharacter;
     }
 }

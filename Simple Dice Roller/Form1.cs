@@ -41,9 +41,14 @@ namespace Simple_Dice_Roller
         public Dictionary<string, Character.Spell> SpellsLibrary;
         public Dictionary<string, Character.Ability> AbilitiesLibrary;
 
+        //Various popup forms.
         internal EditCharacter? EditCharacterForm;
         internal EditAbilities? EditAbilitiesForm;
         internal EditSpells? EditSpellsForm;
+
+        //A class for holding the configurable settings.
+        internal Settings Settings;
+
 
         public string Folderpath { get; private set; }
 
@@ -51,14 +56,30 @@ namespace Simple_Dice_Roller
         //-------- -------- -------- -------- -------- -------- -------- -------- 
         public Form1()
         {
-            LogMessages = new List<string>();
-
             InitializeComponent();
 
+            //We'll start by zeroing everything out, so that we can guarantee everything is initialized.
+            LogMessages = new List<string>();
+            LoadedCharacter = new Character.Character();
+            CurrentDice = new DiceCollection();
+            LastDice = new DiceCollection();
+            AbilitiesAreaDetails = new Dictionary<string, Panel>();
+            SpellsAreaDetails = new Dictionary<string, Panel>();
+            SpellsLibrary = new Dictionary<string, Spell>();
+            AbilitiesLibrary = new Dictionary<string, Character.Ability>();
             EditCharacterForm = null;
+            EditAbilitiesForm = null;
+            EditSpellsForm = null;
+
+            //Load the settings next, to make sure they're available everywhere.
+            Settings = new Settings();
+
+            DisplaySettings();
+            DrawListOfCharacters();
 
             //Directory that this stuff runs out of:
-            //C:\Users\david\source\repos\ArkDice\Simple Dice Roller\bin\Debug\net6.0-windows
+            //C:\Users\david\source\repos\ArkDice\Simple Dice Roller\bin\Debug\net7.0-windows
+            //Will probably switch to net8.0-windows soon, since I'm updating this to .net 8.0.
             Folderpath = "C:\\Users\\david\\Programs\\Simple Dice Roller\\";
 
 
@@ -1047,6 +1068,9 @@ namespace Simple_Dice_Roller
             {
                 LogMessage("Could not save character.");
             }
+
+            //This may be a new character, so we'll redraw the list.
+            DrawListOfCharacters();
         }
 
         //Deal damage to the active character.
@@ -2188,6 +2212,82 @@ namespace Simple_Dice_Roller
 
         //-------- -------- -------- -------- -------- -------- -------- -------- 
 
+        //Functions that relate to the Settings tab.
+        #region Tab: Settings
+
+        //Displays the various settings in the settings tab.
+        private void DisplaySettings()
+        {
+            Settings_SaveLocation.Text = Settings.GetBaseFolderPath();
+        }
+
+        //Populates the character select dropdown on the settings tab.
+        private void DrawListOfCharacters ()
+        {
+            //Clear the list so we can just redraw everything.
+            Dropdown_CharactersList.Items.Clear();
+
+            //Get a list of characters to include, and refer to them by character name and filename.
+            Dictionary<string, string> characters = GetListOfCharacters();
+
+            foreach (var character in characters)
+            {
+                Dropdown_CharactersList.Items.Add(character);
+            }
+        }
+
+        private Dictionary<string, string> GetListOfCharacters()
+        {
+            Dictionary<string, string> ret = new Dictionary<string, string>();
+            string charactersFolder = Settings.GetCharacterFolderPath();
+
+            //Make sure the characters folder exists before we try to access it.
+            if (!File.Exists(charactersFolder))
+            {
+                //complain to a log file?
+                return ret;
+            }
+
+            //Compile a list of characters and store the associated name + filename.
+            string[] filenames = Directory.GetFiles(charactersFolder, "*.char");
+            for (int a = 0; a < filenames.Length; a++)
+            {
+                string filename = filenames[a];
+                string charname = "charname goes here";
+
+                ret[charname] = filename;
+            }
+
+            //to do: store the most recent character name - filename associations so we don't need to do this loop all over again.
+            //just make a new class variable and stick a copy of ret into it.
+
+            return ret;
+        }
+
+        //Called when the save button in the settings tab is clicked.
+        //Saves the updated settings to disk.
+        private void Settings_SaveButton_Click(object sender, EventArgs e)
+        {
+            //Fetch the current values to save.
+            string saveLocation = Settings_SaveLocation.Text;
+            //to do: check this over to make sure it's not terrible.
+
+            Settings.Update(saveLocation);
+
+            bool resp = Settings.SaveToDisk();
+            if (resp)
+            {
+                LogMessage("Settings saved successfully.");
+            } else
+            {
+                //complain to a log file?
+                LogMessage("Error: unable to save settings.");
+            }
+        }
+
+        #endregion
+
+        //-------- -------- -------- -------- -------- -------- -------- -------- 
 
 
 

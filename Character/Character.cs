@@ -1083,6 +1083,8 @@ namespace Character
                 WriteIndented = true
             };
             string ret = JsonSerializer.Serialize<Character>(this, serializerOptions);
+            //error checking here?
+
             return ret;
         }
 
