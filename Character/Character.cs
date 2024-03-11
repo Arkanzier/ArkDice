@@ -20,7 +20,6 @@ namespace Character
         public int MaxHP { get; set; }
         public int CurrentHP { get; set; }
         public int TempHP { get; set; }
-        //temporary modifiers to max HP?
 
         //Class related info
         public List<ClassLevel> Classes { get; set; }
@@ -28,14 +27,13 @@ namespace Character
         //Added to the prof bonus calculated based on level. Can be negative.
         public int BonusToProf { get; set; }
 
-        //Automatically managed. Stores prof bonus by level + profBonus.
+        //Automatically managed. Stores prof bonus by level + BonusToProf.
         [JsonIgnore]
         public int Prof { get; set; }
 
         //Stats and related info
         //Starts at 0 and proceeds in the order Str, Dex, Con, Int, Wis, Cha.
         public int[] Stats { get; set; }
-
         public double[] Saves { get; set; }
 
         //Skill proficiencies
@@ -71,8 +69,9 @@ namespace Character
          */
 
         //Abilities and related info.
+        //Regular abilities covering most things.
         public List<Ability> Abilities { get; set; }
-        //switch from strings to objects?
+        //Basic abilities (weapon attacks, etc).
         public List<Ability> BasicAbilities { get; set; }
         //Text describing passive abilities the character has.
         public List<string> Passives { get; set; }
@@ -83,12 +82,8 @@ namespace Character
         public int[] SpellSlotsWarlockMax { get; set; }
         public int[] SpellSlotsWarlockCurrent { get; set; }
 
-        //The character's known, prepared, and frequently used spells.
+        //The character's known / prepared spells.
         public List<Spell> Spells { get; set; }
-
-        //Automatically managed. Stores the location of the file this was loaded from + should be saved to.
-        [JsonIgnore]
-        private string FolderLocation;
 
 
 
@@ -159,8 +154,6 @@ namespace Character
             }
             Spells = new List<Spell>();
 
-            FolderLocation = "";
-
             CalculateProf();
         }
 
@@ -187,8 +180,6 @@ namespace Character
                 //Complain to a log file.
                 return;
             }
-
-            FolderLocation = folderpath;
 
             var deserializerOptions = new JsonSerializerOptions
             {
