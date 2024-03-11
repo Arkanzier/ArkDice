@@ -47,7 +47,7 @@ namespace Simple_Dice_Roller
         internal EditSpells? EditSpellsForm;
 
         //A class for holding the configurable settings.
-        internal Settings Settings;
+        internal Settings.Settings Settings;
 
 
         public string Folderpath { get; private set; }
@@ -72,7 +72,7 @@ namespace Simple_Dice_Roller
             EditSpellsForm = null;
 
             //Load the settings next, to make sure they're available everywhere.
-            Settings = new Settings();
+            Settings = new Settings.Settings();
 
             DisplaySettings();
             DrawListOfCharacters();
@@ -132,7 +132,7 @@ namespace Simple_Dice_Roller
         }
 
         //Loads a specified character.
-        private void LoadCharacter(string characterName)
+        private void LoadCharacter(string filename)
         {
             //Load the libraries every time in case something has changed while we were doing stuff.
             SpellsLibrary = new Dictionary<string, Spell>();
@@ -152,7 +152,17 @@ namespace Simple_Dice_Roller
             LastDice = new DiceCollection();
 
             //Stores the currently loaded character.
-            Character.Character currentCharacter = new Character.Character(characterName, Folderpath, ref AbilitiesLibrary, ref SpellsLibrary);
+            Character.Character currentCharacter;
+            if (filename == "")
+            {
+                //We're loading a blank character as part of the process of the user creating a new character.
+                currentCharacter = new Character.Character();
+            } else
+            {
+                //We're loading an existing character from a file.
+                currentCharacter = new Character.Character(filename, Folderpath, ref AbilitiesLibrary, ref SpellsLibrary);
+            }
+            
             LoadedCharacter = currentCharacter;
             DisplayCharacter(currentCharacter);
 
@@ -650,55 +660,32 @@ namespace Simple_Dice_Roller
         //Opens a new window for editing abilities.
         private void BeginEditingAbilities()
         {
-            string id = LoadedCharacter.ID;
-            if (id == "")
-            {
-                MessageBox.Show("Error: could not identify loaded character.");
-            }
-            else
-            {
-                EditAbilities editing = new EditAbilities(this);
-                editing.Show();
+            EditAbilities editing = new EditAbilities(this);
+            editing.Show();
 
-                EditAbilitiesForm = editing;
-            }
+            EditAbilitiesForm = editing;
+
         }
 
         //Opens a new window for editing the current character.
         private void BeginEditingCharacter()
         {
-            string id = LoadedCharacter.ID;
-            if (id == "")
-            {
-                //Complain to a log file.
-                MessageBox.Show("Error: could not identify loaded character.");
-            }
-            else
-            {
-                EditCharacter editing = new EditCharacter(LoadedCharacter);
-                editing.ParentForm = this;
-                editing.Show();
+            EditCharacter editing = new EditCharacter(LoadedCharacter);
+            editing.ParentForm = this;
+            editing.Show();
 
-                //Store a reference to the child so we can access it later.
-                EditCharacterForm = editing;
-            }
+            //Store a reference to the child so we can access it later.
+            EditCharacterForm = editing;
         }
 
         //Opens a new window for editing spells.
         private void BeginEditingSpells()
         {
-            string id = LoadedCharacter.ID;
-            if (id == "")
-            {
-                MessageBox.Show("Error: could not identify loaded character.");
-            }
-            else
-            {
-                EditSpells editing = new EditSpells(this);
-                editing.Show();
+            
+            EditSpells editing = new EditSpells(this);
+            editing.Show();
 
-                EditSpellsForm = editing;
-            }
+            EditSpellsForm = editing;
         }
 
         //The onclick event for the edit abilities button. Pops up a new window where spells can be edited and assigned.
@@ -1057,7 +1044,7 @@ namespace Simple_Dice_Roller
         //The onclick even for the save button. Saves the character.
         private void Button_SaveCharacter_Click(object sender, EventArgs e)
         {
-            bool resp = LoadedCharacter.Save();
+            bool resp = LoadedCharacter.Save(Settings);
 
             //Display a message indicating success / failure.
             if (resp)
@@ -2215,6 +2202,36 @@ namespace Simple_Dice_Roller
         //Functions that relate to the Settings tab.
         #region Tab: Settings
 
+        //Called when the Create New Character button is clicked.
+        //Loads a blank character ready for editing.
+        private void Button_CreateNewCharacter_Click(object sender, EventArgs e)
+        {
+            LoadCharacter("");
+        }
+
+        //Called when the Load Character button is clicked.
+        //Triggers a load of the character currently selected in Dropdown_CharactersList.
+        private void Button_LoadCharacter_Click(object sender, EventArgs e)
+        {
+            //Get the character to load.
+            string charname = Dropdown_CharactersList.Text;
+            if (charname == "" || charname == null)
+            {
+                //There is no character selected, just quit.
+                return;
+            }
+
+            //Check if we can find the appropriate file.
+            Dictionary<string, string> charactersList = GetListOfCharacters();
+
+            if (charactersList.ContainsKey(charname))
+            {
+                string filename = charactersList[charname];
+
+                LoadCharacter(filename);
+            }
+        }
+
         //Displays the various settings in the settings tab.
         private void DisplaySettings()
         {
@@ -2222,7 +2239,7 @@ namespace Simple_Dice_Roller
         }
 
         //Populates the character select dropdown on the settings tab.
-        private void DrawListOfCharacters ()
+        private void DrawListOfCharacters()
         {
             //Clear the list so we can just redraw everything.
             Dropdown_CharactersList.Items.Clear();
@@ -2230,9 +2247,10 @@ namespace Simple_Dice_Roller
             //Get a list of characters to include, and refer to them by character name and filename.
             Dictionary<string, string> characters = GetListOfCharacters();
 
-            foreach (var character in characters)
+            foreach (KeyValuePair<string, string> character in characters)
             {
-                Dropdown_CharactersList.Items.Add(character);
+                string charID = character.Key;
+                Dropdown_CharactersList.Items.Add(charID);
             }
         }
 
@@ -2242,20 +2260,27 @@ namespace Simple_Dice_Roller
             string charactersFolder = Settings.GetCharacterFolderPath();
 
             //Make sure the characters folder exists before we try to access it.
-            if (!File.Exists(charactersFolder))
+            if (!Directory.Exists(charactersFolder))
             {
                 //complain to a log file?
                 return ret;
             }
 
             //Compile a list of characters and store the associated name + filename.
-            string[] filenames = Directory.GetFiles(charactersFolder, "*.char");
-            for (int a = 0; a < filenames.Length; a++)
+            string[] filepaths = Directory.GetFiles(charactersFolder, "*.char");
+            for (int a = 0; a < filepaths.Length; a++)
             {
-                string filename = filenames[a];
-                string charname = "charname goes here";
+                //Pull out the relevant information.
+                //The filename is based on the character's ID, but may have some characters removed.
+                //We want the name and/or ID
+                //We'll want the filename as well
 
-                ret[charname] = filename;
+                string filepath = filepaths[a];
+                string filename = Path.GetFileName(filepath);
+                string charID = filename.Substring(0, filename.Length - 5);
+                //now trim off the last / or \ and everything before.
+
+                ret[charID] = filepath;
             }
 
             //to do: store the most recent character name - filename associations so we don't need to do this loop all over again.
@@ -2278,7 +2303,8 @@ namespace Simple_Dice_Roller
             if (resp)
             {
                 LogMessage("Settings saved successfully.");
-            } else
+            }
+            else
             {
                 //complain to a log file?
                 LogMessage("Error: unable to save settings.");

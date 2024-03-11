@@ -29,6 +29,7 @@ namespace Character
         public int BonusToProf { get; set; }
 
         //Automatically managed. Stores prof bonus by level + profBonus.
+        [JsonIgnore]
         public int Prof { get; set; }
 
         //Stats and related info
@@ -199,6 +200,8 @@ namespace Character
             {
                 IncorporateChanges(copy);
             }
+
+            CalculateProf();
         }
 
         //Loads the character from a JSON file, then compares the character's spells and abilities against the provided libraries looking for updates.
@@ -614,6 +617,8 @@ namespace Character
             SortAbilities();
             SortSpells();
 
+            CalculateProf();
+
             return true;
         }
         public bool IncorporateChanges(Dictionary<string, string> changes)
@@ -761,6 +766,8 @@ namespace Character
             }
 
             //...
+
+            CalculateProf();
 
             return true;
         }
@@ -912,10 +919,10 @@ namespace Character
         }
 
         //Saves the character and all it's abilities to a file.
-        public bool Save()
+        public bool Save(Settings.Settings settings)
         {
-            string backupFolder = FolderLocation + "Characters\\Backups\\";
-            string filepath = FolderLocation + "Characters\\" + ID + ".char";
+            string backupFolder = settings.GetCharacterBackupFolderpath();
+            string filepath = settings.GetCharacterFilepath(ID);
             string backupFilepath = backupFolder + ID + "_" + DateTime.Now.ToString("yyyy-MM-dd_hh-mm-ss") + ".char";
 
             if (System.IO.File.Exists(filepath))

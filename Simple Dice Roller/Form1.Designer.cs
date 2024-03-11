@@ -238,6 +238,9 @@
             Spells_PageCol = new DataGridViewTextBoxColumn();
             label7 = new Label();
             SettingsTab = new TabPage();
+            Button_LoadCharacter = new Button();
+            Dropdown_CharactersList = new ComboBox();
+            Label_LoadCharacter = new Label();
             Settings_SaveButton = new Button();
             Settings_SaveLocation = new TextBox();
             Label_SaveLocation = new Label();
@@ -250,9 +253,7 @@
             Button_EditChar = new Button();
             Button_EditAbilities = new Button();
             Button_EditSpells = new Button();
-            Label_LoadCharacter = new Label();
-            Dropdown_CharactersList = new ComboBox();
-            Button_LoadCharacter = new Button();
+            Button_CreateNewCharacter = new Button();
             MainTabArea.SuspendLayout();
             DiceTab.SuspendLayout();
             CharacterTab.SuspendLayout();
@@ -1294,7 +1295,6 @@
             RechargesArea.Location = new Point(465, 46);
             RechargesArea.MultiSelect = false;
             RechargesArea.Name = "RechargesArea";
-            RechargesArea.RowTemplate.Height = 25;
             RechargesArea.Size = new Size(301, 116);
             RechargesArea.TabIndex = 79;
             RechargesArea.CellContentClick += RechargesArea_CellContentClick;
@@ -1321,7 +1321,6 @@
             ClassesArea.Columns.AddRange(new DataGridViewColumn[] { ClassName, Subclass, Level, HD, SpendHDButton, AddHDButton, SubtractHDButton });
             ClassesArea.Location = new Point(6, 46);
             ClassesArea.Name = "ClassesArea";
-            ClassesArea.RowTemplate.Height = 25;
             ClassesArea.Size = new Size(453, 116);
             ClassesArea.TabIndex = 78;
             ClassesArea.CellContentClick += ClassesArea_CellContentClick;
@@ -1935,7 +1934,6 @@
             BasicAbilitiesArea.Location = new Point(6, 412);
             BasicAbilitiesArea.Name = "BasicAbilitiesArea";
             BasicAbilitiesArea.ReadOnly = true;
-            BasicAbilitiesArea.RowTemplate.Height = 25;
             BasicAbilitiesArea.Size = new Size(760, 114);
             BasicAbilitiesArea.TabIndex = 18;
             // 
@@ -2105,7 +2103,7 @@
             AbilitiesArea.Columns.AddRange(new DataGridViewColumn[] { Abilities_NumberCol, Abilities_IDCol, Abilities_NameCol, Abilities_TextCol, Abilities_RechargeCol, Abilities_DiceCol, Abilities_UsesCol, Abilities_ChangeCol, Abilities_UseButtonCol, Abilities_Plus1Col, Abilities_Minus1Col });
             dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.TopLeft;
             dataGridViewCellStyle1.BackColor = SystemColors.Window;
-            dataGridViewCellStyle1.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            dataGridViewCellStyle1.Font = new Font("Segoe UI", 9F);
             dataGridViewCellStyle1.ForeColor = SystemColors.ControlText;
             dataGridViewCellStyle1.SelectionBackColor = SystemColors.Highlight;
             dataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText;
@@ -2115,7 +2113,6 @@
             AbilitiesArea.Location = new Point(6, 6);
             AbilitiesArea.MultiSelect = false;
             AbilitiesArea.Name = "AbilitiesArea";
-            AbilitiesArea.RowTemplate.Height = 25;
             AbilitiesArea.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             AbilitiesArea.Size = new Size(760, 523);
             AbilitiesArea.TabIndex = 20;
@@ -2247,7 +2244,6 @@
             SpellSlotsList.Location = new Point(6, 6);
             SpellSlotsList.Name = "SpellSlotsList";
             SpellSlotsList.RowHeadersVisible = false;
-            SpellSlotsList.RowTemplate.Height = 25;
             SpellSlotsList.Size = new Size(259, 520);
             SpellSlotsList.TabIndex = 2;
             SpellSlotsList.CellContentClick += SpellSlotsList_CellContentClick;
@@ -2298,7 +2294,7 @@
             SpellsArea.Columns.AddRange(new DataGridViewColumn[] { Spells_NumberCol, Spells_IDCol, Spells_NameCol, Spells_LevelCol, Spells_SchoolCol, Spells_RangeCol, Spells_DurationCol, Spells_ConcentrationCol, Spells_VocalCol, Spells_SomaticCol, Spells_MaterialCol, Spells_ActionCol, Spells_DescriptionCol, Spells_UpcastingBenefitCol, Spells_CastCol, Spells_UpcastCol, Spells_BookCol, Spells_PageCol });
             dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.TopLeft;
             dataGridViewCellStyle2.BackColor = SystemColors.Window;
-            dataGridViewCellStyle2.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            dataGridViewCellStyle2.Font = new Font("Segoe UI", 9F);
             dataGridViewCellStyle2.ForeColor = SystemColors.ControlText;
             dataGridViewCellStyle2.SelectionBackColor = SystemColors.Highlight;
             dataGridViewCellStyle2.SelectionForeColor = SystemColors.HighlightText;
@@ -2310,7 +2306,6 @@
             SpellsArea.Name = "SpellsArea";
             SpellsArea.ReadOnly = true;
             SpellsArea.RowHeadersVisible = false;
-            SpellsArea.RowTemplate.Height = 25;
             SpellsArea.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             SpellsArea.Size = new Size(495, 502);
             SpellsArea.TabIndex = 1;
@@ -2472,6 +2467,7 @@
             // 
             // SettingsTab
             // 
+            SettingsTab.Controls.Add(Button_CreateNewCharacter);
             SettingsTab.Controls.Add(Button_LoadCharacter);
             SettingsTab.Controls.Add(Dropdown_CharactersList);
             SettingsTab.Controls.Add(Label_LoadCharacter);
@@ -2484,6 +2480,33 @@
             SettingsTab.TabIndex = 5;
             SettingsTab.Text = "Settings";
             SettingsTab.UseVisualStyleBackColor = true;
+            // 
+            // Button_LoadCharacter
+            // 
+            Button_LoadCharacter.Location = new Point(356, 506);
+            Button_LoadCharacter.Name = "Button_LoadCharacter";
+            Button_LoadCharacter.Size = new Size(75, 23);
+            Button_LoadCharacter.TabIndex = 5;
+            Button_LoadCharacter.Text = "Load";
+            Button_LoadCharacter.UseVisualStyleBackColor = true;
+            Button_LoadCharacter.Click += Button_LoadCharacter_Click;
+            // 
+            // Dropdown_CharactersList
+            // 
+            Dropdown_CharactersList.FormattingEnabled = true;
+            Dropdown_CharactersList.Location = new Point(150, 506);
+            Dropdown_CharactersList.Name = "Dropdown_CharactersList";
+            Dropdown_CharactersList.Size = new Size(200, 23);
+            Dropdown_CharactersList.TabIndex = 4;
+            // 
+            // Label_LoadCharacter
+            // 
+            Label_LoadCharacter.AutoSize = true;
+            Label_LoadCharacter.Location = new Point(3, 510);
+            Label_LoadCharacter.Name = "Label_LoadCharacter";
+            Label_LoadCharacter.Size = new Size(87, 15);
+            Label_LoadCharacter.TabIndex = 3;
+            Label_LoadCharacter.Text = "Load Character";
             // 
             // Settings_SaveButton
             // 
@@ -2592,31 +2615,15 @@
             Button_EditSpells.UseVisualStyleBackColor = true;
             Button_EditSpells.Click += Button_EditSpells_Click;
             // 
-            // Label_LoadCharacter
+            // Button_CreateNewCharacter
             // 
-            Label_LoadCharacter.AutoSize = true;
-            Label_LoadCharacter.Location = new Point(3, 510);
-            Label_LoadCharacter.Name = "Label_LoadCharacter";
-            Label_LoadCharacter.Size = new Size(87, 15);
-            Label_LoadCharacter.TabIndex = 3;
-            Label_LoadCharacter.Text = "Load Character";
-            // 
-            // Dropdown_CharactersList
-            // 
-            Dropdown_CharactersList.FormattingEnabled = true;
-            Dropdown_CharactersList.Location = new Point(150, 506);
-            Dropdown_CharactersList.Name = "Dropdown_CharactersList";
-            Dropdown_CharactersList.Size = new Size(200, 23);
-            Dropdown_CharactersList.TabIndex = 4;
-            // 
-            // Button_LoadCharacter
-            // 
-            Button_LoadCharacter.Location = new Point(356, 506);
-            Button_LoadCharacter.Name = "Button_LoadCharacter";
-            Button_LoadCharacter.Size = new Size(75, 23);
-            Button_LoadCharacter.TabIndex = 5;
-            Button_LoadCharacter.Text = "Load";
-            Button_LoadCharacter.UseVisualStyleBackColor = true;
+            Button_CreateNewCharacter.Location = new Point(437, 506);
+            Button_CreateNewCharacter.Name = "Button_CreateNewCharacter";
+            Button_CreateNewCharacter.Size = new Size(150, 23);
+            Button_CreateNewCharacter.TabIndex = 6;
+            Button_CreateNewCharacter.Text = "Create New Character";
+            Button_CreateNewCharacter.UseVisualStyleBackColor = true;
+            Button_CreateNewCharacter.Click += Button_CreateNewCharacter_Click;
             // 
             // Form1
             // 
@@ -2877,5 +2884,6 @@
         private Label Label_LoadCharacter;
         private ComboBox Dropdown_CharactersList;
         private Button Button_LoadCharacter;
+        private Button Button_CreateNewCharacter;
     }
 }

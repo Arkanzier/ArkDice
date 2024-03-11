@@ -6,11 +6,11 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace Simple_Dice_Roller
+namespace Settings
 {
     //This class is used to store and access system settings.
 
-    internal class Settings
+    public class Settings
     {
         //Stores the filepath to the directory where this program saves it's stuff to disk.
         internal string SaveFolder;
@@ -61,16 +61,38 @@ namespace Simple_Dice_Roller
         #endregion
 
 
-        #region Public Getters for Filepaths
+        #region Getters for Filepaths
 
         //Functions that return the filepaths to various things
         //Some of these have private overloads that take a string as an argument. These are used as part of the process of moving the save folder.
 
+        //Returns the path to the folder where this stores non-settings information.
         public string GetBaseFolderPath()
         {
             return SaveFolder;
         }
 
+        //Returns the filepath for the folder where backups of character files are moved.
+        public string GetCharacterBackupFolderpath ()
+        {
+            return SaveFolder + "/Characters/Backups";
+        }
+
+        //Returns the expected filepath for where to save/load a character with a given name.
+        public string GetCharacterFilepath (string charID)
+        {
+            string ret = "";
+
+            string charFolder = GetCharacterFolderPath();
+
+            string filename = GetFilenameForCharacter(charID);
+
+            ret = charFolder + "/" + filename;
+
+            return ret;
+        }
+
+        //Returns the filepath for the folder where characters are stored.
         public string GetCharacterFolderPath ()
         {
             return GetCharacterFolderPath(SaveFolder);
@@ -80,6 +102,7 @@ namespace Simple_Dice_Roller
             return location + "/Characters";
         }
 
+        //Returns the filepath for the folder where the libraries are stored.
         public string GetDatFolderPath ()
         {
             return GetDatFolderPath(SaveFolder);
@@ -87,6 +110,26 @@ namespace Simple_Dice_Roller
         private string GetDatFolderPath (string location)
         {
             return location + "/dat";
+        }
+
+        //Returns the expected filename for a character based on that character's ID.
+        //Usually this will be the character's ID with ".char" stuck onto the end, but this will also remove characters that aren't allowed in filenames.
+        private string GetFilenameForCharacter(string charID)
+        {
+            string ret = "";
+
+            //Do some logic here to remove problematic characters.
+            char[] prohibitedChars = System.IO.Path.GetInvalidFileNameChars();
+
+            string modified = charID;
+            foreach (char c in prohibitedChars)
+            {
+                modified = modified.Replace(c.ToString(), "");
+            }
+
+            ret = modified + ".char";
+
+            return ret;
         }
 
         #endregion
@@ -120,7 +163,6 @@ namespace Simple_Dice_Roller
             {
                 //This is too big, we're going to skip loading it.
                 //complain to a log file
-                MessageBox.Show("Error: settings file is " + size + " bytes, this is too large.");
                 return;
             }
 
@@ -150,7 +192,6 @@ namespace Simple_Dice_Roller
                 else if (pieces.Length > 2)
                 {
                     //We set a limit that should prevent this, how did this happen?
-                    MessageBox.Show("Error: somehow got " + pieces.Length + " pieces when exploding " + line);
                     continue;
                 }
 
@@ -170,7 +211,6 @@ namespace Simple_Dice_Roller
                         break;
                     default:
                         //Complain to a log file?
-                        MessageBox.Show("Warning: unknown index " + index);
                         break;
                 }
             }
@@ -341,5 +381,6 @@ namespace Simple_Dice_Roller
         }
 
         #endregion
+
     }
 }
