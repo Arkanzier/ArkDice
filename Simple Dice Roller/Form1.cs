@@ -2440,18 +2440,25 @@ namespace Simple_Dice_Roller
             Settings_SaveLocation.Text = Settings.GetBaseFolderPath();
         }
 
-        //Populates the character select dropdown on the settings tab.
+        //Populates a character select dropdown such as the one on the settings tab.
         private void DrawListOfCharacters(ComboBox? cb)
         {
-            //Clear the list so we can just redraw everything.
-            Dropdown_CharactersList.Items.Clear();
-
             //Get a list of characters to include, and refer to them by character name and filename.
             Dictionary<string, string> characters = GetListOfCharacters();
+
+            //Clear the list so we can just redraw everything.
+            if (cb == null)
+            {
+                Dropdown_CharactersList.Items.Clear();
+            } else
+            {
+                cb.Items.Clear();
+            }
 
             foreach (KeyValuePair<string, string> character in characters)
             {
                 string charID = character.Key;
+
                 if (cb == null)
                 {
                     Dropdown_CharactersList.Items.Add(charID);
