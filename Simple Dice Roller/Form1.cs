@@ -7,6 +7,7 @@ using System.IO.Compression;
 using System.Text.RegularExpressions;
 using Microsoft.VisualBasic.ApplicationServices;
 using System.Text.Json;
+using System.Xml.Linq;
 
 namespace Simple_Dice_Roller
 {
@@ -45,6 +46,7 @@ namespace Simple_Dice_Roller
         internal EditCharacter? EditCharacterForm;
         internal EditAbilities? EditAbilitiesForm;
         internal EditSpells? EditSpellsForm;
+        internal Panel? CharacterSelectPopup;
 
         //A class for holding the configurable settings.
         internal Settings.Settings Settings;
@@ -75,16 +77,20 @@ namespace Simple_Dice_Roller
             Settings = new Settings.Settings();
 
             DisplaySettings();
-            DrawListOfCharacters();
+            DrawListOfCharacters(Dropdown_CharactersList);
+
+            //Potentially prompt the user to load an existing character.
+            Dictionary<string, string> characters = GetListOfCharacters();
+            if (characters.Count > 0)
+            {
+                CreateCharacterSelectPopup();
+            }
+            //Else: do nothing, because the only option will be to load a blank character.
 
             //Directory that this stuff runs out of:
             //C:\Users\david\source\repos\ArkDice\Simple Dice Roller\bin\Debug\net7.0-windows
             //Will probably switch to net8.0-windows soon, since I'm updating this to .net 8.0.
             Folderpath = "C:\\Users\\david\\Programs\\Simple Dice Roller\\";
-
-
-            //Currently set to load the default character I'm using for testing.
-            LoadCharacter("Tiriel");
         }
 
 
@@ -132,7 +138,7 @@ namespace Simple_Dice_Roller
         }
 
         //Loads a specified character.
-        private void LoadCharacter(string filename)
+        private void LoadCharacter(string charID)
         {
             //Load the libraries every time in case something has changed while we were doing stuff.
             SpellsLibrary = new Dictionary<string, Spell>();
@@ -153,14 +159,16 @@ namespace Simple_Dice_Roller
 
             //Stores the currently loaded character.
             Character.Character currentCharacter;
-            if (filename == "")
+            if (charID == "")
             {
                 //We're loading a blank character as part of the process of the user creating a new character.
                 currentCharacter = new Character.Character();
+                LogMessage("Could not find character " + charID);
             } else
             {
                 //We're loading an existing character from a file.
-                currentCharacter = new Character.Character(filename, Folderpath, ref AbilitiesLibrary, ref SpellsLibrary);
+                currentCharacter = new Character.Character(charID, Folderpath, ref AbilitiesLibrary, ref SpellsLibrary);
+                LogMessage("Loaded character " + charID);
             }
             
             LoadedCharacter = currentCharacter;
@@ -443,6 +451,200 @@ namespace Simple_Dice_Roller
             }
         }
 
+
+        //-------- -------- -------- -------- -------- -------- -------- -------- 
+        //Functions relating to the character select popup that appears on program start
+        #region Character Select Popup
+
+        //Create a popup prompting the user to load an existing character, or a blank one.
+        private void CreateCharacterSelectPopup()
+        {
+            //A few things we might want to make customizable later:
+            int horizontalMargin = 25;
+            int verticalMargin = 10;    //25?
+            int spaceBetweenRows = 10;
+            int spaceBetweenElements = spaceBetweenRows;
+            int minPopupWidth = 300;
+            //int minPopupHeight = 200;
+
+
+            //Get rid of an existing copy of the popup, if there is one, then create a popup.
+            if (CharacterSelectPopup != null)
+            {
+                CharacterSelectPopup.Dispose();
+                CharacterSelectPopup = null;
+            }
+            Panel popup = new Panel();
+
+            //Store the popup for later, so we can delete it if this gets called again before it's gone.
+            CharacterSelectPopup = popup;
+
+            //Get the size of the main window.
+            Rectangle windowRect = new Rectangle(new Point(0, 0), this.Size);
+
+            //Restrict this popup to only 80% of the height/width of the main window.
+            int maxWidth = (int)(windowRect.Width * 0.8);
+            int maxHeight = (int)(windowRect.Height * 0.8);
+
+            //--------
+
+            //First row: some text to tell the user what's going on.
+            Label newLabel = new Label();
+            newLabel.Text = "Would you like to load an existing character?";
+            popup.Controls.Add(newLabel);
+            Size labelSize = newLabel.GetPreferredSize(new Size(maxWidth, maxHeight));
+
+            //Do some sanity checking on what we got back.
+            //Restrict this text to no more than 80% of the width of the main window.
+            if (labelSize.Width > maxWidth)
+            {
+                labelSize.Width = maxWidth;
+
+                //I don't know of a way to recalculate the appropriate dimensions with an enforced max width,
+                //if GetPreferredSize failed, so we're just going to blindly add 15px (one row) to the height.
+                labelSize.Height += 15;
+            }
+            //Do the same with the height.
+            labelSize.Height = (labelSize.Height > maxHeight) ? maxHeight : labelSize.Height;
+
+            int textRowHeight = labelSize.Height;
+            int textRowWidth = labelSize.Width;
+
+            //--------
+
+            //Next row: character select dropdown and "load" button.
+            //Create the dropdown with the list of characters.
+            ComboBox dropdown = new ComboBox();
+            DrawListOfCharacters(dropdown);
+            popup.Controls.Add(dropdown);
+            Size dropdownSize = dropdown.GetPreferredSize(new Size(0,0));
+
+            //Put in a button to trigger the load, rather than having it automatically happen when something is selected.
+            Button loadButton = new Button();
+            loadButton.Text = "Load";
+            loadButton.Click += new System.EventHandler(LoadCharacterFromPopup);
+            popup.Controls.Add(loadButton);
+            Size loadButtonSize = new Size(75, 23);
+
+            int characterRowHeight = (dropdownSize.Height > loadButtonSize.Height) ? dropdownSize.Height : loadButtonSize.Height;
+            int characterRowWidth = dropdownSize.Width + spaceBetweenElements + loadButtonSize.Width;
+
+            //--------
+
+            //Next row: a button to indicate that the user wants to load a blank character.
+            Button newCharButton = new Button();
+            newCharButton.Text = "New";
+            newCharButton.Click += new System.EventHandler(NewCharacterFromPopup);
+            popup.Controls.Add(newCharButton);
+            Size newCharButtonSize = new Size(75, 23);
+
+            int newCharRowHeight = newCharButtonSize.Height;
+            int newCharRowWidth = newCharButtonSize.Width;
+
+            //--------
+
+            /*
+            +---------------------------------------------------+
+            |   Would you like to load an existing character?   |
+            |            [dropdown here]     [load]             |
+            |                     [   no  ]                     |
+            +---------------------------------------------------+
+            */
+            //Now we position everything.
+
+            //Figure out how wide to make the popup.
+            int widestRowWidth = Math.Max (textRowWidth, Math.Max(newCharRowWidth, characterRowWidth));
+            if (widestRowWidth + (horizontalMargin * 2) < minPopupWidth)
+            {
+                widestRowWidth = minPopupWidth;
+            }
+
+            //We'll use this variable to track vertical positioning.
+            int currentHeight = verticalMargin;
+
+            //Now we can set the width of the popup and position everything else around it.
+            int popupWidth = widestRowWidth + (horizontalMargin * 2);
+            popupWidth = (popupWidth < minPopupWidth) ? minPopupWidth : popupWidth;
+
+            //First row
+            int temp = (popupWidth - labelSize.Width) / 2;
+            Rectangle textRowRect = new Rectangle(temp, currentHeight, labelSize.Width, labelSize.Height);
+            newLabel.Bounds = textRowRect;
+
+            currentHeight += labelSize.Height + spaceBetweenRows;
+
+            //Second row
+            //We're going to assume that this row will never be too wide, and skip checking for that.
+            temp = (popupWidth - characterRowWidth) / 2;
+            Rectangle dropdownRect = new Rectangle(temp, currentHeight, dropdownSize.Width, dropdownSize.Height);
+            dropdown.Bounds = dropdownRect;
+            temp += dropdownSize.Width + spaceBetweenElements;
+            Rectangle loadButtonRect = new Rectangle (temp, currentHeight, loadButtonSize.Width, loadButtonSize.Height);
+            loadButton.Bounds = loadButtonRect;
+
+            currentHeight += characterRowHeight + spaceBetweenRows;
+
+            //Third row
+            temp = (popupWidth - newCharButtonSize.Width) / 2;
+            Rectangle newCharButtonRect = new Rectangle(temp, currentHeight, newCharButtonSize.Width, newCharButtonSize.Height);
+            newCharButton.Bounds = newCharButtonRect;
+
+            currentHeight += newCharButtonSize.Height + spaceBetweenRows;
+
+            //Now the entire popup.
+            this.Controls.Add(popup);
+            //Width is already in popupWidth
+            int popupHeight = currentHeight + verticalMargin;
+
+            int popupLeft = (windowRect.Width - popupWidth) / 2;
+            int popupTop = (windowRect.Height - popupHeight) / 2;
+
+            Rectangle popupRect = new Rectangle(popupLeft, popupTop, popupWidth, popupHeight);
+            popup.Bounds = popupRect;
+
+            popup.Show();
+            popup.BringToFront();
+        }
+
+        //Fetches the character currently selected from the Character Select Popup and loads it, then closes the popup.
+        //If no character is selected, it does nothing.
+        internal void LoadCharacterFromPopup (object? sender, EventArgs e)
+        {
+            //Fetch the currently selected character, if there is one.
+            if (CharacterSelectPopup == null)
+            {
+                //The panel isn't open, how did this get called?
+                return;
+            }
+
+            string? charname = CharacterSelectPopup.Controls.OfType<ComboBox>().FirstOrDefault()?.Text;
+            if (charname == null || charname == "")
+            {
+                //Nothing was selected in it.
+                return;
+            }
+
+            LoadCharacter(charname);
+
+            //We're done with this popup, so get rid of it.
+            CharacterSelectPopup.Dispose();
+            CharacterSelectPopup = null;
+        }
+
+        //Set things up so that a blank character will be properly loaded, then close the Character Select Popup.
+        internal void NewCharacterFromPopup (object? sender, EventArgs e)
+        {
+            //start by trying out just closing the popup and seeing if anything complains
+            if (CharacterSelectPopup != null)
+            {
+                CharacterSelectPopup.Dispose();
+                CharacterSelectPopup = null;
+            }
+
+            LogMessage("Loaded blank character");
+        }
+
+        #endregion
 
         //-------- -------- -------- -------- -------- -------- -------- -------- 
 
@@ -1057,7 +1259,7 @@ namespace Simple_Dice_Roller
             }
 
             //This may be a new character, so we'll redraw the list.
-            DrawListOfCharacters();
+            DrawListOfCharacters(Dropdown_CharactersList);
         }
 
         //Deal damage to the active character.
@@ -2239,7 +2441,7 @@ namespace Simple_Dice_Roller
         }
 
         //Populates the character select dropdown on the settings tab.
-        private void DrawListOfCharacters()
+        private void DrawListOfCharacters(ComboBox? cb)
         {
             //Clear the list so we can just redraw everything.
             Dropdown_CharactersList.Items.Clear();
@@ -2250,7 +2452,13 @@ namespace Simple_Dice_Roller
             foreach (KeyValuePair<string, string> character in characters)
             {
                 string charID = character.Key;
-                Dropdown_CharactersList.Items.Add(charID);
+                if (cb == null)
+                {
+                    Dropdown_CharactersList.Items.Add(charID);
+                } else
+                {
+                    cb.Items.Add(charID);
+                }
             }
         }
 

@@ -238,6 +238,7 @@
             Spells_PageCol = new DataGridViewTextBoxColumn();
             label7 = new Label();
             SettingsTab = new TabPage();
+            Button_CreateNewCharacter = new Button();
             Button_LoadCharacter = new Button();
             Dropdown_CharactersList = new ComboBox();
             Label_LoadCharacter = new Label();
@@ -253,7 +254,6 @@
             Button_EditChar = new Button();
             Button_EditAbilities = new Button();
             Button_EditSpells = new Button();
-            Button_CreateNewCharacter = new Button();
             MainTabArea.SuspendLayout();
             DiceTab.SuspendLayout();
             CharacterTab.SuspendLayout();
@@ -2481,6 +2481,16 @@
             SettingsTab.Text = "Settings";
             SettingsTab.UseVisualStyleBackColor = true;
             // 
+            // Button_CreateNewCharacter
+            // 
+            Button_CreateNewCharacter.Location = new Point(437, 506);
+            Button_CreateNewCharacter.Name = "Button_CreateNewCharacter";
+            Button_CreateNewCharacter.Size = new Size(150, 23);
+            Button_CreateNewCharacter.TabIndex = 6;
+            Button_CreateNewCharacter.Text = "Create New Character";
+            Button_CreateNewCharacter.UseVisualStyleBackColor = true;
+            Button_CreateNewCharacter.Click += Button_CreateNewCharacter_Click;
+            // 
             // Button_LoadCharacter
             // 
             Button_LoadCharacter.Location = new Point(356, 506);
@@ -2614,16 +2624,6 @@
             Button_EditSpells.Text = "Edit Spells";
             Button_EditSpells.UseVisualStyleBackColor = true;
             Button_EditSpells.Click += Button_EditSpells_Click;
-            // 
-            // Button_CreateNewCharacter
-            // 
-            Button_CreateNewCharacter.Location = new Point(437, 506);
-            Button_CreateNewCharacter.Name = "Button_CreateNewCharacter";
-            Button_CreateNewCharacter.Size = new Size(150, 23);
-            Button_CreateNewCharacter.TabIndex = 6;
-            Button_CreateNewCharacter.Text = "Create New Character";
-            Button_CreateNewCharacter.UseVisualStyleBackColor = true;
-            Button_CreateNewCharacter.Click += Button_CreateNewCharacter_Click;
             // 
             // Form1
             // 

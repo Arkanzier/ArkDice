@@ -914,7 +914,7 @@ namespace Character
         {
             string backupFolder = settings.GetCharacterBackupFolderpath();
             string filepath = settings.GetCharacterFilepath(ID);
-            string backupFilepath = backupFolder + ID + "_" + DateTime.Now.ToString("yyyy-MM-dd_hh-mm-ss") + ".char";
+            string backupFilepath = backupFolder + "/" + ID + "_" + DateTime.Now.ToString("yyyy-MM-dd_hh-mm-ss") + ".char";
 
             if (System.IO.File.Exists(filepath))
             {
