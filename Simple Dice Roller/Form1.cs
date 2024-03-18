@@ -52,7 +52,6 @@ namespace Simple_Dice_Roller
         internal Settings.Settings Settings;
 
 
-        public string Folderpath { get; private set; }
 
         //Constructor(s):
         //-------- -------- -------- -------- -------- -------- -------- -------- 
@@ -93,13 +92,8 @@ namespace Simple_Dice_Roller
             }
             //Else: do nothing, because the only option will be to load a blank character.
 
-            //Skipping for now.
-            //TestButton.Enabled = false;
-
             //Directory that this stuff runs out of:
-            //C:\Users\david\source\repos\ArkDice\Simple Dice Roller\bin\Debug\net7.0-windows
-            //Will probably switch to net8.0-windows soon, since I'm updating this to .net 8.0.
-            Folderpath = "C:\\Users\\david\\Programs\\Simple Dice Roller\\";
+            //C:\Users\david\source\repos\ArkDice\Simple Dice Roller\bin\Debug\net8.0-windows7.0
         }
 
 
@@ -176,7 +170,7 @@ namespace Simple_Dice_Roller
             } else
             {
                 //We're loading an existing character from a file.
-                currentCharacter = new Character.Character(charID, Folderpath, ref AbilitiesLibrary, ref SpellsLibrary);
+                currentCharacter = new Character.Character(charID, Settings, ref AbilitiesLibrary, ref SpellsLibrary);
                 LogMessage("Loaded character " + charID);
             }
             

@@ -158,14 +158,10 @@ namespace Character
         }
 
         //Loads the character from a file containing JSON.
-        public Character (string charID, string folderpath = "")
+        public Character (string charID, Settings.Settings Settings)
             : this()
         {
-            if (folderpath != "" && folderpath.Last() != '\\')
-            {
-                folderpath += "\\";
-            }
-            string filepath = folderpath + "Characters\\" + charID + ".char";
+            string filepath = Settings.GetCharacterFilepath(charID);
 
             if (!File.Exists (filepath))
             {
@@ -196,8 +192,8 @@ namespace Character
         }
 
         //Loads the character from a JSON file, then compares the character's spells and abilities against the provided libraries looking for updates.
-        public Character (string charID, string folderpath, ref Dictionary<string, Ability> abilitiesLibrary, ref Dictionary<string, Spell> spellsLibrary)
-            : this (charID, folderpath)
+        public Character (string charID, Settings.Settings Settings, ref Dictionary<string, Ability> abilitiesLibrary, ref Dictionary<string, Spell> spellsLibrary)
+            : this (charID, Settings)
         {
             //Check through the list of abilities.
             abilitiesLibrary = UpdateAllAbilities(abilitiesLibrary);
