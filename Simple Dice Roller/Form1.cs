@@ -87,6 +87,9 @@ namespace Simple_Dice_Roller
             }
             //Else: do nothing, because the only option will be to load a blank character.
 
+            //Skipping for now.
+            //TestButton.Enabled = false;
+
             //Directory that this stuff runs out of:
             //C:\Users\david\source\repos\ArkDice\Simple Dice Roller\bin\Debug\net7.0-windows
             //Will probably switch to net8.0-windows soon, since I'm updating this to .net 8.0.
@@ -476,6 +479,13 @@ namespace Simple_Dice_Roller
             }
             Panel popup = new Panel();
 
+            //Disable the stuff behind the popup so people can't just ignore it and use the program anyway.
+            MainTabArea.Enabled = false;
+            Button_SaveCharacter.Enabled = false;
+            Button_EditChar.Enabled = false;
+            Button_EditAbilities.Enabled = false;
+            Button_EditSpells.Enabled = false;
+
             //Store the popup for later, so we can delete it if this gets called again before it's gone.
             CharacterSelectPopup = popup;
 
@@ -629,6 +639,12 @@ namespace Simple_Dice_Roller
             //We're done with this popup, so get rid of it.
             CharacterSelectPopup.Dispose();
             CharacterSelectPopup = null;
+
+            MainTabArea.Enabled = true;
+            Button_SaveCharacter.Enabled = true;
+            Button_EditChar.Enabled = true;
+            Button_EditAbilities.Enabled = true;
+            Button_EditSpells.Enabled = true;
         }
 
         //Set things up so that a blank character will be properly loaded, then close the Character Select Popup.
@@ -642,6 +658,12 @@ namespace Simple_Dice_Roller
             }
 
             LogMessage("Loaded blank character");
+
+            MainTabArea.Enabled = true;
+            Button_SaveCharacter.Enabled = true;
+            Button_EditChar.Enabled = true;
+            Button_EditAbilities.Enabled = true;
+            Button_EditSpells.Enabled = true;
         }
 
         #endregion
