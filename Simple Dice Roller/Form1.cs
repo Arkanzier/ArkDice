@@ -607,7 +607,8 @@ namespace Simple_Dice_Roller
             int popupHeight = currentHeight + verticalMargin;
 
             int popupLeft = (windowRect.Width - popupWidth) / 2;
-            int popupTop = (windowRect.Height - popupHeight) / 2;
+            //int popupTop = (windowRect.Height - popupHeight) / 2;
+            int popupTop = (windowRect.Height > popupHeight + 400) ? 200 : 25;
 
             Rectangle popupRect = new Rectangle(popupLeft, popupTop, popupWidth, popupHeight);
             popup.Bounds = popupRect;
