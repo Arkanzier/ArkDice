@@ -76,6 +76,12 @@ namespace Simple_Dice_Roller
             //Load the settings next, to make sure they're available everywhere.
             Settings = new Settings.Settings();
 
+            SpellsLibrary = new Dictionary<string, Spell>();
+            AbilitiesLibrary = new Dictionary<string, Ability>();
+
+            LoadSpellsLibrary();
+            LoadAbilitiesLibrary();
+
             DisplaySettings();
             DrawListOfCharacters(Dropdown_CharactersList);
 
@@ -147,8 +153,8 @@ namespace Simple_Dice_Roller
             SpellsLibrary = new Dictionary<string, Spell>();
             AbilitiesLibrary = new Dictionary<string, Ability>();
 
-            LoadSpellsLibrary(Folderpath);
-            LoadAbilitiesLibrary(Folderpath);
+            LoadSpellsLibrary();
+            LoadAbilitiesLibrary();
 
             //Detail views for the lists of abilities and spells.
             AbilitiesAreaDetails = new Dictionary<string, Panel>();
@@ -714,13 +720,9 @@ namespace Simple_Dice_Roller
         #region Library Functions
 
         //Loads a collection of abilities into a library that can be referenced later to quickly load abilities without having to type them or whatever.
-        private bool LoadAbilitiesLibrary(string folderpath)
+        private bool LoadAbilitiesLibrary()
         {
-            if (folderpath.Last() != '\\')
-            {
-                folderpath += "\\";
-            }
-            string filepath = folderpath + "dat\\Abilities.dat";
+            string filepath = Settings.GetAbilitiesLibraryPath();
 
             if (File.Exists(filepath))
             {
@@ -753,13 +755,9 @@ namespace Simple_Dice_Roller
         }
 
         //Loads a collection of spells into a library that can be referenced later to quickly load spells without having to type them or whatever.
-        private bool LoadSpellsLibrary(string folderpath)
+        private bool LoadSpellsLibrary()
         {
-            if (folderpath.Last() != '\\')
-            {
-                folderpath += "\\";
-            }
-            string filepath = folderpath + "dat\\Spells.dat";
+            string filepath = Settings.GetSpellsLibraryPath();
 
             if (File.Exists(filepath))
             {
@@ -794,16 +792,12 @@ namespace Simple_Dice_Roller
         //Writes the contents of the abilities library to disk.
         private bool SaveAbilitiesLibrary()
         {
-            if (Folderpath.Last() != '\\')
-            {
-                Folderpath += "\\";
-            }
-            string filepath = Folderpath + "dat\\Abilities.dat";
+            string filepath = Settings.GetAbilitiesLibraryPath();
 
             if (File.Exists(filepath))
             {
                 //The library file already exists, let's make a backup before we overwrite it.
-                string backupFolderpath = Folderpath + "dat\\Backups\\";
+                string backupFolderpath = Settings.GetLibraryBackupFolderpath();
                 string backupFilepath = backupFolderpath + "Abilities_" + DateTime.Now.ToString("yyyy-MM-dd_hh-mm-ss") + ".dat";
                 if (!File.Exists(backupFolderpath))
                 {
@@ -836,16 +830,12 @@ namespace Simple_Dice_Roller
         //Writes the contents of the spells library to disk.
         private bool SaveSpellsLibrary()
         {
-            if (Folderpath.Last() != '\\')
-            {
-                Folderpath += "\\";
-            }
-            string filepath = Folderpath + "dat\\Spells.dat";
+            string filepath = Settings.GetSpellsLibraryPath();
 
             if (File.Exists(filepath))
             {
                 //The library file already exists, let's make a backup before we overwrite it.
-                string backupFolderpath = Folderpath + "dat\\Backups\\";
+                string backupFolderpath = Settings.GetLibraryBackupFolderpath();
                 string backupFilepath = backupFolderpath + "Spells_" + DateTime.Now.ToString("yyyy-MM-dd_hh-mm-ss") + ".dat";
                 if (!File.Exists(backupFolderpath))
                 {

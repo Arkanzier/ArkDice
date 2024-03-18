@@ -66,6 +66,12 @@ namespace Settings
         //Functions that return the filepaths to various things
         //Some of these have private overloads that take a string as an argument. These are used as part of the process of moving the save folder.
 
+        //Returns the path to the abilities library file.
+        public string GetAbilitiesLibraryPath()
+        {
+            return GetBaseFolderPath() + "/dat/Abilities.dat";
+        }
+
         //Returns the path to the folder where this stores non-settings information.
         public string GetBaseFolderPath()
         {
@@ -130,6 +136,18 @@ namespace Settings
             ret = modified + ".char";
 
             return ret;
+        }
+
+        //Returns the filepath to the folder where backups of library files are stored.
+        public string GetLibraryBackupFolderpath()
+        {
+            return GetBaseFolderPath() + "/dat/Backups/";
+        }
+
+        //Returns the path to the spells library file.
+        public string GetSpellsLibraryPath()
+        {
+            return GetBaseFolderPath() + "/dat/Spells.dat";
         }
 
         #endregion
