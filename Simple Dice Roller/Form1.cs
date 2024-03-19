@@ -99,6 +99,56 @@ namespace Simple_Dice_Roller
 
         //Misc functions
         //-------- -------- -------- -------- -------- -------- -------- -------- 
+        //Returns the bounding Rectangle for the visible portion of the specified row.
+        private Rectangle GetActualBoundsForGridRow (DataGridViewRow row)
+        {
+            //Scan through the row looking for the first and last visible cells, so we can work off them.
+            //This assignment is only here because the code checker mistakenly thinks that this variable will be unassigned later.
+            Rectangle first = row.Cells[0].AccessibilityObject.Bounds;
+            Rectangle last;
+            int lastIndex = -1;
+            for (int a = 0; a < row.Cells.Count; a++)
+            {
+                if (row.Cells[a].Visible)
+                {
+                    if (lastIndex < 0)
+                    {
+                        first = row.Cells[a].AccessibilityObject.Bounds;
+                    }
+
+                    //We'll track the last one with this int, so we're not overwriting an entire Rectangle every iteration.
+                    lastIndex = a;
+                }
+            }
+            if (lastIndex >= 0)
+            {
+                //If we've seen the first one we've definitely seen the last one too.
+                last = row.Cells[lastIndex].AccessibilityObject.Bounds;
+            } else
+            {
+                //We didn't find any.
+                //Complain to a log file?
+                return new Rectangle();
+            }
+
+            Rectangle ret = new Rectangle();
+
+            ret.X = first.X;
+            ret.Y = first.Y;
+            ret.Width = last.Right - first.X;
+            //Both cells should be the same height, so we can blindly use the first one.
+            ret.Height = first.Height;
+
+            return ret;
+        }
+
+        //Returns the width of the visual portion of the specified row.
+        private int GetActualWidthForGridRow (DataGridViewRow row)
+        {
+            Rectangle bounds = GetActualBoundsForGridRow (row);
+            return bounds.Width;
+        }
+
         //Looks up the index for the AbilitiesArea or SpellsArea row with a particular ID.
         //Returns the row's index if found, or -1 if not.
         private int GetIndexForRow(string gridName, string id)
@@ -277,10 +327,12 @@ namespace Simple_Dice_Roller
             }
 
             //Get the location and dimensions to set this.
-            int top = grid.Rows[rowIndex].AccessibilityObject.Bounds.Top;
-            int left = grid.Rows[rowIndex].AccessibilityObject.Bounds.Left;
-            int bottom = grid.Rows[rowIndex].AccessibilityObject.Bounds.Bottom;
-            int right = grid.Rows[rowIndex].AccessibilityObject.Bounds.Right;
+            Rectangle rowBounds = GetActualBoundsForGridRow(grid.Rows[rowIndex]);
+            int top = rowBounds.Top;
+            int left = rowBounds.Left;
+            int width = rowBounds.Width;
+            int bottom = rowBounds.Bottom;
+            int right = rowBounds.Right;
 
             //We need to position things in relation to the grid, not the program.
             int gridTop = grid.AccessibilityObject.Bounds.Top;
@@ -311,9 +363,6 @@ namespace Simple_Dice_Roller
                 return;
             }
 
-            int width = right - left;
-
-            //MessageBox.Show("Going to set this panel to " + left + ", " + top + " and " + width + " x " + panelHeight);
             Rectangle rect = new Rectangle(left, top, width, panelHeight);
 
             //Now set the panel's size and location.
@@ -1837,9 +1886,17 @@ namespace Simple_Dice_Roller
             newLabel.Left = 6;
             newLabel.Top = 6;
 
-            //Set height and width to the panel's height and width -12 each
-            newLabel.Width = AbilitiesArea.Rows[0].AccessibilityObject.Bounds.Width - 12;
-            //newLabel.Height = 88; //hardcoded 100px height - 12px for margins = 88px
+            //Set height and width to the panel's height and width
+            int width = 0;
+            for (int a = 0; a < AbilitiesArea.Rows.Count; a++)
+            {
+                width = GetActualWidthForGridRow(AbilitiesArea.Rows[a]);
+                if (width != 0)
+                {
+                    break;
+                }
+            }
+
             //Figure out how tall the text area wants to be, then add 12px for a margin.
             int temp = newLabel.GetPreferredSize(new Size(newLabel.Width, 100)).Height + 12;
             newLabel.Height = temp;
@@ -2024,10 +2081,21 @@ namespace Simple_Dice_Roller
             Label descriptionLabel = new Label();
             descriptionLabel.Text = row.Cells["Spells_DescriptionCol"].Value.ToString();
             descriptionLabel.Left = 6;
-            descriptionLabel.Top = 21;  //place it 1 row down
+            descriptionLabel.Top = 36;  //place it 2 rows down
 
             //Set height and width to the panel's height and width -12 each
-            descriptionLabel.Width = SpellsArea.Rows[0].AccessibilityObject.Bounds.Width - 12;
+            //We need to scan through the rows of the grid, because invisible ones will report width 0.
+            int width = 0;
+            for (int a = 0; a < SpellsArea.Rows.Count; a++)
+            {
+                width = GetActualWidthForGridRow(SpellsArea.Rows[a]);
+                if (width != 0)
+                {
+                    break;
+                }
+            }
+
+            descriptionLabel.Width = width;
             descriptionLabel.Height = 88; //hardcoded 100px height - 12px for margins = 88px
 
             //upcasting benefit goes here

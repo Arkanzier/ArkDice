@@ -2113,6 +2113,7 @@
             AbilitiesArea.Location = new Point(6, 6);
             AbilitiesArea.MultiSelect = false;
             AbilitiesArea.Name = "AbilitiesArea";
+            AbilitiesArea.RowHeadersVisible = false;
             AbilitiesArea.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             AbilitiesArea.Size = new Size(760, 523);
             AbilitiesArea.TabIndex = 20;
