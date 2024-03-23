@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
@@ -178,15 +179,31 @@ namespace Simple_Dice_Roller
             }
             else
             {
+                //Back out if there's no row selected.
+                if (AbilitiesLibraryList.SelectedRows.Count == 0)
+                {
+                    return;
+                }
+                //Back out if this row is blank.
+                if (AbilitiesLibraryList.SelectedRows[0].Cells["Library_IDCol"].Value == null)
+                {
+                    return;
+                }
+
                 //Get the ability's info.
-                string id = "";
+                string? id = "";
                 try
                 {
                     id = AbilitiesLibraryList.SelectedRows[0].Cells["Library_IDCol"].Value.ToString();
+                    if (id == null)
+                    {
+                        id = "";
+                    }
                 }
                 catch (Exception ex)
                 {
                     //do nothing?
+                    return;
                 }
                 if (id == "")
                 {

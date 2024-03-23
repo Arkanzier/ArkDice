@@ -72,16 +72,19 @@
             // 
             // AbilitiesLibraryList
             // 
+            AbilitiesLibraryList.AllowUserToAddRows = false;
+            AbilitiesLibraryList.AllowUserToDeleteRows = false;
+            AbilitiesLibraryList.AllowUserToResizeColumns = false;
+            AbilitiesLibraryList.AllowUserToResizeRows = false;
             AbilitiesLibraryList.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             AbilitiesLibraryList.Columns.AddRange(new DataGridViewColumn[] { Library_IDCol, Library_NameCol });
             AbilitiesLibraryList.EditMode = DataGridViewEditMode.EditProgrammatically;
             AbilitiesLibraryList.Location = new Point(12, 27);
             AbilitiesLibraryList.MultiSelect = false;
             AbilitiesLibraryList.Name = "AbilitiesLibraryList";
-            AbilitiesLibraryList.RowTemplate.Height = 25;
             AbilitiesLibraryList.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             AbilitiesLibraryList.Size = new Size(384, 447);
-            AbilitiesLibraryList.TabIndex = 0;
+            AbilitiesLibraryList.TabIndex = 17;
             AbilitiesLibraryList.SelectionChanged += AbilitiesLibraryList_SelectionChanged;
             // 
             // Library_IDCol
@@ -116,16 +119,19 @@
             // 
             // AssignedAbilitiesList
             // 
+            AssignedAbilitiesList.AllowUserToAddRows = false;
+            AssignedAbilitiesList.AllowUserToDeleteRows = false;
+            AssignedAbilitiesList.AllowUserToResizeColumns = false;
+            AssignedAbilitiesList.AllowUserToResizeRows = false;
             AssignedAbilitiesList.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             AssignedAbilitiesList.Columns.AddRange(new DataGridViewColumn[] { Assigned_IDCol, Assigned_NameCol });
             AssignedAbilitiesList.EditMode = DataGridViewEditMode.EditProgrammatically;
             AssignedAbilitiesList.Location = new Point(402, 27);
             AssignedAbilitiesList.MultiSelect = false;
             AssignedAbilitiesList.Name = "AssignedAbilitiesList";
-            AssignedAbilitiesList.RowTemplate.Height = 25;
             AssignedAbilitiesList.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             AssignedAbilitiesList.Size = new Size(386, 447);
-            AssignedAbilitiesList.TabIndex = 3;
+            AssignedAbilitiesList.TabIndex = 18;
             AssignedAbilitiesList.SelectionChanged += AssignedAbilitiesList_SelectionChanged;
             // 
             // Assigned_IDCol
@@ -154,14 +160,14 @@
             Input_Name.Location = new Point(62, 509);
             Input_Name.Name = "Input_Name";
             Input_Name.Size = new Size(100, 23);
-            Input_Name.TabIndex = 5;
+            Input_Name.TabIndex = 1;
             // 
             // Input_ID
             // 
             Input_ID.Location = new Point(62, 538);
             Input_ID.Name = "Input_ID";
             Input_ID.Size = new Size(100, 23);
-            Input_ID.TabIndex = 6;
+            Input_ID.TabIndex = 2;
             // 
             // Label_ID
             // 
@@ -177,7 +183,7 @@
             Button_Remove.Location = new Point(246, 480);
             Button_Remove.Name = "Button_Remove";
             Button_Remove.Size = new Size(150, 23);
-            Button_Remove.TabIndex = 8;
+            Button_Remove.TabIndex = 15;
             Button_Remove.Text = "Remove from Character";
             Button_Remove.UseVisualStyleBackColor = true;
             Button_Remove.Click += Button_Remove_Click;
@@ -187,7 +193,7 @@
             Button_Add.Location = new Point(402, 480);
             Button_Add.Name = "Button_Add";
             Button_Add.Size = new Size(150, 23);
-            Button_Add.TabIndex = 9;
+            Button_Add.TabIndex = 16;
             Button_Add.Text = "Add to Character";
             Button_Add.UseVisualStyleBackColor = true;
             Button_Add.Click += Button_Add_Click;
@@ -198,14 +204,14 @@
             Input_Text.Multiline = true;
             Input_Text.Name = "Input_Text";
             Input_Text.Size = new Size(600, 200);
-            Input_Text.TabIndex = 10;
+            Input_Text.TabIndex = 11;
             // 
             // Button_Close
             // 
             Button_Close.Location = new Point(713, 772);
             Button_Close.Name = "Button_Close";
             Button_Close.Size = new Size(75, 23);
-            Button_Close.TabIndex = 11;
+            Button_Close.TabIndex = 19;
             Button_Close.Text = "Close";
             Button_Close.UseVisualStyleBackColor = true;
             Button_Close.Click += Button_Close_Click;
@@ -215,7 +221,7 @@
             Button_Save.Location = new Point(713, 743);
             Button_Save.Name = "Button_Save";
             Button_Save.Size = new Size(75, 23);
-            Button_Save.TabIndex = 12;
+            Button_Save.TabIndex = 102;
             Button_Save.Text = "remove? Save";
             Button_Save.UseVisualStyleBackColor = true;
             // 
@@ -278,35 +284,35 @@
             Input_Uses.Location = new Point(251, 512);
             Input_Uses.Name = "Input_Uses";
             Input_Uses.Size = new Size(100, 23);
-            Input_Uses.TabIndex = 19;
+            Input_Uses.TabIndex = 3;
             // 
             // Input_MaxUses
             // 
             Input_MaxUses.Location = new Point(251, 541);
             Input_MaxUses.Name = "Input_MaxUses";
             Input_MaxUses.Size = new Size(100, 23);
-            Input_MaxUses.TabIndex = 20;
+            Input_MaxUses.TabIndex = 4;
             // 
             // Input_UsesChange
             // 
             Input_UsesChange.Location = new Point(251, 570);
             Input_UsesChange.Name = "Input_UsesChange";
             Input_UsesChange.Size = new Size(100, 23);
-            Input_UsesChange.TabIndex = 21;
+            Input_UsesChange.TabIndex = 5;
             // 
             // Input_RechargeCondition
             // 
             Input_RechargeCondition.Location = new Point(485, 507);
             Input_RechargeCondition.Name = "Input_RechargeCondition";
             Input_RechargeCondition.Size = new Size(100, 23);
-            Input_RechargeCondition.TabIndex = 22;
+            Input_RechargeCondition.TabIndex = 6;
             // 
             // Input_RechargeAmount
             // 
             Input_RechargeAmount.Location = new Point(485, 536);
             Input_RechargeAmount.Name = "Input_RechargeAmount";
             Input_RechargeAmount.Size = new Size(100, 23);
-            Input_RechargeAmount.TabIndex = 23;
+            Input_RechargeAmount.TabIndex = 7;
             // 
             // Label_Action
             // 
@@ -340,28 +346,28 @@
             Input_Action.Location = new Point(688, 504);
             Input_Action.Name = "Input_Action";
             Input_Action.Size = new Size(100, 23);
-            Input_Action.TabIndex = 27;
+            Input_Action.TabIndex = 8;
             // 
             // Input_Dice
             // 
             Input_Dice.Location = new Point(688, 533);
             Input_Dice.Name = "Input_Dice";
             Input_Dice.Size = new Size(100, 23);
-            Input_Dice.TabIndex = 28;
+            Input_Dice.TabIndex = 9;
             // 
             // Input_DisplayTier
             // 
             Input_DisplayTier.Location = new Point(688, 562);
             Input_DisplayTier.Name = "Input_DisplayTier";
             Input_DisplayTier.Size = new Size(100, 23);
-            Input_DisplayTier.TabIndex = 29;
+            Input_DisplayTier.TabIndex = 10;
             // 
             // Button_Delete
             // 
             Button_Delete.Location = new Point(12, 480);
             Button_Delete.Name = "Button_Delete";
             Button_Delete.Size = new Size(150, 23);
-            Button_Delete.TabIndex = 30;
+            Button_Delete.TabIndex = 14;
             Button_Delete.Text = "Delete Ability";
             Button_Delete.UseVisualStyleBackColor = true;
             Button_Delete.Click += Button_Delete_Click;
@@ -371,7 +377,7 @@
             Button_Test.Location = new Point(713, 714);
             Button_Test.Name = "Button_Test";
             Button_Test.Size = new Size(75, 23);
-            Button_Test.TabIndex = 31;
+            Button_Test.TabIndex = 101;
             Button_Test.Text = "Test";
             Button_Test.UseVisualStyleBackColor = true;
             Button_Test.Click += Button_Test_Click;
@@ -381,7 +387,7 @@
             Button_NewAbility.Location = new Point(688, 591);
             Button_NewAbility.Name = "Button_NewAbility";
             Button_NewAbility.Size = new Size(100, 23);
-            Button_NewAbility.TabIndex = 32;
+            Button_NewAbility.TabIndex = 13;
             Button_NewAbility.Text = "New Ability";
             Button_NewAbility.UseVisualStyleBackColor = true;
             Button_NewAbility.Click += Button_NewAbility_Click;
@@ -391,7 +397,7 @@
             Button_SaveAbility.Location = new Point(688, 620);
             Button_SaveAbility.Name = "Button_SaveAbility";
             Button_SaveAbility.Size = new Size(100, 23);
-            Button_SaveAbility.TabIndex = 33;
+            Button_SaveAbility.TabIndex = 12;
             Button_SaveAbility.Text = "Save Ability";
             Button_SaveAbility.UseVisualStyleBackColor = true;
             Button_SaveAbility.Click += Button_SaveAbility_Click;
