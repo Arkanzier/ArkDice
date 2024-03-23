@@ -1893,9 +1893,11 @@ namespace Simple_Dice_Roller
                 width = GetActualWidthForGridRow(AbilitiesArea.Rows[a]);
                 if (width != 0)
                 {
+                    width -= 12;
                     break;
                 }
             }
+            newLabel.Width = width;
 
             //Figure out how tall the text area wants to be, then add 12px for a margin.
             int temp = newLabel.GetPreferredSize(new Size(newLabel.Width, 100)).Height + 12;
