@@ -253,7 +253,8 @@ namespace Character
 
             DiceResponse resp = RollDice(stats);
 
-            switch (Action)
+            string lowerAction = Action.ToLower();
+            switch (lowerAction)
             {
                 case "roll":
                     //We just do the roll and let it get logged.
