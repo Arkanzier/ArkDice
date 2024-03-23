@@ -328,6 +328,18 @@ namespace Simple_Dice_Roller
 
             //Get the location and dimensions to set this.
             Rectangle rowBounds = GetActualBoundsForGridRow(grid.Rows[rowIndex]);
+            
+            //Now we check if this row is visible at all.
+            if (!grid.Rows[rowIndex].Cells[0].Displayed)
+            {
+                panel.Visible = false;
+                return;
+            }
+            else
+            {
+                panel.Visible = true;
+            }
+
             int top = rowBounds.Top;
             int left = rowBounds.Left;
             int width = rowBounds.Width;
@@ -337,18 +349,6 @@ namespace Simple_Dice_Roller
             //We need to position things in relation to the grid, not the program.
             int gridTop = grid.AccessibilityObject.Bounds.Top;
             int gridLeft = grid.AccessibilityObject.Bounds.Left;
-
-            //Don't show panels if there's nothing to actually show.
-            //We'll be told top/bottom and left/right coordinates that exactly match the top left of the visible part of the grid.
-            if (gridTop == top && gridTop == bottom && gridLeft == left && gridLeft == right)
-            {
-                panel.Visible = false;
-                return;
-            }
-            else
-            {
-                panel.Visible = true;
-            }
 
             top -= gridTop;
             left -= gridLeft;
@@ -2101,7 +2101,7 @@ namespace Simple_Dice_Roller
             descriptionLabel.Left = 6;
             descriptionLabel.Top = 36;  //place it 2 rows down
 
-            //Set height and width to the panel's height and width -12 each
+            //Set height and width
             //We need to scan through the rows of the grid, because invisible ones will report width 0.
             int width = 0;
             for (int a = 0; a < SpellsArea.Rows.Count; a++)
