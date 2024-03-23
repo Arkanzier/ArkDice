@@ -2114,10 +2114,15 @@ namespace Simple_Dice_Roller
                     break;
                 }
             }
-
             descriptionLabel.Width = width;
-            descriptionLabel.Height = 88; //hardcoded 100px height - 12px for margins = 88px
-            //to do: automatically calculate this. I probably have code for it in the abilities list stuff.
+
+            //Figure out how tall the text area wants to be.
+            int temp = descriptionLabel.GetPreferredSize(new Size(descriptionLabel.Width, 100)).Height;
+            //Add stuff to account for the other things in the panel:
+            //The description area goes 36 px down.
+            //There's another 6px of margin at the bottom.
+            temp += 42;
+            descriptionLabel.Height = temp;
 
             //upcasting benefit goes here
 
