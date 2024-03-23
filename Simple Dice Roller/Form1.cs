@@ -929,7 +929,7 @@ namespace Simple_Dice_Roller
         private void BeginEditingCharacter()
         {
             EditCharacter editing = new EditCharacter(LoadedCharacter);
-            editing.ParentForm = this;
+            editing.CallingForm = this;
             editing.Show();
 
             //Store a reference to the child so we can access it later.

@@ -16,7 +16,7 @@ namespace Simple_Dice_Roller
         internal string CharacterID;
         internal Character.Character EditingCharacter;
 
-        public Form1? ParentForm;
+        public Form1? CallingForm;
 
         //Definable settings
         private string[] ProficiencyLevelStrings = new[] { "None", "Half Proficiency", "Proficient", "1.5x Proficiency", "Expertise" };
@@ -28,7 +28,7 @@ namespace Simple_Dice_Roller
 
             CharacterID = "";
             EditingCharacter = new Character.Character();
-            ParentForm = null;
+            CallingForm = null;
         }
 
         public EditCharacter(string CharacterID)
@@ -518,9 +518,9 @@ namespace Simple_Dice_Roller
         //Called when the form is closing for whatever reason.
         private void EditCharacter_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (ParentForm != null)
+            if (CallingForm != null)
             {
-                ParentForm.ClosingEditingCharacter();
+                CallingForm.ClosingEditingCharacter();
             }
         }
 
