@@ -2072,11 +2072,29 @@ namespace Simple_Dice_Roller
         //Populate the details panel for the spells list when it appears.
         private void CreateSpellDetailPanel(Panel p, DataGridViewRow row)
         {
-            //spell school goes here
+            string school = "";
+            if (row.Cells["Spells_SchoolCol"] != null && row.Cells["Spells_SchoolCol"].Value != null) {
+                school = row.Cells["Spells_SchoolCol"].Value.ToString();
+                //Why is this complaining about how I might be doing stuff to a null, but not for the description column?
+                //I'm checking for that stuff here but not there, it's literally backwards.
+            }
+            Label schoolLabel = new Label();
+            schoolLabel.Text = school;
+            schoolLabel.Left = 6;
+            schoolLabel.Top = 6;
+            p.Controls.Add(schoolLabel);
+
+
             //more in the same row?
             //duration
+                //top 6 and left ... 106? 156?
             //book and page
+                //top 6 and left ... 206? 306?
+            //Consider automatically centering these.
+                //school is left, book and page are right, duration is centered between them?
+
             //expensive material component?
+                //top 21 and left 6
 
             Label descriptionLabel = new Label();
             descriptionLabel.Text = row.Cells["Spells_DescriptionCol"].Value.ToString();
@@ -2097,6 +2115,7 @@ namespace Simple_Dice_Roller
 
             descriptionLabel.Width = width;
             descriptionLabel.Height = 88; //hardcoded 100px height - 12px for margins = 88px
+            //to do: automatically calculate this. I probably have code for it in the abilities list stuff.
 
             //upcasting benefit goes here
 
