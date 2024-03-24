@@ -261,10 +261,14 @@ namespace Simple_Dice_Roller
             else
             {
                 //Get the ability's info.
-                string id = "";
+                string? id = "";
                 try
                 {
                     id = AssignedAbilitiesList.SelectedRows[0].Cells["Assigned_IDCol"].Value.ToString();
+                    if (id == null)
+                    {
+                        id = "";
+                    }
                 }
                 catch (Exception ex)
                 {
