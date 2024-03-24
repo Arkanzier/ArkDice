@@ -66,6 +66,7 @@
             Button_Test = new Button();
             Button_NewAbility = new Button();
             Button_SaveAbility = new Button();
+            comboBox1 = new ComboBox();
             ((System.ComponentModel.ISupportInitialize)AbilitiesLibraryList).BeginInit();
             ((System.ComponentModel.ISupportInitialize)AssignedAbilitiesList).BeginInit();
             SuspendLayout();
@@ -343,7 +344,7 @@
             // 
             // Input_Action
             // 
-            Input_Action.Location = new Point(688, 504);
+            Input_Action.Location = new Point(618, 649);
             Input_Action.Name = "Input_Action";
             Input_Action.Size = new Size(100, 23);
             Input_Action.TabIndex = 8;
@@ -402,11 +403,22 @@
             Button_SaveAbility.UseVisualStyleBackColor = true;
             Button_SaveAbility.Click += Button_SaveAbility_Click;
             // 
+            // comboBox1
+            // 
+            comboBox1.FormattingEnabled = true;
+            comboBox1.Items.AddRange(new object[] { "Roll", "Counter", "Heal", "TempHP" });
+            comboBox1.Location = new Point(688, 504);
+            comboBox1.Name = "comboBox1";
+            comboBox1.Size = new Size(100, 23);
+            comboBox1.TabIndex = 103;
+            comboBox1.Text = "Roll";
+            // 
             // EditAbilities
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 807);
+            Controls.Add(comboBox1);
             Controls.Add(Button_SaveAbility);
             Controls.Add(Button_NewAbility);
             Controls.Add(Button_Test);
@@ -491,5 +503,6 @@
         private Button Button_Test;
         private Button Button_NewAbility;
         private Button Button_SaveAbility;
+        private ComboBox comboBox1;
     }
 }

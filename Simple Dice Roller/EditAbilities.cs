@@ -340,7 +340,13 @@ namespace Simple_Dice_Roller
         //Delete the selected ability.
         private void Button_Delete_Click(object sender, EventArgs e)
         {
-            string? id = null;
+            var confirmation = MessageBox.Show("You are about to permanently delete an ability, do you want to continue?", "Confirm Delete", MessageBoxButtons.YesNo);
+            if (confirmation == DialogResult.No)
+            {
+                return;
+            }
+
+                string? id = null;
             try
             {
                 id = AbilitiesLibraryList.SelectedRows[0].Cells["Library_IDCol"].Value.ToString();
@@ -406,17 +412,24 @@ namespace Simple_Dice_Roller
         {
             Ability ability = GetValuesFromFields();
 
+            //Make sure we have access to the main form.
+            if (ParentOfThisForm == null)
+            {
+                //Complain to a log file?
+                return;
+            }
+
             //Make sure the new / updated ability meets certain requirements.
             if (ability.ID == "")
             {
-                //complain?
+                //complain to a log file?
                 return;
             }
 
             if (AbilitiesLibrary.ContainsKey(ability.ID))
             {
                 //This ability exists in the list, overwrite it.
-                var confirmation = MessageBox.Show("You are about to overwrite an existing ability, do you want to continue?", "Confirm Delete!!", MessageBoxButtons.YesNo);
+                var confirmation = MessageBox.Show("You are about to overwrite an existing ability, do you want to continue?", "Confirm Overwrite", MessageBoxButtons.YesNo);
                 if (confirmation == DialogResult.Yes)
                 {
                     //Overwrite the ability.
@@ -425,6 +438,7 @@ namespace Simple_Dice_Roller
                 else
                 {
                     //Don't overwrite the ability.
+                    return;
                 }
             }
             else
@@ -439,6 +453,9 @@ namespace Simple_Dice_Roller
             //Redraw the lists
             DrawAbilitiesLibrary();
             DrawAssignedAbilitiesList();
+
+            //Redraw this ability's stuff into the text boxes, in case something was automatically changed.
+            DisplayAbility(ability);
         }
 
         //Clean things up as the form gets closed.
