@@ -276,6 +276,7 @@ namespace Simple_Dice_Roller
             int baseRowHeight = grid.Rows[rowIndex].GetPreferredHeight(rowIndex, DataGridViewAutoSizeRowMode.AllCellsExceptHeader, true);
             //MessageBox.Show("This row reports that it would like to have a height of " + baseRowHeight);
             //to do: get this working
+            //change to GetPreferredSize() ?
             baseRowHeight = 25;
 
             if (panel == null)
@@ -306,6 +307,11 @@ namespace Simple_Dice_Roller
             if (panelHeight < minHeight)
             {
                 panelHeight = minHeight;
+            }
+            else
+            {
+                //Add a bit of margin at the bottom.
+                panelHeight += 6;
             }
 
             int rowHeight = baseRowHeight + panelHeight;
@@ -2074,37 +2080,188 @@ namespace Simple_Dice_Roller
         //Populate the details panel for the spells list when it appears.
         private void CreateSpellDetailPanel(Panel p, DataGridViewRow row)
         {
-            string school = "";
-            if (row.Cells["Spells_SchoolCol"] != null && row.Cells["Spells_SchoolCol"].Value != null) {
-                school = row.Cells["Spells_SchoolCol"].Value.ToString();
-                //Why is this complaining about how I might be doing stuff to a null, but not for the description column?
-                //I'm checking for that stuff here but not there, it's literally backwards.
+            //Calculate the expected width of the detail panel.
+            p.Width = GetActualWidthForGridRow(row);
+
+            //Collect information
+            string? book = "";
+            if (row.Cells["Spells_BookCol"] != null && row.Cells["Spells_BookCol"].Value != null)
+            {
+                book = row.Cells["Spells_BookCol"].Value.ToString();
+                if (book == null)
+                {
+                    book = "";
+                }
             }
+            string? concentration = "";
+            if (row.Cells["Spells_ConcentrationCol"] != null && row.Cells["Spells_ConcentrationCol"].Value != null)
+            {
+                concentration = row.Cells["Spells_ConcentrationCol"].Value.ToString();
+                if (concentration == null)
+                {
+                    concentration = "";
+                }
+            }
+            string? duration = "";
+            if (row.Cells["Spells_DurationCol"] != null && row.Cells["Spells_DurationCol"].Value != null)
+            {
+                duration = row.Cells["Spells_DurationCol"].Value.ToString();
+                if (duration == null)
+                {
+                    duration = "";
+                }
+            }
+            string? expensiveMaterial = "";
+            if (row.Cells["Spells_ExpensiveMaterialCol"] != null && row.Cells["Spells_ExpensiveMaterialCol"].Value != null)
+            {
+                expensiveMaterial = row.Cells["Spells_ExpensiveMaterialCol"].Value.ToString();
+                if (expensiveMaterial == null)
+                {
+                    expensiveMaterial = "";
+                }
+            }
+            string? page = "";
+            if (row.Cells["Spells_PageCol"] != null && row.Cells["Spells_PageCol"].Value != null)
+            {
+                page = row.Cells["Spells_PageCol"].Value.ToString();
+                if (page == null)
+                {
+                    page = "";
+                }
+            }
+            string? school = "";
+            if (row.Cells["Spells_SchoolCol"] != null && row.Cells["Spells_SchoolCol"].Value != null)
+            {
+                school = row.Cells["Spells_SchoolCol"].Value.ToString();
+                if (school == null)
+                {
+                    school = "";
+                }
+            }
+            string? upcastBenefit = "";
+            if (row.Cells["Spells_UpcastingBenefitCol"] != null && row.Cells["Spells_UpcastingBenefitCol"].Value != null)
+            {
+                upcastBenefit = row.Cells["Spells_UpcastingBenefitCol"].Value.ToString();
+                if (upcastBenefit == null)
+                {
+                    upcastBenefit = "";
+                }
+            }
+
+            //Intermediate values
+            Size tempSize;
+
+            int currentHeight = 6;
+            int heightOfCurrentRow = 0;
+
+
+            //Spell school: left aligned in top row.
             Label schoolLabel = new Label();
             schoolLabel.Text = school;
             schoolLabel.Left = 6;
-            schoolLabel.Top = 6;
+            schoolLabel.Top = currentHeight;
+            tempSize = schoolLabel.GetPreferredSize(new Size(100, 15));
+            schoolLabel.Height = tempSize.Height;
+            schoolLabel.Width = tempSize.Width;
             p.Controls.Add(schoolLabel);
+            if (schoolLabel.Height > heightOfCurrentRow)
+            {
+                heightOfCurrentRow = schoolLabel.Height;
+            }
 
 
-            //more in the same row?
-            //duration
-                //top 6 and left ... 106? 156?
-            //book and page
-                //top 6 and left ... 206? 306?
-            //Consider automatically centering these.
-                //school is left, book and page are right, duration is centered between them?
+            //Book and page number: right aligned in first row.
+            string bookPage;
+            if (book.Length > 0 && page.Length > 0)
+            {
+                //We have a book and page number, display them both.
+                bookPage = book + " " + page;
+            }
+            else if (book.Length > 0)
+            {
+                //We only have a page number, not a book.
+                bookPage = page;
+            }
+            else if (page.Length > 0)
+            {
+                //We only have a book, not a page number.
+                bookPage = book;
+            } else
+            {
+                //There's nothing here, leave it blank.
+                bookPage = "";
+            }
+            Label bookLabel = new Label();
+            bookLabel.Text = bookPage;
+            bookLabel.Top = 6;
+            tempSize = bookLabel.GetPreferredSize(new Size(100, 15));
+            bookLabel.Width = tempSize.Width;
+            bookLabel.Left = p.Width - (tempSize.Width + 6);
+            p.Controls.Add(bookLabel);
+            if (bookLabel.Height > heightOfCurrentRow)
+            {
+                heightOfCurrentRow = bookLabel.Height;
+            }
 
-            //expensive material component?
-                //top 21 and left 6
 
+            //Duration: centered-ish in top row
+            string durationDescription = DiceFunctions.ConvertRoundsToDuration(duration, concentration);
+            if (durationDescription == "0")
+            {
+                durationDescription = "Instantaneous";
+            }
+            Label durationLabel = new Label();
+            durationLabel.Text = durationDescription;
+            int tempint = p.Width - 12;
+            tempint -= schoolLabel.Width;
+            tempint -= bookLabel.Width;
+            tempSize = durationLabel.GetPreferredSize(new Size(tempint, 15));
+            durationLabel.Width = tempSize.Width;
+            durationLabel.Left = 106;
+            durationLabel.Top = currentHeight;
+            p.Controls.Add(durationLabel);
+            if (durationLabel.Height > heightOfCurrentRow)
+            {
+                heightOfCurrentRow = durationLabel.Height;
+            }
+
+
+            currentHeight += heightOfCurrentRow + 6;
+            heightOfCurrentRow = 0;
+
+            //Description of expensive material components: second row
+            Label materialComponentLabel = new Label();
+            if (expensiveMaterial == "")
+            {
+                expensiveMaterial = "No expensive material components";
+            }
+            materialComponentLabel.Text = expensiveMaterial;
+            tempSize = materialComponentLabel.GetPreferredSize(new Size(p.Width - 12, 15));
+            materialComponentLabel.Width = tempSize.Width;
+            materialComponentLabel.Height = tempSize.Height;
+            materialComponentLabel.Left = 6;
+            materialComponentLabel.Top = currentHeight;
+            p.Controls.Add(materialComponentLabel);
+            if (materialComponentLabel.Height > heightOfCurrentRow)
+            {
+                heightOfCurrentRow = materialComponentLabel.Height;
+            }
+
+
+            //Let's put some extra space between the top section and the main text.
+            currentHeight += heightOfCurrentRow + 6 + 15;
+            heightOfCurrentRow = 0;
+
+
+            //Main text area.
             Label descriptionLabel = new Label();
             descriptionLabel.Text = row.Cells["Spells_DescriptionCol"].Value.ToString();
             descriptionLabel.Left = 6;
-            descriptionLabel.Top = 36;  //place it 2 rows down
+            descriptionLabel.Top = currentHeight;
 
-            //Set height and width
+            //Set height and width.
             //We need to scan through the rows of the grid, because invisible ones will report width 0.
+            //Assume that the first one we find with non-zero dimensions is visible.
             int width = 0;
             for (int a = 0; a < SpellsArea.Rows.Count; a++)
             {
@@ -2114,19 +2271,29 @@ namespace Simple_Dice_Roller
                     break;
                 }
             }
-            descriptionLabel.Width = width;
+            descriptionLabel.Width = width - 12;
 
             //Figure out how tall the text area wants to be.
             int temp = descriptionLabel.GetPreferredSize(new Size(descriptionLabel.Width, 100)).Height;
-            //Add stuff to account for the other things in the panel:
-            //The description area goes 36 px down.
-            //There's another 6px of margin at the bottom.
-            temp += 42;
             descriptionLabel.Height = temp;
-
-            //upcasting benefit goes here
-
             p.Controls.Add(descriptionLabel);
+            if (descriptionLabel.Height > heightOfCurrentRow)
+            {
+                heightOfCurrentRow = descriptionLabel.Height;
+            }
+
+
+            currentHeight += heightOfCurrentRow + 6;
+
+            //Bottom row: upcasting benefit, if there is any.
+            Label upcastLabel = new Label();
+            upcastLabel.Text = upcastBenefit;
+            upcastLabel.Left = 6;
+            upcastLabel.Top = currentHeight;
+            tempSize = upcastLabel.GetPreferredSize(new Size(p.Width - 12, 30));    //change to ?,15 ?
+            upcastLabel.Width = tempSize.Width;
+            upcastLabel.Height = tempSize.Height;
+            p.Controls.Add(upcastLabel);
         }
 
         //Display a character's spells in the spells tab.
@@ -2147,28 +2314,19 @@ namespace Simple_Dice_Roller
                 string somaticString = (somatic == true) ? "X" : "";
                 bool material = thisSpell.Material;
                 string materialString = (material == true) ? "X" : "";
-                //material + expensivematerial as single entry?
-                //write a function for this?
+                string expensiveMaterial = thisSpell.ExpensiveMaterial;
                 string action = thisSpell.Action;
                 string description = thisSpell.Description;
                 string upcastingBenefit = thisSpell.UpcastingBenefit;
                 string range = thisSpell.Range;
                 int duration = thisSpell.Duration;
                 string durationString = (duration > 0) ? duration.ToString() : "";
-                //extra logic
-                //convert to 1 minute / 1 hour / etc as appropriate?
                 bool concentration = thisSpell.Concentration;
                 string concentrationString = (concentration == true) ? "X" : "";
                 string book = thisSpell.Book;
                 int page = thisSpell.Page;
 
-
-                //to do:
-                //add hidden columns for description and upcasting benefit
-                //and more?
-                //how to display book and page? Details view only?
-
-                SpellsArea.Rows.Insert(spellNum, spellNum + 1, id, name, level, school, range, durationString, concentrationString, vocalString, somaticString, materialString, action, description, upcastingBenefit, "Cast", "Upcast", book, page);
+                SpellsArea.Rows.Insert(spellNum, spellNum + 1, id, name, level, school, range, durationString, concentrationString, vocalString, somaticString, materialString, expensiveMaterial, action, description, upcastingBenefit, "Cast", "Upcast", book, page);
 
                 //Now we potentially blank out the upcast button.
                 //This is done for cantrips.
@@ -2457,6 +2615,9 @@ namespace Simple_Dice_Roller
         //Create the popup panel for upcasting a spell.
         private void CreateUpcastPanel(string spellID)
         {
+            LogMessage("Upcasting functionality coming soon.");
+            return;
+
             //to do: consider passing in the spell object
             //we can access the character via this form
 

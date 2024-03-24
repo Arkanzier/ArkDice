@@ -218,24 +218,6 @@
             SpellSlots_PlusOne = new DataGridViewButtonColumn();
             SpellSlots_MinusOne = new DataGridViewButtonColumn();
             SpellsArea = new DataGridView();
-            Spells_NumberCol = new DataGridViewTextBoxColumn();
-            Spells_IDCol = new DataGridViewTextBoxColumn();
-            Spells_NameCol = new DataGridViewTextBoxColumn();
-            Spells_LevelCol = new DataGridViewTextBoxColumn();
-            Spells_SchoolCol = new DataGridViewTextBoxColumn();
-            Spells_RangeCol = new DataGridViewTextBoxColumn();
-            Spells_DurationCol = new DataGridViewTextBoxColumn();
-            Spells_ConcentrationCol = new DataGridViewTextBoxColumn();
-            Spells_VocalCol = new DataGridViewTextBoxColumn();
-            Spells_SomaticCol = new DataGridViewTextBoxColumn();
-            Spells_MaterialCol = new DataGridViewTextBoxColumn();
-            Spells_ActionCol = new DataGridViewTextBoxColumn();
-            Spells_DescriptionCol = new DataGridViewTextBoxColumn();
-            Spells_UpcastingBenefitCol = new DataGridViewTextBoxColumn();
-            Spells_CastCol = new DataGridViewButtonColumn();
-            Spells_UpcastCol = new DataGridViewButtonColumn();
-            Spells_BookCol = new DataGridViewTextBoxColumn();
-            Spells_PageCol = new DataGridViewTextBoxColumn();
             label7 = new Label();
             SettingsTab = new TabPage();
             Button_CreateNewCharacter = new Button();
@@ -254,6 +236,25 @@
             Button_EditChar = new Button();
             Button_EditAbilities = new Button();
             Button_EditSpells = new Button();
+            Spells_NumberCol = new DataGridViewTextBoxColumn();
+            Spells_IDCol = new DataGridViewTextBoxColumn();
+            Spells_NameCol = new DataGridViewTextBoxColumn();
+            Spells_LevelCol = new DataGridViewTextBoxColumn();
+            Spells_SchoolCol = new DataGridViewTextBoxColumn();
+            Spells_RangeCol = new DataGridViewTextBoxColumn();
+            Spells_DurationCol = new DataGridViewTextBoxColumn();
+            Spells_ConcentrationCol = new DataGridViewTextBoxColumn();
+            Spells_VocalCol = new DataGridViewTextBoxColumn();
+            Spells_SomaticCol = new DataGridViewTextBoxColumn();
+            Spells_MaterialCol = new DataGridViewTextBoxColumn();
+            Spells_ExpensiveMaterialCol = new DataGridViewTextBoxColumn();
+            Spells_ActionCol = new DataGridViewTextBoxColumn();
+            Spells_DescriptionCol = new DataGridViewTextBoxColumn();
+            Spells_UpcastingBenefitCol = new DataGridViewTextBoxColumn();
+            Spells_CastCol = new DataGridViewButtonColumn();
+            Spells_UpcastCol = new DataGridViewButtonColumn();
+            Spells_BookCol = new DataGridViewTextBoxColumn();
+            Spells_PageCol = new DataGridViewTextBoxColumn();
             MainTabArea.SuspendLayout();
             DiceTab.SuspendLayout();
             CharacterTab.SuspendLayout();
@@ -2292,7 +2293,7 @@
             SpellsArea.AllowUserToDeleteRows = false;
             SpellsArea.AllowUserToOrderColumns = true;
             SpellsArea.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            SpellsArea.Columns.AddRange(new DataGridViewColumn[] { Spells_NumberCol, Spells_IDCol, Spells_NameCol, Spells_LevelCol, Spells_SchoolCol, Spells_RangeCol, Spells_DurationCol, Spells_ConcentrationCol, Spells_VocalCol, Spells_SomaticCol, Spells_MaterialCol, Spells_ActionCol, Spells_DescriptionCol, Spells_UpcastingBenefitCol, Spells_CastCol, Spells_UpcastCol, Spells_BookCol, Spells_PageCol });
+            SpellsArea.Columns.AddRange(new DataGridViewColumn[] { Spells_NumberCol, Spells_IDCol, Spells_NameCol, Spells_LevelCol, Spells_SchoolCol, Spells_RangeCol, Spells_DurationCol, Spells_ConcentrationCol, Spells_VocalCol, Spells_SomaticCol, Spells_MaterialCol, Spells_ExpensiveMaterialCol, Spells_ActionCol, Spells_DescriptionCol, Spells_UpcastingBenefitCol, Spells_CastCol, Spells_UpcastCol, Spells_BookCol, Spells_PageCol });
             dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.TopLeft;
             dataGridViewCellStyle2.BackColor = SystemColors.Window;
             dataGridViewCellStyle2.Font = new Font("Segoe UI", 9F);
@@ -2316,146 +2317,6 @@
             SpellsArea.SortCompare += SpellsArea_SortCompare;
             SpellsArea.Sorted += SpellsArea_Sorted;
             SpellsArea.Click += SpellsArea_Click;
-            // 
-            // Spells_NumberCol
-            // 
-            Spells_NumberCol.HeaderText = "#";
-            Spells_NumberCol.Name = "Spells_NumberCol";
-            Spells_NumberCol.ReadOnly = true;
-            Spells_NumberCol.Width = 25;
-            // 
-            // Spells_IDCol
-            // 
-            Spells_IDCol.HeaderText = "ID";
-            Spells_IDCol.Name = "Spells_IDCol";
-            Spells_IDCol.ReadOnly = true;
-            Spells_IDCol.ToolTipText = "ID";
-            Spells_IDCol.Visible = false;
-            // 
-            // Spells_NameCol
-            // 
-            Spells_NameCol.HeaderText = "Name";
-            Spells_NameCol.Name = "Spells_NameCol";
-            Spells_NameCol.ReadOnly = true;
-            Spells_NameCol.ToolTipText = "Name";
-            // 
-            // Spells_LevelCol
-            // 
-            Spells_LevelCol.HeaderText = "Lvl";
-            Spells_LevelCol.Name = "Spells_LevelCol";
-            Spells_LevelCol.ReadOnly = true;
-            Spells_LevelCol.ToolTipText = "Spell Level";
-            Spells_LevelCol.Width = 30;
-            // 
-            // Spells_SchoolCol
-            // 
-            Spells_SchoolCol.HeaderText = "School";
-            Spells_SchoolCol.Name = "Spells_SchoolCol";
-            Spells_SchoolCol.ReadOnly = true;
-            Spells_SchoolCol.ToolTipText = "School";
-            Spells_SchoolCol.Visible = false;
-            Spells_SchoolCol.Width = 75;
-            // 
-            // Spells_RangeCol
-            // 
-            Spells_RangeCol.HeaderText = "Range";
-            Spells_RangeCol.Name = "Spells_RangeCol";
-            Spells_RangeCol.ReadOnly = true;
-            Spells_RangeCol.ToolTipText = "Range";
-            Spells_RangeCol.Width = 50;
-            // 
-            // Spells_DurationCol
-            // 
-            Spells_DurationCol.HeaderText = "Duration";
-            Spells_DurationCol.Name = "Spells_DurationCol";
-            Spells_DurationCol.ReadOnly = true;
-            Spells_DurationCol.ToolTipText = "Duration in rounds";
-            Spells_DurationCol.Visible = false;
-            Spells_DurationCol.Width = 75;
-            // 
-            // Spells_ConcentrationCol
-            // 
-            Spells_ConcentrationCol.HeaderText = "C";
-            Spells_ConcentrationCol.Name = "Spells_ConcentrationCol";
-            Spells_ConcentrationCol.ReadOnly = true;
-            Spells_ConcentrationCol.ToolTipText = "Concentration?";
-            Spells_ConcentrationCol.Width = 25;
-            // 
-            // Spells_VocalCol
-            // 
-            Spells_VocalCol.HeaderText = "V";
-            Spells_VocalCol.Name = "Spells_VocalCol";
-            Spells_VocalCol.ReadOnly = true;
-            Spells_VocalCol.ToolTipText = "Vocal Component?";
-            Spells_VocalCol.Width = 25;
-            // 
-            // Spells_SomaticCol
-            // 
-            Spells_SomaticCol.HeaderText = "S";
-            Spells_SomaticCol.Name = "Spells_SomaticCol";
-            Spells_SomaticCol.ReadOnly = true;
-            Spells_SomaticCol.ToolTipText = "Somatic Component?";
-            Spells_SomaticCol.Width = 25;
-            // 
-            // Spells_MaterialCol
-            // 
-            Spells_MaterialCol.HeaderText = "M";
-            Spells_MaterialCol.Name = "Spells_MaterialCol";
-            Spells_MaterialCol.ReadOnly = true;
-            Spells_MaterialCol.ToolTipText = "Material Component?";
-            Spells_MaterialCol.Width = 25;
-            // 
-            // Spells_ActionCol
-            // 
-            Spells_ActionCol.HeaderText = "Action";
-            Spells_ActionCol.Name = "Spells_ActionCol";
-            Spells_ActionCol.ReadOnly = true;
-            Spells_ActionCol.ToolTipText = "Action Used to Cast";
-            Spells_ActionCol.Width = 50;
-            // 
-            // Spells_DescriptionCol
-            // 
-            Spells_DescriptionCol.HeaderText = "Description";
-            Spells_DescriptionCol.Name = "Spells_DescriptionCol";
-            Spells_DescriptionCol.ReadOnly = true;
-            Spells_DescriptionCol.Visible = false;
-            // 
-            // Spells_UpcastingBenefitCol
-            // 
-            Spells_UpcastingBenefitCol.HeaderText = "Upcasting Benefit";
-            Spells_UpcastingBenefitCol.Name = "Spells_UpcastingBenefitCol";
-            Spells_UpcastingBenefitCol.ReadOnly = true;
-            Spells_UpcastingBenefitCol.Visible = false;
-            // 
-            // Spells_CastCol
-            // 
-            Spells_CastCol.HeaderText = "Cast";
-            Spells_CastCol.Name = "Spells_CastCol";
-            Spells_CastCol.ReadOnly = true;
-            Spells_CastCol.Width = 50;
-            // 
-            // Spells_UpcastCol
-            // 
-            Spells_UpcastCol.HeaderText = "Upcast";
-            Spells_UpcastCol.Name = "Spells_UpcastCol";
-            Spells_UpcastCol.ReadOnly = true;
-            Spells_UpcastCol.Width = 50;
-            // 
-            // Spells_BookCol
-            // 
-            Spells_BookCol.HeaderText = "Book";
-            Spells_BookCol.Name = "Spells_BookCol";
-            Spells_BookCol.ReadOnly = true;
-            Spells_BookCol.ToolTipText = "Book";
-            Spells_BookCol.Visible = false;
-            // 
-            // Spells_PageCol
-            // 
-            Spells_PageCol.HeaderText = "Page";
-            Spells_PageCol.Name = "Spells_PageCol";
-            Spells_PageCol.ReadOnly = true;
-            Spells_PageCol.ToolTipText = "Page Number";
-            Spells_PageCol.Visible = false;
             // 
             // label7
             // 
@@ -2625,6 +2486,153 @@
             Button_EditSpells.Text = "Edit Spells";
             Button_EditSpells.UseVisualStyleBackColor = true;
             Button_EditSpells.Click += Button_EditSpells_Click;
+            // 
+            // Spells_NumberCol
+            // 
+            Spells_NumberCol.HeaderText = "#";
+            Spells_NumberCol.Name = "Spells_NumberCol";
+            Spells_NumberCol.ReadOnly = true;
+            Spells_NumberCol.Width = 25;
+            // 
+            // Spells_IDCol
+            // 
+            Spells_IDCol.HeaderText = "ID";
+            Spells_IDCol.Name = "Spells_IDCol";
+            Spells_IDCol.ReadOnly = true;
+            Spells_IDCol.ToolTipText = "ID";
+            Spells_IDCol.Visible = false;
+            // 
+            // Spells_NameCol
+            // 
+            Spells_NameCol.HeaderText = "Name";
+            Spells_NameCol.Name = "Spells_NameCol";
+            Spells_NameCol.ReadOnly = true;
+            Spells_NameCol.ToolTipText = "Name";
+            // 
+            // Spells_LevelCol
+            // 
+            Spells_LevelCol.HeaderText = "Lvl";
+            Spells_LevelCol.Name = "Spells_LevelCol";
+            Spells_LevelCol.ReadOnly = true;
+            Spells_LevelCol.ToolTipText = "Spell Level";
+            Spells_LevelCol.Width = 30;
+            // 
+            // Spells_SchoolCol
+            // 
+            Spells_SchoolCol.HeaderText = "School";
+            Spells_SchoolCol.Name = "Spells_SchoolCol";
+            Spells_SchoolCol.ReadOnly = true;
+            Spells_SchoolCol.ToolTipText = "School";
+            Spells_SchoolCol.Visible = false;
+            Spells_SchoolCol.Width = 75;
+            // 
+            // Spells_RangeCol
+            // 
+            Spells_RangeCol.HeaderText = "Range";
+            Spells_RangeCol.Name = "Spells_RangeCol";
+            Spells_RangeCol.ReadOnly = true;
+            Spells_RangeCol.ToolTipText = "Range";
+            Spells_RangeCol.Width = 50;
+            // 
+            // Spells_DurationCol
+            // 
+            Spells_DurationCol.HeaderText = "Duration";
+            Spells_DurationCol.Name = "Spells_DurationCol";
+            Spells_DurationCol.ReadOnly = true;
+            Spells_DurationCol.ToolTipText = "Duration in rounds";
+            Spells_DurationCol.Visible = false;
+            Spells_DurationCol.Width = 75;
+            // 
+            // Spells_ConcentrationCol
+            // 
+            Spells_ConcentrationCol.HeaderText = "C";
+            Spells_ConcentrationCol.Name = "Spells_ConcentrationCol";
+            Spells_ConcentrationCol.ReadOnly = true;
+            Spells_ConcentrationCol.ToolTipText = "Concentration?";
+            Spells_ConcentrationCol.Width = 25;
+            // 
+            // Spells_VocalCol
+            // 
+            Spells_VocalCol.HeaderText = "V";
+            Spells_VocalCol.Name = "Spells_VocalCol";
+            Spells_VocalCol.ReadOnly = true;
+            Spells_VocalCol.ToolTipText = "Vocal Component?";
+            Spells_VocalCol.Width = 25;
+            // 
+            // Spells_SomaticCol
+            // 
+            Spells_SomaticCol.HeaderText = "S";
+            Spells_SomaticCol.Name = "Spells_SomaticCol";
+            Spells_SomaticCol.ReadOnly = true;
+            Spells_SomaticCol.ToolTipText = "Somatic Component?";
+            Spells_SomaticCol.Width = 25;
+            // 
+            // Spells_MaterialCol
+            // 
+            Spells_MaterialCol.HeaderText = "M";
+            Spells_MaterialCol.Name = "Spells_MaterialCol";
+            Spells_MaterialCol.ReadOnly = true;
+            Spells_MaterialCol.ToolTipText = "Material Component?";
+            Spells_MaterialCol.Width = 25;
+            // 
+            // Spells_ExpensiveMaterialCol
+            // 
+            Spells_ExpensiveMaterialCol.HeaderText = "Expensive Material";
+            Spells_ExpensiveMaterialCol.Name = "Spells_ExpensiveMaterialCol";
+            Spells_ExpensiveMaterialCol.ReadOnly = true;
+            Spells_ExpensiveMaterialCol.Visible = false;
+            // 
+            // Spells_ActionCol
+            // 
+            Spells_ActionCol.HeaderText = "Action";
+            Spells_ActionCol.Name = "Spells_ActionCol";
+            Spells_ActionCol.ReadOnly = true;
+            Spells_ActionCol.ToolTipText = "Action Used to Cast";
+            Spells_ActionCol.Width = 50;
+            // 
+            // Spells_DescriptionCol
+            // 
+            Spells_DescriptionCol.HeaderText = "Description";
+            Spells_DescriptionCol.Name = "Spells_DescriptionCol";
+            Spells_DescriptionCol.ReadOnly = true;
+            Spells_DescriptionCol.Visible = false;
+            // 
+            // Spells_UpcastingBenefitCol
+            // 
+            Spells_UpcastingBenefitCol.HeaderText = "Upcasting Benefit";
+            Spells_UpcastingBenefitCol.Name = "Spells_UpcastingBenefitCol";
+            Spells_UpcastingBenefitCol.ReadOnly = true;
+            Spells_UpcastingBenefitCol.Visible = false;
+            // 
+            // Spells_CastCol
+            // 
+            Spells_CastCol.HeaderText = "Cast";
+            Spells_CastCol.Name = "Spells_CastCol";
+            Spells_CastCol.ReadOnly = true;
+            Spells_CastCol.Width = 50;
+            // 
+            // Spells_UpcastCol
+            // 
+            Spells_UpcastCol.HeaderText = "Upcast";
+            Spells_UpcastCol.Name = "Spells_UpcastCol";
+            Spells_UpcastCol.ReadOnly = true;
+            Spells_UpcastCol.Width = 50;
+            // 
+            // Spells_BookCol
+            // 
+            Spells_BookCol.HeaderText = "Book";
+            Spells_BookCol.Name = "Spells_BookCol";
+            Spells_BookCol.ReadOnly = true;
+            Spells_BookCol.ToolTipText = "Book";
+            Spells_BookCol.Visible = false;
+            // 
+            // Spells_PageCol
+            // 
+            Spells_PageCol.HeaderText = "Page";
+            Spells_PageCol.Name = "Spells_PageCol";
+            Spells_PageCol.ReadOnly = true;
+            Spells_PageCol.ToolTipText = "Page Number";
+            Spells_PageCol.Visible = false;
             // 
             // Form1
             // 
@@ -2844,24 +2852,6 @@
         private DataGridView SpellSlotsList;
         private Label label1;
         private Label label2;
-        private DataGridViewTextBoxColumn Spells_NumberCol;
-        private DataGridViewTextBoxColumn Spells_IDCol;
-        private DataGridViewTextBoxColumn Spells_NameCol;
-        private DataGridViewTextBoxColumn Spells_LevelCol;
-        private DataGridViewTextBoxColumn Spells_SchoolCol;
-        private DataGridViewTextBoxColumn Spells_RangeCol;
-        private DataGridViewTextBoxColumn Spells_DurationCol;
-        private DataGridViewTextBoxColumn Spells_ConcentrationCol;
-        private DataGridViewTextBoxColumn Spells_VocalCol;
-        private DataGridViewTextBoxColumn Spells_SomaticCol;
-        private DataGridViewTextBoxColumn Spells_MaterialCol;
-        private DataGridViewTextBoxColumn Spells_ActionCol;
-        private DataGridViewTextBoxColumn Spells_DescriptionCol;
-        private DataGridViewTextBoxColumn Spells_UpcastingBenefitCol;
-        private DataGridViewButtonColumn Spells_CastCol;
-        private DataGridViewButtonColumn Spells_UpcastCol;
-        private DataGridViewTextBoxColumn Spells_BookCol;
-        private DataGridViewTextBoxColumn Spells_PageCol;
         private DataGridViewTextBoxColumn SpellSlots_Level;
         private DataGridViewTextBoxColumn SpellSlots_RestType;
         private DataGridViewTextBoxColumn SpellSlots_Uses;
@@ -2886,5 +2876,24 @@
         private ComboBox Dropdown_CharactersList;
         private Button Button_LoadCharacter;
         private Button Button_CreateNewCharacter;
+        private DataGridViewTextBoxColumn Spells_NumberCol;
+        private DataGridViewTextBoxColumn Spells_IDCol;
+        private DataGridViewTextBoxColumn Spells_NameCol;
+        private DataGridViewTextBoxColumn Spells_LevelCol;
+        private DataGridViewTextBoxColumn Spells_SchoolCol;
+        private DataGridViewTextBoxColumn Spells_RangeCol;
+        private DataGridViewTextBoxColumn Spells_DurationCol;
+        private DataGridViewTextBoxColumn Spells_ConcentrationCol;
+        private DataGridViewTextBoxColumn Spells_VocalCol;
+        private DataGridViewTextBoxColumn Spells_SomaticCol;
+        private DataGridViewTextBoxColumn Spells_MaterialCol;
+        private DataGridViewTextBoxColumn Spells_ExpensiveMaterialCol;
+        private DataGridViewTextBoxColumn Spells_ActionCol;
+        private DataGridViewTextBoxColumn Spells_DescriptionCol;
+        private DataGridViewTextBoxColumn Spells_UpcastingBenefitCol;
+        private DataGridViewButtonColumn Spells_CastCol;
+        private DataGridViewButtonColumn Spells_UpcastCol;
+        private DataGridViewTextBoxColumn Spells_BookCol;
+        private DataGridViewTextBoxColumn Spells_PageCol;
     }
 }

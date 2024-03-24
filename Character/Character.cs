@@ -503,12 +503,12 @@ namespace Character
             Dictionary<string, double> ret = new Dictionary<string, double>();
 
             //Stats and modifiers
-            ret["strmod"] = DiceFunctions.getModifierForStat(Stats[0]);
-            ret["dexmod"] = DiceFunctions.getModifierForStat(Stats[1]);
-            ret["conmod"] = DiceFunctions.getModifierForStat(Stats[2]);
-            ret["intmod"] = DiceFunctions.getModifierForStat(Stats[3]);
-            ret["wismod"] = DiceFunctions.getModifierForStat(Stats[4]);
-            ret["chamod"] = DiceFunctions.getModifierForStat(Stats[5]);
+            ret["strmod"] = DiceFunctions.GetModifierForStat(Stats[0]);
+            ret["dexmod"] = DiceFunctions.GetModifierForStat(Stats[1]);
+            ret["conmod"] = DiceFunctions.GetModifierForStat(Stats[2]);
+            ret["intmod"] = DiceFunctions.GetModifierForStat(Stats[3]);
+            ret["wismod"] = DiceFunctions.GetModifierForStat(Stats[4]);
+            ret["chamod"] = DiceFunctions.GetModifierForStat(Stats[5]);
 
             ret["strscore"] = Stats[0];
             ret["dexscore"] = Stats[1];
@@ -1213,7 +1213,7 @@ namespace Character
         }
         public int GetStrMod()
         {
-            return DiceFunctions.getModifierForStat(this.Stats[0]);
+            return DiceFunctions.GetModifierForStat(this.Stats[0]);
         }
         public int GetDexterity()
         {
@@ -1225,7 +1225,7 @@ namespace Character
         }
         public int GetDexMod()
         {
-            return DiceFunctions.getModifierForStat(this.Stats[1]);
+            return DiceFunctions.GetModifierForStat(this.Stats[1]);
         }
         public int GetConstitution()
         {
@@ -1237,7 +1237,7 @@ namespace Character
         }
         public int GetConMod()
         {
-            return DiceFunctions.getModifierForStat(this.Stats[2]);
+            return DiceFunctions.GetModifierForStat(this.Stats[2]);
         }
         public int GetIntelligence()
         {
@@ -1249,7 +1249,7 @@ namespace Character
         }
         public int GetIntMod()
         {
-            return DiceFunctions.getModifierForStat(this.Stats[3]);
+            return DiceFunctions.GetModifierForStat(this.Stats[3]);
         }
         public int GetWisdom()
         {
@@ -1261,7 +1261,7 @@ namespace Character
         }
         public int GetWisMod()
         {
-            return DiceFunctions.getModifierForStat(this.Stats[4]);
+            return DiceFunctions.GetModifierForStat(this.Stats[4]);
         }
         public int GetCharisma()
         {
@@ -1273,7 +1273,7 @@ namespace Character
         }
         public int GetChaMod()
         {
-            return DiceFunctions.getModifierForStat(this.Stats[5]);
+            return DiceFunctions.GetModifierForStat(this.Stats[5]);
         }
         public int[] GetStats()
         {
@@ -1715,7 +1715,7 @@ namespace Character
         {
             int charLevel = GetCharacterLevel();
 
-            Prof = DiceFunctions.getProfForLevel(charLevel) + BonusToProf;
+            Prof = DiceFunctions.GetProfForLevel(charLevel) + BonusToProf;
         }
 
         //Calculates the numeric index of the ability with the specified ID.
